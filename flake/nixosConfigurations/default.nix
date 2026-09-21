@@ -50,11 +50,14 @@ in
     ];
 
     vm = mkSystem [
-      {
-        virtualisation.vmVariant = true;
-        virtualisation.memorySize = 4096;
-        virtualisation.diskSize = 8192;
-      }
+      (
+        { modulesPath, ... }:
+        {
+          imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
+          virtualisation.memorySize = 4096;
+          virtualisation.diskSize = 8192;
+        }
+      )
     ];
   };
 }
