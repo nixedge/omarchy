@@ -39,7 +39,7 @@ in
         imports = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix"
         ];
-        image.fileName = "omarchy-cinque.iso";
+        isoImage.isoBaseName = nixpkgs.lib.mkForce "omarchy-cinque";
         isoImage.squashfsCompression = "zstd -Xcompression-level 6";
         isoImage.appendToMenuLabel = " Omarchy Cinque";
         services.displayManager.autoLogin = {
