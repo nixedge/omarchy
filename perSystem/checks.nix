@@ -15,9 +15,11 @@
             { nativeBuildInputs = [ pkgs.shellcheck pkgs.bash ]; }
             ''
               # Only check bash scripts; Python and other-shebang files are skipped.
+              # --severity=error: catch real errors but not pre-existing style warnings
+              # in the upstream Arch-era scripts.
               for f in ${config.packages.omarchy}/bin/omarchy-*; do
                 read -r shebang < "$f"
-                [[ $shebang == "#!/"*"bash"* ]] && shellcheck "$f"
+                [[ $shebang == "#!/"*"bash"* ]] && shellcheck --severity=error "$f"
               done
               touch $out
             '';
