@@ -15,7 +15,7 @@
           touch $out
         '';
 
-        vm-smoke = import ./tests/vm-smoke.nix { inherit inputs pkgs lib; };
+        vm-smoke = import ../tests/vm-smoke.nix { inherit inputs pkgs lib; };
       };
     };
 }
