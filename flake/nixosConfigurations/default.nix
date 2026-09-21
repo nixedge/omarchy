@@ -39,7 +39,7 @@ in
         imports = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix"
         ];
-        isoImage.isoName = "omarchy-cinque.iso";
+        image.fileName = "omarchy-cinque.iso";
         isoImage.squashfsCompression = "zstd -Xcompression-level 6";
         isoImage.appendToMenuLabel = " Omarchy Cinque";
         services.displayManager.autoLogin = {
@@ -54,6 +54,7 @@ in
         { modulesPath, ... }:
         {
           imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
+          system.stateVersion = "25.11";
           virtualisation.memorySize = 4096;
           virtualisation.diskSize = 8192;
         }
