@@ -1,4 +1,8 @@
-{ inputs, pkgs, lib }:
+{
+  inputs,
+  pkgs,
+  lib,
+}:
 pkgs.testers.nixosTest {
   name = "omarchy-cinque-vm-smoke";
 

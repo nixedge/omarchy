@@ -26,11 +26,10 @@ pub async fn list() -> Response {
 pub async fn present(name: &str) -> Response {
     match tokio::fs::read(MANIFEST_PATH).await {
         Ok(data) => {
-            let pkgs: Vec<serde_json::Value> =
-                serde_json::from_slice(&data).unwrap_or_default();
-            let found = pkgs.iter().any(|p| {
-                p.get("name").and_then(|n| n.as_str()) == Some(name)
-            });
+            let pkgs: Vec<serde_json::Value> = serde_json::from_slice(&data).unwrap_or_default();
+            let found = pkgs
+                .iter()
+                .any(|p| p.get("name").and_then(|n| n.as_str()) == Some(name));
             Response::ok(Some(serde_json::json!({ "present": found })))
         }
         Err(e) => Response::err(format!("manifest unavailable: {e}")),

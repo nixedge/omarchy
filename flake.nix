@@ -22,16 +22,17 @@
       ...
     }@inputs:
     let
-      inherit
-        ((import ./flake/lib/recursive-imports.nix { inherit inputs; }).flake.lib)
+      inherit ((import ./flake/lib/recursive-imports.nix { inherit inputs; }).flake.lib)
         recursiveImports
         ;
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = recursiveImports [
-        ./flake
-        ./perSystem
-      ] ++ [ inputs.treefmt-nix.flakeModule ];
+      imports =
+        recursiveImports [
+          ./flake
+          ./perSystem
+        ]
+        ++ [ inputs.treefmt-nix.flakeModule ];
 
       systems = [ "x86_64-linux" ];
 

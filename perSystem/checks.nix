@@ -12,7 +12,12 @@
       checks = {
         shellcheck =
           pkgs.runCommand "shellcheck"
-            { nativeBuildInputs = [ pkgs.shellcheck pkgs.bash ]; }
+            {
+              nativeBuildInputs = [
+                pkgs.shellcheck
+                pkgs.bash
+              ];
+            }
             ''
               # Only check bash scripts; Python and other-shebang files are skipped.
               # --severity=error: catch real errors but not pre-existing style warnings
