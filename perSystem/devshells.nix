@@ -16,7 +16,7 @@
           pkgs.nix
           pkgs.jq
           pkgs.socat
-          pkgs.nixfmt-rfc-style
+          pkgs.nixfmt
         ];
         # Make the omarchy commands available in the dev shell
         OMARCHY_PATH = config.packages.omarchy;
