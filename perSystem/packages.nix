@@ -54,11 +54,9 @@
             runHook postInstall
           '';
 
-          # Leave #!/bin/bash shebangs alone — NixOS provides /bin/bash and
-          # rewriting to store paths would break the header-grep in bin/omarchy
-          # which scans for # omarchy:summary= lines in the installed files.
-          dontPatchShebangs = true;
-          dontFixup = true;
+          # patchShebangs rewrites #!/bin/bash to the nix-store bash path.
+          # bin/omarchy's register_command already skips line 1 when it starts
+          # with #!, so the header-grep is unaffected by shebang rewriting.
         };
 
         default = inputs.self.packages.${system}.omarchy;
