@@ -27,8 +27,7 @@
         programs.hyprland = {
           enable = true;
           package = inputs.hyprland.packages.${system}.hyprland;
-          portalPackage =
-            inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
+          portalPackage = inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
         };
 
         # OMARCHY_PATH in the session environment, not hardcoded in the package.
