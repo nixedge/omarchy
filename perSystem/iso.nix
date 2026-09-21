@@ -14,6 +14,7 @@
       apps.run-vm = {
         type = "app";
         program = lib.getExe config.packages.vm;
+        meta.description = "Run the Omarchy Cinque QEMU VM";
       };
     };
 }
