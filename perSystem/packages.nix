@@ -34,6 +34,9 @@
             for d in bin config default shell themes migrations manual; do
               [ -d "$d" ] && cp -r "$d" $out/
             done
+            # icon.png is referenced by default/chromium/extensions/copy-url/icon.png
+            # via a ../../../../ symlink that resolves to the package root.
+            [ -f icon.png ] && cp icon.png $out/
 
             # Cinque-not-implemented shims for eliminated Arch-only commands.
             # These are prepended to PATH via environment.sessionVariables so
