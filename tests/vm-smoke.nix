@@ -8,6 +8,12 @@ pkgs.testers.nixosTest {
       imports = [ inputs.self.nixosModules.omarchy ];
       programs.omarchy.enable = true;
       virtualisation.memorySize = 2048;
+      system.stateVersion = "25.11";
+      users.users.omarchy = {
+        isNormalUser = true;
+        initialPassword = "omarchy";
+        group = "users";
+      };
     };
 
   testScript = ''
