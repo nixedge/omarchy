@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# omarchy:summary=Install Arch packages if they are missing
-# omarchy:args=<packages...>
-# omarchy:examples=omarchy pkg add jq ripgrep
-# omarchy:requires-sudo=true
+# omarchy:summary=Add a package
+# omarchy:args=<package>
+# omarchy:examples=omarchy pkg add git
 
-if omarchy-pkg-missing "$@"; then
-  if (( EUID == 0 )); then
-    pacman -S --noconfirm --needed "$@" || exit 1
-  else
-    sudo pacman -S --noconfirm --needed "$@" || exit 1
-  fi
+[[ -z $1 ]] && { echo "Usage: omarchy-pkg-add <package>" >&2; exit 1; }
+
+pkg="$1"
+
+response=$(printf '{"cmd":"pkg-add","name":"%s"}\n' "$pkg" \
+  | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+
+if [[ -z $response ]]; then
+  echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
+  exit 1
 fi
 
-for pkg in "$@"; do
-  # Secondary check to handle states where pacman doesn't actually register an error
-  if ! pacman -Q "$pkg" &>/dev/null; then
-    echo -e "\033[31mError: Package '$pkg' did not install\033[0m" >&2
-    exit 1
-  fi
-done
+ok=$(printf '%s' "$response" | jq -r '.ok')
 
-exit 0
+if [[ $ok != "true" ]]; then
+  printf '%s' "$response" | jq -r '.error // "unknown error"' >&2
+  exit 1
+fi

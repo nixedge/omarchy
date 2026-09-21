@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# omarchy:summary=List installed packages
+# omarchy:group=pkg
+
+jq -r '.[].name' /run/omarchy/packages.json
