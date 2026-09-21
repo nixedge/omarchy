@@ -3,6 +3,7 @@
 Deeper instructions for specific kinds of work live in `agents/skills/`. Read the
 matching guide before starting:
 
+- [`agents/skills/speckit/`](agents/skills/speckit/) - spec-driven development workflow for the nix-port (specify → clarify → plan → tasks → implement)
 - [`agents/skills/command-metadata.md`](agents/skills/command-metadata.md) - adding or changing commands in `bin/`
 - [`agents/skills/install-scripts.md`](agents/skills/install-scripts.md) - working under `install/` or on system/user setup commands
 - [`agents/skills/shell-dev.md`](agents/skills/shell-dev.md) - editing the Quickshell desktop under `shell/`
