@@ -4,3 +4,11 @@ __pycache__/
 *.pyc
 
 .claude/
+
+# Rust build output
+daemon/target/
+
+# Nix build outputs and VM artifacts
+result
+result-*
+omarchy-cinque.qcow2
