@@ -81,6 +81,24 @@ All pkg-* command output uses colors from the active omarchy theme and nerd font
 
 ---
 
+### User Story 5 — Search for packages (P3)
+
+A user can search for available packages by name or description without leaving the omarchy CLI and without knowing the nix command syntax.
+
+**Why this priority**: Without a search command, users who don't know the exact nixpkgs attribute name must context-switch to a browser or run `nix search nixpkgs <term>` manually. This is the last step to making pkg management self-contained. It's P3 because add/drop/list/aliases are more pressing, and `nix search` already works as a fallback.
+
+**Independent Test**: Run `omarchy pkg search json`. Output contains at least `jq` and `yq` with brief descriptions, formatted consistently with other pkg output.
+
+**Acceptance Scenarios**:
+
+1. **Given** a search term, **When** `omarchy pkg search <term>`, **Then** results from nixpkgs matching that term are displayed with package name, version, and a one-line description.
+2. **Given** a term with many results, **When** `omarchy pkg search <term>`, **Then** results are paginated or capped at a reasonable limit (e.g. 20) to avoid flooding the terminal.
+3. **Given** a term with no results, **When** `omarchy pkg search <term>`, **Then** a "No packages found." message is shown and the command exits 0.
+4. **Given** a result that matches a user-installed package, **When** the list is shown, **Then** that entry is visually marked as already installed (e.g. a different glyph or color).
+5. **Given** the search results, **When** displayed, **Then** package names and versions use the same themed color scheme as `omarchy pkg list` (`foreground` for names, `muted` for versions, `accent` for the installed marker).
+
+---
+
 ## Edge Cases
 
 - `--verbose` flag on a non-rebuild command (e.g., `omarchy pkg list --verbose`): flag is silently ignored; list output is unchanged.
@@ -130,6 +148,14 @@ All pkg-* command output uses colors from the active omarchy theme and nerd font
 
 **FR-011** — Theme color reading: pkg scripts read colors from `~/.local/state/omarchy/current/theme/colors.toml` using the awk-based approach established in `omarchy-plymouth-set-by-theme`. A shared helper (`omarchy-pkg-color` or a sourced function) extracts this logic so all pkg scripts share one implementation.
 
+**FR-013** — Search command: `omarchy pkg search <term>` invokes `nix search nixpkgs <term>` and displays results as a formatted list of name, version, and description.
+
+**FR-014** — Search result limit: results are capped at 20 entries by default to prevent terminal flooding.
+
+**FR-015** — Search installed marker: results that correspond to a package in `/var/lib/omarchy/state.json` are marked with a distinct glyph or color to indicate they are already installed.
+
+**FR-016** — Search empty state: when no results are found, `omarchy pkg search <term>` prints "No packages found." and exits 0.
+
 **FR-012** — Glyph usage: progress lines are prefixed with the nerd font package glyph (󰏖 U+F040E or nearest available); success uses ✓ or  (U+F00C nf-fa-check); failure uses ✗ or  (U+F00D nf-fa-times).
 
 ### Key Entities
@@ -157,6 +183,10 @@ All pkg-* command output uses colors from the active omarchy theme and nerd font
 **SC-006** — All existing unit tests in `alias.rs` pass after the alias table is expanded.
 
 **SC-007** — `omarchy pkg add <unknown-name>` exits non-zero and the output contains the string `nix search nixpkgs`.
+
+**SC-008** — `omarchy pkg search json` returns results including at least `jq` within 10 seconds and displays no more than 20 entries.
+
+**SC-009** — When a package returned by search is already installed, it is visually distinguishable from uninstalled results.
 
 ---
 
