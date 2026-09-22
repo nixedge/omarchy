@@ -65,6 +65,22 @@ in
           system.stateVersion = "25.11";
           virtualisation.memorySize = 4096;
           virtualisation.diskSize = 8192;
+
+          # Headless — use VNC instead of the QEMU SDL window.
+          # Connect with: vncviewer localhost:5900
+          virtualisation.graphics = false;
+          virtualisation.qemu.options = [ "-vnc :0" ];
+
+          # SSH access from host.
+          # Connect with: ssh -p 2222 omarchy@localhost
+          services.openssh.enable = true;
+          virtualisation.forwardPorts = [
+            {
+              from = "host";
+              host.port = 2222;
+              guest.port = 22;
+            }
+          ];
         }
       )
     ];
