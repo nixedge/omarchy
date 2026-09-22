@@ -9,6 +9,7 @@ use tokio::sync::mpsc;
 
 const MODULE_PATH: &str = "/var/lib/omarchy/omarchy-managed.nix";
 const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
+const REBUILD_OPTS_PATH: &str = "/etc/omarchy/rebuild-opts";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 
 // NixOS puts the sudo setuid wrapper here; not in the default systemd PATH.
@@ -66,16 +67,27 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
 
     let flake_arg = flake_uri().await?;
 
+    // Optional extra flags (e.g. --no-install-bootloader for VM environments).
+    let extra_opts: Vec<String> = tokio::fs::read_to_string(REBUILD_OPTS_PATH)
+        .await
+        .unwrap_or_default()
+        .split_whitespace()
+        .map(str::to_owned)
+        .collect();
+
+    let mut args = vec![
+        "--".to_owned(),
+        NIXOS_REBUILD.to_owned(),
+        "switch".to_owned(),
+        "--impure".to_owned(),
+        "--accept-flake-config".to_owned(),
+        "--flake".to_owned(),
+        flake_arg,
+    ];
+    args.extend(extra_opts);
+
     let mut child = Command::new(SUDO)
-        .args([
-            "--",
-            NIXOS_REBUILD,
-            "switch",
-            "--impure",
-            "--accept-flake-config",
-            "--flake",
-            &flake_arg,
-        ])
+        .args(&args)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()

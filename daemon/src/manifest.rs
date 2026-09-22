@@ -7,7 +7,14 @@ use tokio::process::Command;
 /// is unavailable in early boot or a sandbox.
 pub async fn write_manifest(dest: &Path) -> Result<()> {
     let out = Command::new("/run/current-system/sw/bin/nix")
-        .args(["path-info", "--json", "--recursive", "/run/current-system"])
+        .args([
+            "--extra-experimental-features",
+            "nix-command",
+            "path-info",
+            "--json",
+            "--recursive",
+            "/run/current-system",
+        ])
         .output()
         .await?;
 
