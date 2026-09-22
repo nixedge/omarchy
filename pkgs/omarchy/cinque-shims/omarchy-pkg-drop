@@ -17,7 +17,10 @@ fail=0
 for pkg in "$@"; do
   exit_code=0
 
-  while IFS= read -r frame; do
+  coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
+  printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
+
+  while IFS= read -r frame <&"${DAEMON[0]}"; do
     type=$(printf '%s' "$frame" | jq -r '.type // empty')
     if [[ $type == "progress" ]]; then
       printf '%s' "$frame" | jq -r '.line'
@@ -29,8 +32,10 @@ for pkg in "$@"; do
       fi
       break
     fi
-  done < <(printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" \
-    | socat - 'UNIX-CONNECT:/run/omarchy/daemon.sock,shut-down' 2>/dev/null)
+  done
+
+  exec {DAEMON[1]}>&-
+  wait "$DAEMON_PID" 2>/dev/null
 
   (( fail = fail || exit_code ))
 done
