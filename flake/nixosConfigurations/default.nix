@@ -84,11 +84,9 @@ in
             }
           ];
 
-          # QEMU boots the kernel directly; skip GRUB device installation so
-          # nixos-rebuild switch doesn't fail writing to the virtio disk.
-          boot.loader.grub.device = lib.mkForce "nodev";
-          boot.loader.grub.efiSupport = lib.mkForce true;
-          boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
+          # QEMU boots the kernel directly via -kernel; skip bootloader
+          # installation so nixos-rebuild switch succeeds in the VM.
+          environment.etc."omarchy/rebuild-opts".text = lib.mkForce "--no-install-bootloader";
         }
       )
     ];
