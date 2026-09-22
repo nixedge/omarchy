@@ -49,6 +49,7 @@
             mkdir -p $out/cinque-shims
             for cmd in \
               omarchy-pkg-add-aur \
+              omarchy-pkg-remove \
               omarchy-update-aur-pkgs \
               omarchy-update-keyring \
               omarchy-update-pacman-guard \
@@ -57,6 +58,15 @@
               omarchy-upgrade-to-quattro \
               omarchy-refresh-pacman; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
+            done
+
+            # NixOS-specific replacement shims for package management commands.
+            for cmd in \
+              omarchy-pkg-drop \
+              omarchy-pkg-present \
+              omarchy-pkg-missing \
+              omarchy-pkg-install; do
+              install -m 0755 ${../pkgs/omarchy/cinque-shims}/$cmd $out/cinque-shims/$cmd
             done
 
             runHook postInstall

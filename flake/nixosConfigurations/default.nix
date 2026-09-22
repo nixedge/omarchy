@@ -34,6 +34,14 @@ let
 in
 {
   flake.nixosConfigurations = {
+    # Production install — hostname omarchy-cinque, no VM or ISO extras.
+    # Used by omarchy-nix-daemon when calling nixos-rebuild switch.
+    "omarchy-cinque" = mkSystem [
+      {
+        system.stateVersion = "25.11";
+      }
+    ];
+
     iso = mkSystem [
       {
         imports = [

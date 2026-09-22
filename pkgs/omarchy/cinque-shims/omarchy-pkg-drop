@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# omarchy:summary=Remove packages from the system.
+# omarchy:args=<packages...>
+
+if [[ -z $1 ]]; then
+  echo "Usage: omarchy-pkg-drop <package> [package...]" >&2
+  exit 1
+fi
+
+fail=0
+for pkg in "$@"; do
+  response=$(printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" \
+    | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+
+  if [[ -z $response ]]; then
+    echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
+    exit 1
+  fi
+
+  ok=$(printf '%s' "$response" | jq -r '.ok')
+  if [[ $ok != "true" ]]; then
+    printf '%s' "$response" | jq -r '.error // "unknown error"' >&2
+    fail=1
+  fi
+done
+
+exit $fail
