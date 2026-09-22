@@ -38,6 +38,11 @@
             # via a ../../../../ symlink that resolves to the package root.
             [ -f icon.png ] && cp icon.png $out/
 
+            # Wayland session entry so SDDM discovers the omarchy session.
+            mkdir -p $out/share/wayland-sessions
+            install -m 0644 default/wayland-sessions/omarchy.desktop \
+              $out/share/wayland-sessions/omarchy.desktop
+
             # Cinque-not-implemented shims for eliminated Arch-only commands.
             # These are prepended to PATH via environment.sessionVariables so
             # they shadow the originals without modifying bin/.
@@ -60,6 +65,9 @@
           # patchShebangs rewrites #!/bin/bash to the nix-store bash path.
           # bin/omarchy's register_command already skips line 1 when it starts
           # with #!, so the header-grep is unaffected by shebang rewriting.
+
+          # Required by services.displayManager.sessionPackages type check.
+          passthru.providedSessions = [ "omarchy" ];
         };
 
         default = inputs.self.packages.${system}.omarchy;
