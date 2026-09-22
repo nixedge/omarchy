@@ -83,6 +83,12 @@ in
               guest.port = 22;
             }
           ];
+
+          # QEMU boots the kernel directly; skip GRUB device installation so
+          # nixos-rebuild switch doesn't fail writing to the virtio disk.
+          boot.loader.grub.device = lib.mkForce "nodev";
+          boot.loader.grub.efiSupport = lib.mkForce true;
+          boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
         }
       )
     ];
