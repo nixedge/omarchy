@@ -1,6 +1,6 @@
 use crate::manifest;
 use crate::state::State;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::path::Path;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
@@ -11,6 +11,10 @@ const MODULE_PATH: &str = "/var/lib/omarchy/omarchy-managed.nix";
 const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
 const FLAKE_CONFIG: &str = "omarchy-cinque";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
+
+// NixOS puts the sudo setuid wrapper here; not in the default systemd PATH.
+const SUDO: &str = "/run/wrappers/bin/sudo";
+const NIXOS_REBUILD: &str = "/run/current-system/sw/bin/nixos-rebuild";
 
 pub fn generate_module(state: &State) -> String {
     let attrs: Vec<String> = state
@@ -33,19 +37,25 @@ pub fn generate_module(state: &State) -> String {
 pub async fn write_module(state: &State) -> Result<()> {
     let content = generate_module(state);
     let tmp = format!("{MODULE_PATH}.tmp");
-    tokio::fs::write(&tmp, content).await?;
-    tokio::fs::rename(&tmp, MODULE_PATH).await?;
+    tokio::fs::write(&tmp, &content)
+        .await
+        .with_context(|| format!("writing {tmp}"))?;
+    tokio::fs::rename(&tmp, MODULE_PATH)
+        .await
+        .with_context(|| format!("renaming {tmp} → {MODULE_PATH}"))?;
     Ok(())
 }
 
 async fn flake_uri() -> Result<String> {
-    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH).await.map_err(|e| {
-        anyhow::anyhow!(
-            "{FLAKE_URI_PATH} not found ({e}); \
-             the system must be rebuilt from the latest omarchy flake \
-             so the activation script can write this file"
-        )
-    })?;
+    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH)
+        .await
+        .with_context(|| {
+            format!(
+                "{FLAKE_URI_PATH} not found; \
+                 rebuild the VM from the latest omarchy flake so the \
+                 activation script can write this file"
+            )
+        })?;
     Ok(uri.trim().to_owned())
 }
 
@@ -58,11 +68,10 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
     let uri = flake_uri().await?;
     let flake_arg = format!("{uri}#{FLAKE_CONFIG}");
 
-    // Use the absolute path so sudo's restricted PATH doesn't matter.
-    let mut child = Command::new("sudo")
+    let mut child = Command::new(SUDO)
         .args([
             "--",
-            "/run/current-system/sw/bin/nixos-rebuild",
+            NIXOS_REBUILD,
             "switch",
             "--impure",
             "--flake",
@@ -70,9 +79,9 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
         ])
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
-        .spawn()?;
+        .spawn()
+        .with_context(|| format!("spawning {SUDO} {NIXOS_REBUILD}"))?;
 
-    // Stream nixos-rebuild stderr to the caller line by line.
     if let Some(stderr) = child.stderr.take() {
         let mut lines = BufReader::new(stderr).lines();
         while let Ok(Some(line)) = lines.next_line().await {
