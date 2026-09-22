@@ -59,8 +59,10 @@ in
 
     vm = mkSystem [
       (
-        { modulesPath, ... }:
+        { modulesPath, inputs, lib, ... }:
         {
+          # Rebuild target inside the VM is the 'vm' config, not 'omarchy-cinque'.
+          environment.etc."omarchy/flake-uri".text = lib.mkForce "${inputs.self.outPath}#vm";
           imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
           system.stateVersion = "25.11";
           virtualisation.memorySize = 4096;

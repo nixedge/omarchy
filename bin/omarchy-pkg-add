@@ -28,6 +28,6 @@ while IFS= read -r frame; do
     break
   fi
 done < <(printf '{"cmd":"pkg-add","name":"%s"}\n' "$pkg" \
-  | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+  | socat - 'UNIX-CONNECT:/run/omarchy/daemon.sock,shut-down' 2>/dev/null)
 
 exit $exit_code
