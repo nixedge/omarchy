@@ -84,9 +84,6 @@ in
             }
           ];
 
-          # QEMU boots the kernel directly via -kernel; skip bootloader
-          # installation so nixos-rebuild switch succeeds in the VM.
-          environment.etc."omarchy/rebuild-opts".text = lib.mkForce "--no-install-bootloader";
         }
       )
     ];
