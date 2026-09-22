@@ -39,7 +39,13 @@ pub async fn write_module(state: &State) -> Result<()> {
 }
 
 async fn flake_uri() -> Result<String> {
-    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH).await?;
+    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH).await.map_err(|e| {
+        anyhow::anyhow!(
+            "{FLAKE_URI_PATH} not found ({e}); \
+             the system must be rebuilt from the latest omarchy flake \
+             so the activation script can write this file"
+        )
+    })?;
     Ok(uri.trim().to_owned())
 }
 
@@ -52,10 +58,11 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
     let uri = flake_uri().await?;
     let flake_arg = format!("{uri}#{FLAKE_CONFIG}");
 
+    // Use the absolute path so sudo's restricted PATH doesn't matter.
     let mut child = Command::new("sudo")
         .args([
             "--",
-            "nixos-rebuild",
+            "/run/current-system/sw/bin/nixos-rebuild",
             "switch",
             "--impure",
             "--flake",
