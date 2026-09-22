@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# omarchy:summary=Returns true if all named packages are installed (reads packages.json).
+# omarchy:args=<packages...>
+
+manifest="/run/omarchy/packages.json"
+
+for pkg in "$@"; do
+  found=$(jq --arg name "$pkg" 'any(.[]; .name == $name)' "$manifest" 2>/dev/null)
+  if [[ $found != "true" ]]; then
+    exit 1
+  fi
+done
+
+exit 0

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# omarchy:summary=Add a package (alias for omarchy-pkg-add, for backward compatibility).
+# omarchy:args=<package>
+
+exec omarchy-pkg-add "$@"

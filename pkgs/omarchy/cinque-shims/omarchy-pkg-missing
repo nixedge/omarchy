@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# omarchy:summary=Returns true if any named package is missing from the system (reads packages.json).
+# omarchy:args=<packages...>
+
+manifest="/run/omarchy/packages.json"
+
+for pkg in "$@"; do
+  found=$(jq --arg name "$pkg" 'any(.[]; .name == $name)' "$manifest" 2>/dev/null)
+  if [[ $found != "true" ]]; then
+    exit 0
+  fi
+done
+
+exit 1

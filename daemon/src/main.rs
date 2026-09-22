@@ -1,12 +1,16 @@
+mod alias;
 mod handlers;
 mod manifest;
 mod protocol;
+mod rebuild;
 mod state;
 
 use anyhow::Result;
 use std::path::Path;
+use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{UnixListener, UnixStream};
+use tokio::sync::Mutex;
 use tracing::{error, info};
 
 const SOCKET_PATH: &str = "/run/omarchy/daemon.sock";
@@ -22,30 +26,32 @@ async fn main() -> Result<()> {
         .with_writer(std::io::stderr)
         .init();
 
+    let rebuild_lock: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
+
     if let Err(e) = manifest::write_manifest(Path::new(MANIFEST_PATH)).await {
         error!("manifest write failed (non-fatal): {e}");
     } else {
         info!("manifest written to {MANIFEST_PATH}");
     }
 
-    // Remove a stale socket from a previous run.
     let _ = tokio::fs::remove_file(SOCKET_PATH).await;
     let listener = UnixListener::bind(SOCKET_PATH)?;
     info!("listening on {SOCKET_PATH}");
 
     loop {
         let (stream, _) = listener.accept().await?;
-        tokio::spawn(handle_connection(stream));
+        let lock = rebuild_lock.clone();
+        tokio::spawn(handle_connection(stream, lock));
     }
 }
 
-async fn handle_connection(mut stream: UnixStream) {
+async fn handle_connection(mut stream: UnixStream, rebuild_lock: Arc<Mutex<()>>) {
     let (reader, mut writer) = stream.split();
     let mut lines = BufReader::new(reader).lines();
 
     while let Ok(Some(line)) = lines.next_line().await {
         let resp = match serde_json::from_str::<protocol::Request>(&line) {
-            Ok(req) => handlers::dispatch(req).await,
+            Ok(req) => handlers::dispatch(req, rebuild_lock.clone()).await,
             Err(e) => protocol::Response::err(format!("parse error: {e}")),
         };
         let mut buf = serde_json::to_vec(&resp).unwrap_or_default();

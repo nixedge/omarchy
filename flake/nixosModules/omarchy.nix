@@ -14,6 +14,12 @@
       daemon = inputs.self.packages.${system}.omarchy-nix-daemon;
     in
     {
+      # Import daemon-managed packages when the module file exists on disk.
+      # Requires --impure on nixos-rebuild so builtins.pathExists can read
+      # the live filesystem rather than being restricted to the Nix store.
+      imports = lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
+        /var/lib/omarchy/omarchy-managed.nix;
+
       options.programs.omarchy = {
         enable = lib.mkEnableOption "Omarchy Cinque desktop environment";
         user = lib.mkOption {
@@ -192,6 +198,25 @@
             Group = "omarchy";
           };
         };
+
+        # Allow omarchy-daemon to run nixos-rebuild without a password.
+        security.sudo.extraRules = [
+          {
+            users = [ "omarchy-daemon" ];
+            commands = [
+              {
+                command = "/run/current-system/sw/bin/nixos-rebuild";
+                options = [
+                  "NOPASSWD"
+                  "SETENV"
+                ];
+              }
+            ];
+          }
+        ];
+
+        # Record the flake store path so the daemon knows what to rebuild from.
+        environment.etc."omarchy/flake-uri".text = inputs.self.outPath;
 
         users.users.omarchy-daemon = {
           isSystemUser = true;
