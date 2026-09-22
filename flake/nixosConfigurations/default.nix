@@ -68,6 +68,10 @@ in
           virtualisation.memorySize = 4096;
           virtualisation.diskSize = 8192;
 
+          # EFI boot so that nixos-rebuild switch can install GRUB to the EFI
+          # partition without needing a BIOS boot partition on the virtio disk.
+          virtualisation.useEFIBoot = true;
+
           # Headless — use VNC instead of the QEMU SDL window.
           # Connect with: vncviewer localhost:5900
           virtualisation.graphics = false;
