@@ -220,8 +220,9 @@
           }
         ];
 
-        # Record the flake store path so the daemon knows what to rebuild from.
-        environment.etc."omarchy/flake-uri".text = inputs.self.outPath;
+        # Record the full flake ref so the daemon knows what to rebuild from.
+        # VM configs override this with lib.mkForce to point at their own config name.
+        environment.etc."omarchy/flake-uri".text = lib.mkDefault "${inputs.self.outPath}#omarchy-cinque";
 
         users.users.omarchy-daemon = {
           isSystemUser = true;

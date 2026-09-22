@@ -9,7 +9,6 @@ use tokio::sync::mpsc;
 
 const MODULE_PATH: &str = "/var/lib/omarchy/omarchy-managed.nix";
 const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
-const FLAKE_CONFIG: &str = "omarchy-cinque";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 
 // NixOS puts the sudo setuid wrapper here; not in the default systemd PATH.
@@ -65,8 +64,7 @@ async fn flake_uri() -> Result<String> {
 pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
     write_module(state).await?;
 
-    let uri = flake_uri().await?;
-    let flake_arg = format!("{uri}#{FLAKE_CONFIG}");
+    let flake_arg = flake_uri().await?;
 
     let mut child = Command::new(SUDO)
         .args([
@@ -74,20 +72,41 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
             NIXOS_REBUILD,
             "switch",
             "--impure",
+            "--accept-flake-config",
             "--flake",
             &flake_arg,
         ])
-        .stdout(Stdio::null())
+        .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .with_context(|| format!("spawning {SUDO} {NIXOS_REBUILD}"))?;
 
-    if let Some(stderr) = child.stderr.take() {
-        let mut lines = BufReader::new(stderr).lines();
-        while let Ok(Some(line)) = lines.next_line().await {
-            let _ = progress_tx.send(line);
+    // Merge stdout and stderr into the progress stream so no output is lost.
+    use tokio::io::AsyncReadExt;
+    let stdout = child.stdout.take();
+    let stderr = child.stderr.take();
+
+    let forward = |mut reader: tokio::process::ChildStdout, tx: mpsc::UnboundedSender<String>| async move {
+        let mut buf = String::new();
+        let _ = reader.read_to_string(&mut buf).await;
+        for line in buf.lines() {
+            let _ = tx.send(line.to_owned());
         }
-    }
+    };
+
+    let forward_err = |reader: tokio::process::ChildStderr, tx: mpsc::UnboundedSender<String>| async move {
+        let mut lines = BufReader::new(reader).lines();
+        while let Ok(Some(line)) = lines.next_line().await {
+            let _ = tx.send(line);
+        }
+    };
+
+    let tx1 = progress_tx.clone();
+    let tx2 = progress_tx.clone();
+    tokio::join!(
+        async { if let Some(s) = stdout { forward(s, tx1).await } },
+        async { if let Some(s) = stderr { forward_err(s, tx2).await } },
+    );
 
     let status = child.wait().await?;
 

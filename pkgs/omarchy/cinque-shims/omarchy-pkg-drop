@@ -30,7 +30,7 @@ for pkg in "$@"; do
       break
     fi
   done < <(printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" \
-    | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+    | socat - 'UNIX-CONNECT:/run/omarchy/daemon.sock,shut-down' 2>/dev/null)
 
   (( fail = fail || exit_code ))
 done
