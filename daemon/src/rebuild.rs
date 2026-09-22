@@ -2,16 +2,16 @@ use crate::manifest;
 use crate::state::State;
 use anyhow::Result;
 use std::path::Path;
+use std::process::Stdio;
+use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
+use tokio::sync::mpsc;
 
-/// Path the daemon writes; imported by the NixOS module with builtins.pathExists.
 const MODULE_PATH: &str = "/var/lib/omarchy/omarchy-managed.nix";
-/// Store path of the omarchy flake written by the NixOS module activation script.
 const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
 const FLAKE_CONFIG: &str = "omarchy-cinque";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 
-/// Generate a NixOS module from the current State.
 pub fn generate_module(state: &State) -> String {
     let attrs: Vec<String> = state
         .packages
@@ -38,21 +38,21 @@ pub async fn write_module(state: &State) -> Result<()> {
     Ok(())
 }
 
-/// Read the flake URI written by the NixOS module activation script.
 async fn flake_uri() -> Result<String> {
     let uri = tokio::fs::read_to_string(FLAKE_URI_PATH).await?;
     Ok(uri.trim().to_owned())
 }
 
-/// Write the managed module, run nixos-rebuild switch, and update packages.json.
+/// Write the managed module, run nixos-rebuild switch (streaming stderr to
+/// `progress_tx`), and update packages.json on success.
 /// Restores state.json from backup on rebuild failure.
-pub async fn run(state: &State) -> Result<()> {
+pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
     write_module(state).await?;
 
     let uri = flake_uri().await?;
     let flake_arg = format!("{uri}#{FLAKE_CONFIG}");
 
-    let status = Command::new("sudo")
+    let mut child = Command::new("sudo")
         .args([
             "--",
             "nixos-rebuild",
@@ -61,8 +61,19 @@ pub async fn run(state: &State) -> Result<()> {
             "--flake",
             &flake_arg,
         ])
-        .status()
-        .await?;
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .spawn()?;
+
+    // Stream nixos-rebuild stderr to the caller line by line.
+    if let Some(stderr) = child.stderr.take() {
+        let mut lines = BufReader::new(stderr).lines();
+        while let Ok(Some(line)) = lines.next_line().await {
+            let _ = progress_tx.send(line);
+        }
+    }
+
+    let status = child.wait().await?;
 
     if !status.success() {
         State::restore_backup().await?;

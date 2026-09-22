@@ -1,13 +1,17 @@
 use crate::alias::{self, ResolveError};
 use crate::protocol::Response;
-use crate::state::State;
 use crate::rebuild;
+use crate::state::State;
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::{mpsc, Mutex};
 
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 
-pub async fn add(name: &str, _lock: Arc<Mutex<()>>) -> Response {
+pub async fn add(
+    name: &str,
+    rebuild_lock: Arc<Mutex<()>>,
+    progress_tx: mpsc::UnboundedSender<String>,
+) -> Response {
     let nix_attr = match alias::resolve(name) {
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
@@ -21,7 +25,10 @@ pub async fn add(name: &str, _lock: Arc<Mutex<()>>) -> Response {
         }
     };
 
-    let _guard = _lock.lock().await;
+    let _ = progress_tx.send(format!("queuing rebuild for '{name}'…"));
+
+    let _guard = rebuild_lock.lock().await;
+    let _ = progress_tx.send("rebuild lock acquired, loading state…".into());
 
     let mut state = match State::load().await {
         Ok(s) => s,
@@ -41,8 +48,9 @@ pub async fn add(name: &str, _lock: Arc<Mutex<()>>) -> Response {
         return Response::err(format!("state save failed: {e}"));
     }
 
-    if let Err(e) = rebuild::run(&state).await {
-        // Rollback already done inside rebuild::run; reload clean state for response.
+    let _ = progress_tx.send(format!("running nixos-rebuild switch for '{name}'…"));
+
+    if let Err(e) = rebuild::run(&state, progress_tx).await {
         return Response::err(format!("rebuild failed: {e}"));
     }
 
@@ -50,7 +58,11 @@ pub async fn add(name: &str, _lock: Arc<Mutex<()>>) -> Response {
     Response::ok(None)
 }
 
-pub async fn remove(name: &str, _lock: Arc<Mutex<()>>) -> Response {
+pub async fn remove(
+    name: &str,
+    rebuild_lock: Arc<Mutex<()>>,
+    progress_tx: mpsc::UnboundedSender<String>,
+) -> Response {
     let nix_attr = match alias::resolve(name) {
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
@@ -64,7 +76,9 @@ pub async fn remove(name: &str, _lock: Arc<Mutex<()>>) -> Response {
         }
     };
 
-    let _guard = _lock.lock().await;
+    let _ = progress_tx.send(format!("queuing rebuild to remove '{name}'…"));
+
+    let _guard = rebuild_lock.lock().await;
 
     let mut state = match State::load().await {
         Ok(s) => s,
@@ -86,7 +100,9 @@ pub async fn remove(name: &str, _lock: Arc<Mutex<()>>) -> Response {
         return Response::err(format!("state save failed: {e}"));
     }
 
-    if let Err(e) = rebuild::run(&state).await {
+    let _ = progress_tx.send(format!("running nixos-rebuild switch to remove '{name}'…"));
+
+    if let Err(e) = rebuild::run(&state, progress_tx).await {
         return Response::err(format!("rebuild failed: {e}"));
     }
 

@@ -10,7 +10,7 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{UnixListener, UnixStream};
-use tokio::sync::Mutex;
+use tokio::sync::{mpsc, Mutex};
 use tracing::{error, info};
 
 const SOCKET_PATH: &str = "/run/omarchy/daemon.sock";
@@ -50,14 +50,31 @@ async fn handle_connection(mut stream: UnixStream, rebuild_lock: Arc<Mutex<()>>)
     let mut lines = BufReader::new(reader).lines();
 
     while let Ok(Some(line)) = lines.next_line().await {
-        let resp = match serde_json::from_str::<protocol::Request>(&line) {
-            Ok(req) => handlers::dispatch(req, rebuild_lock.clone()).await,
-            Err(e) => protocol::Response::err(format!("parse error: {e}")),
+        let req = match serde_json::from_str::<protocol::Request>(&line) {
+            Ok(r) => r,
+            Err(e) => {
+                let frame = protocol::Frame::Done(protocol::Response::err(format!("parse error: {e}")));
+                write_frame(&mut writer, &frame).await;
+                continue;
+            }
         };
-        let mut buf = serde_json::to_vec(&resp).unwrap_or_default();
-        buf.push(b'\n');
-        if writer.write_all(&buf).await.is_err() {
-            break;
+
+        let (frame_tx, mut frame_rx) = mpsc::unbounded_channel::<protocol::Frame>();
+        let lock = rebuild_lock.clone();
+
+        // Run the handler concurrently so we can forward frames as they arrive.
+        let handler = tokio::spawn(handlers::dispatch(req, lock, frame_tx));
+
+        while let Some(frame) = frame_rx.recv().await {
+            write_frame(&mut writer, &frame).await;
         }
+
+        let _ = handler.await;
     }
+}
+
+async fn write_frame(writer: &mut (impl AsyncWriteExt + Unpin), frame: &protocol::Frame) {
+    let mut buf = serde_json::to_vec(frame).unwrap_or_default();
+    buf.push(b'\n');
+    let _ = writer.write_all(&buf).await;
 }

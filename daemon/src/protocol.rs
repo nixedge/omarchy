@@ -37,3 +37,14 @@ impl Response {
         }
     }
 }
+
+/// Newline-delimited frames written to the socket for long-running operations.
+/// The connection stays open until a `Done` frame is sent.
+#[derive(Serialize)]
+#[serde(tag = "type", rename_all = "kebab-case")]
+pub enum Frame {
+    /// One line of output from nixos-rebuild stderr.
+    Progress { line: String },
+    /// Final result — client should check `ok` and exit accordingly.
+    Done(Response),
+}
