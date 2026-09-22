@@ -196,6 +196,11 @@
             UMask = "0117";
             User = "omarchy-daemon";
             Group = "omarchy";
+            # Restrict writeable paths to what the daemon actually needs.
+            ReadWritePaths = [
+              "/var/lib/omarchy"
+              "/run/omarchy"
+            ];
           };
         };
 
@@ -351,6 +356,19 @@
             qt6.qtimageformats
           ]
           ++ lib.optionals (builtins.hasAttr "quickshell" pkgs) [ pkgs.quickshell ];
+
+        # ── Bootstrap /var/lib/omarchy/omarchy-managed.nix on first activation ──
+        # The stub ensures nixos-rebuild with builtins.pathExists finds the file
+        # even before the daemon has written any packages.
+        system.activationScripts.omarchyManagedStub = lib.stringAfter [ "var" ] ''
+          stub=/var/lib/omarchy/omarchy-managed.nix
+          if [[ ! -f $stub ]]; then
+            mkdir -p /var/lib/omarchy
+            printf '# Managed by omarchy-nix-daemon — do not edit manually.\n{ ... }: { }\n' \
+              > "$stub"
+            chown omarchy-daemon:omarchy "$stub"
+          fi
+        '';
 
         # ── Copy default configs to the user's home on first boot ──────────────
         # Copies $OMARCHY_PATH/config/* → ~/.config/* if not already present,

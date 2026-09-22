@@ -8,21 +8,31 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
+if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
+  echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
+  exit 1
+fi
+
 fail=0
 for pkg in "$@"; do
-  response=$(printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" \
+  exit_code=0
+
+  while IFS= read -r frame; do
+    type=$(printf '%s' "$frame" | jq -r '.type // empty')
+    if [[ $type == "progress" ]]; then
+      printf '%s' "$frame" | jq -r '.line'
+    else
+      ok=$(printf '%s' "$frame" | jq -r '.ok // false')
+      if [[ $ok != "true" ]]; then
+        printf '%s' "$frame" | jq -r '.error // "unknown error"' >&2
+        exit_code=1
+      fi
+      break
+    fi
+  done < <(printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" \
     | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
 
-  if [[ -z $response ]]; then
-    echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
-    exit 1
-  fi
-
-  ok=$(printf '%s' "$response" | jq -r '.ok')
-  if [[ $ok != "true" ]]; then
-    printf '%s' "$response" | jq -r '.error // "unknown error"' >&2
-    fail=1
-  fi
+  (( fail = fail || exit_code ))
 done
 
 exit $fail
