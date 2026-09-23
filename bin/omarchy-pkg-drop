@@ -1,5 +1,5 @@
 #!/bin/bash
 # omarchy:summary=Remove a package
-# omarchy:args=[--async] <package>
+# omarchy:args=[--sync] <package>
 # omarchy:examples=omarchy pkg drop git
 exec omarchy-cli pkg drop "$@"

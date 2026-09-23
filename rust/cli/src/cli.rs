@@ -24,14 +24,14 @@ pub enum PkgCmd {
     #[command(about = "Add a package")]
     Add {
         name: String,
-        #[arg(long = "async", help = "Queue rebuild in background")]
-        async_flag: bool,
+        #[arg(long, help = "Block until rebuild completes")]
+        sync: bool,
     },
     #[command(about = "Remove a package")]
     Drop {
         name: String,
-        #[arg(long = "async", help = "Queue rebuild in background")]
-        async_flag: bool,
+        #[arg(long, help = "Block until rebuild completes")]
+        sync: bool,
     },
     #[command(about = "List installed packages")]
     List,

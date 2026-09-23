@@ -14,8 +14,8 @@ fn main() {
     let cli = Cli::parse();
     let code = match cli.cmd {
         Cmd::Pkg { subcmd } => match subcmd {
-            PkgCmd::Add { name, async_flag } => cmds::add::run(&name, async_flag),
-            PkgCmd::Drop { name, async_flag } => cmds::drop::run(&name, async_flag),
+            PkgCmd::Add { name, sync } => cmds::add::run(&name, sync),
+            PkgCmd::Drop { name, sync } => cmds::drop::run(&name, sync),
             PkgCmd::List => cmds::list::run(),
             PkgCmd::Search { query } => cmds::search::run(&query),
             PkgCmd::Sync => cmds::sync::run(),
