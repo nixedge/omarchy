@@ -38,6 +38,14 @@
             # via a ../../../../ symlink that resolves to the package root.
             [ -f icon.png ] && cp icon.png $out/
 
+            # Shell completions.
+            install -Dm644 completions/bash/omarchy \
+              $out/share/bash-completion/completions/omarchy
+            install -Dm644 completions/zsh/_omarchy \
+              $out/share/zsh/site-functions/_omarchy
+            install -Dm644 completions/fish/omarchy.fish \
+              $out/share/fish/vendor_completions.d/omarchy.fish
+
             # Wayland session entry so SDDM discovers the omarchy session.
             mkdir -p $out/share/wayland-sessions
             install -m 0644 default/wayland-sessions/omarchy.desktop \

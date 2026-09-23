@@ -1,0 +1,30 @@
+_omarchy() {
+  local cur words cword
+  _init_completion 2>/dev/null || {
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    words=("${COMP_WORDS[@]}")
+    cword=$COMP_CWORD
+  }
+
+  local json
+  json=$(omarchy commands --json 2>/dev/null) || return
+
+  if (( cword == 1 )); then
+    local groups
+    groups=$(printf '%s' "$json" | jq -r '.commands[].group' | sort -u)
+    COMPREPLY=($(compgen -W "$groups" -- "$cur"))
+    return
+  fi
+
+  local group="${words[1]}"
+
+  if (( cword == 2 )); then
+    local names
+    names=$(printf '%s' "$json" | jq -r --arg g "$group" \
+      '.commands[] | select(.group == $g and .name != "") | .name' | sort -u)
+    COMPREPLY=($(compgen -W "$names" -- "$cur"))
+    return
+  fi
+}
+
+complete -F _omarchy omarchy

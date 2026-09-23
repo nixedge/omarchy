@@ -1,0 +1,24 @@
+#compdef omarchy
+
+_omarchy() {
+  local json
+  json=$(omarchy commands --json 2>/dev/null) || return
+
+  local -a groups subcmds
+  local group="${words[2]}"
+
+  if (( CURRENT == 2 )); then
+    groups=(${(f)"$(printf '%s' "$json" | jq -r '.commands[].group' | sort -u)"})
+    _values 'group' $groups
+    return
+  fi
+
+  if (( CURRENT == 3 )); then
+    subcmds=(${(f)"$(printf '%s' "$json" | jq -r --arg g "$group" \
+      '.commands[] | select(.group == $g and .name != "") | .name + "\t" + .summary' | sort -u)"})
+    _describe 'command' subcmds
+    return
+  fi
+}
+
+_omarchy
