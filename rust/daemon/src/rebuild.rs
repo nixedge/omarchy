@@ -8,6 +8,7 @@ use tokio::process::Command;
 use tokio::sync::mpsc;
 
 const MODULE_PATH: &str = "/var/lib/omarchy/omarchy-managed.nix";
+const SERVICES_MODULE_PATH: &str = "/var/lib/omarchy/omarchy-services.nix";
 const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
 const REBUILD_OPTS_PATH: &str = "/etc/omarchy/rebuild-opts";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
@@ -29,11 +30,46 @@ pub fn generate_module(state: &State) -> String {
     )
 }
 
+pub fn generate_services_module(state: &State) -> String {
+    if state.services.is_empty() {
+        return "# Managed by omarchy-nix-daemon — do not edit manually.\n{ ... }: { }\n"
+            .to_owned();
+    }
+    let lines: String = state
+        .services
+        .iter()
+        .map(|s| {
+            let attr = if s.starts_with(|c: char| c.is_ascii_digit()) || s.contains('-') {
+                format!(r#""{s}""#)
+            } else {
+                s.clone()
+            };
+            format!("  programs.omarchy.services.{attr}.enable = true;\n")
+        })
+        .collect();
+    format!(
+        "# Managed by omarchy-nix-daemon — do not edit manually.\n\
+         {{ ... }}:\n\
+         {{\n\
+         {lines}}}\n"
+    )
+}
+
 pub async fn write_module(state: &State) -> Result<()> {
     let content = generate_module(state);
     let tmp = format!("{MODULE_PATH}.tmp");
     tokio::fs::write(&tmp, &content).await.with_context(|| format!("writing {tmp}"))?;
     tokio::fs::rename(&tmp, MODULE_PATH).await.with_context(|| format!("renaming {tmp} → {MODULE_PATH}"))?;
+    Ok(())
+}
+
+pub async fn write_services_module(state: &State) -> Result<()> {
+    let content = generate_services_module(state);
+    let tmp = format!("{SERVICES_MODULE_PATH}.tmp");
+    tokio::fs::write(&tmp, &content).await.with_context(|| format!("writing {tmp}"))?;
+    tokio::fs::rename(&tmp, SERVICES_MODULE_PATH)
+        .await
+        .with_context(|| format!("renaming {tmp} → {SERVICES_MODULE_PATH}"))?;
     Ok(())
 }
 
@@ -54,6 +90,7 @@ pub enum Mode {
 
 pub async fn run(state: &State, mode: Mode, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
     write_module(state).await?;
+    write_services_module(state).await?;
 
     let flake_arg = flake_uri().await?;
 

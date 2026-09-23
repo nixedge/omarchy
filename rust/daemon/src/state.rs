@@ -8,6 +8,8 @@ const BACKUP_PATH: &str = "/var/lib/omarchy/state.json.bak";
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct State {
     pub packages: Vec<String>,
+    #[serde(default)]
+    pub services: Vec<String>,
 }
 
 impl State {

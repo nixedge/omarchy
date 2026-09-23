@@ -6,4 +6,5 @@ pub mod missing;
 pub mod present;
 pub mod resolve;
 pub mod search;
+pub mod service;
 pub mod sync;

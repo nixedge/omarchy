@@ -51,7 +51,26 @@
               omarchy-pkg-present \
               omarchy-pkg-resolve \
               omarchy-pkg-search \
-              omarchy-pkg-sync; do
+              omarchy-pkg-sync \
+              omarchy-install-service-tailscale \
+              omarchy-install-service-signal \
+              omarchy-install-service-spotify \
+              omarchy-install-service-1password \
+              omarchy-install-service-dropbox \
+              omarchy-install-service-nordvpn \
+              omarchy-install-service-sunshine \
+              omarchy-remove-service-tailscale \
+              omarchy-remove-service-1password \
+              omarchy-remove-service-dropbox \
+              omarchy-remove-service-sunshine \
+              omarchy-setup-security-fingerprint \
+              omarchy-setup-security-fido2 \
+              omarchy-setup-security-sshd \
+              omarchy-setup-security-sudoless-docker \
+              omarchy-remove-security-fingerprint \
+              omarchy-remove-security-fido2 \
+              omarchy-remove-security-sshd \
+              omarchy-remove-security-sudoless-docker; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';

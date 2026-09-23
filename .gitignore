@@ -13,3 +13,4 @@ rust/target/
 result
 result-*
 omarchy-cinque.qcow2
+omarchy-cinque-efi-vars.fd

@@ -15,6 +15,9 @@ pub enum Request {
     ConfigGet,
     ConfigApply { content: String },
     ConfigCheck,
+    ServiceEnable { name: String },
+    ServiceDisable { name: String },
+    ServiceList,
     Status,
 }
 

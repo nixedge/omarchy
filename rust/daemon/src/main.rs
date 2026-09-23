@@ -43,6 +43,14 @@ async fn main() -> Result<()> {
         }
     }
 
+    // Write the initial services module from current state (creates the file if absent).
+    let state = crate::state::State::load().await.unwrap_or_default();
+    if let Err(e) = crate::rebuild::write_services_module(&state).await {
+        error!("services module write failed (non-fatal): {e}");
+    } else {
+        info!("services module written");
+    }
+
     let _ = tokio::fs::remove_file(SOCKET_PATH).await;
     let listener = UnixListener::bind(SOCKET_PATH)?;
     info!("listening on {SOCKET_PATH}");

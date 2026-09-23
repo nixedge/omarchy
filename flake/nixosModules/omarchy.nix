@@ -19,8 +19,11 @@
       # Requires --impure on nixos-rebuild so builtins.pathExists can read
       # the live filesystem rather than being restricted to the Nix store.
       imports =
-        lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
+        [ ./services ]
+        ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
           /var/lib/omarchy/omarchy-managed.nix
+        ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-services.nix)
+          /var/lib/omarchy/omarchy-services.nix
         ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-user.nix)
           /var/lib/omarchy/omarchy-user.nix;
 

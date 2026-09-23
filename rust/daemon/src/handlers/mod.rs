@@ -1,8 +1,9 @@
 pub mod config;
 pub mod pkg;
+pub mod service;
 pub mod system;
 
-use omarchy_lib::protocol::{Frame, Request, Response};
+use omarchy_lib::protocol::{Frame, Request};
 use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 
@@ -26,6 +27,8 @@ pub async fn dispatch(
         Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, progress_tx).await,
         Request::ConfigApply { content } => config::apply(content, rebuild_lock, progress_tx).await,
         Request::ConfigCheck => config::check(rebuild_lock, progress_tx).await,
+        Request::ServiceEnable { name } => service::enable(&name, rebuild_lock, progress_tx).await,
+        Request::ServiceDisable { name } => service::disable(&name, rebuild_lock, progress_tx).await,
         req => {
             drop(progress_tx);
             match req {
@@ -38,10 +41,13 @@ pub async fn dispatch(
                 Request::PkgPresent { name } => pkg::present(&name).await,
                 Request::PkgResolve { name } => pkg::resolve_name(&name).await,
                 Request::ConfigGet => config::get().await,
+                Request::ServiceList => service::list().await,
                 Request::PkgAdd { .. }
                 | Request::PkgRemove { .. }
                 | Request::ConfigApply { .. }
-                | Request::ConfigCheck => unreachable!(),
+                | Request::ConfigCheck
+                | Request::ServiceEnable { .. }
+                | Request::ServiceDisable { .. } => unreachable!(),
             }
         }
     };

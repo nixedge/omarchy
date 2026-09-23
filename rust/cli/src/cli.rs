@@ -20,6 +20,11 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: ConfigCmd,
     },
+    #[command(about = "Optional system services")]
+    Service {
+        #[command(subcommand)]
+        subcmd: ServiceCmd,
+    },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
 }
@@ -32,6 +37,16 @@ pub enum ConfigCmd {
     Show,
     #[command(about = "Validate configuration without applying (dry-activate)")]
     Check,
+}
+
+#[derive(Subcommand)]
+pub enum ServiceCmd {
+    #[command(about = "Enable a service")]
+    Enable { name: String },
+    #[command(about = "Disable a service")]
+    Disable { name: String },
+    #[command(about = "List available and enabled services")]
+    List,
 }
 
 #[derive(Subcommand)]
