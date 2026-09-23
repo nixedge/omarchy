@@ -26,23 +26,20 @@ pub async fn write_manifest(dest: &Path) -> Result<()> {
         );
     }
 
+    // nix path-info --json outputs an object keyed by store path.
+    // Extract the package name by stripping the /nix/store/<hash>- prefix.
     let raw: serde_json::Value = serde_json::from_slice(&out.stdout)?;
     let pkgs: Vec<serde_json::Value> = raw
         .as_object()
         .map(|m| {
-            m.values()
-                .filter_map(|v| {
-                    let name = v
-                        .get("pname")
-                        .or_else(|| v.get("name"))?
-                        .as_str()?
-                        .to_owned();
-                    let version = v
-                        .get("version")
-                        .and_then(|x| x.as_str())
-                        .unwrap_or("")
-                        .to_owned();
-                    Some(serde_json::json!({ "name": name, "version": version }))
+            m.keys()
+                .filter_map(|path| {
+                    // Store paths look like /nix/store/HASH-name[-version]
+                    let after_hash = path
+                        .strip_prefix("/nix/store/")?
+                        .splitn(2, '-')
+                        .nth(1)?;
+                    Some(serde_json::json!({ "name": after_hash }))
                 })
                 .collect()
         })

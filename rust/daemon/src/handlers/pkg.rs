@@ -6,7 +6,6 @@ use std::sync::Arc;
 use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 
-const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 const LOGIN_USER_PATH: &str = "/var/lib/omarchy/login-user";
 
 fn get_login_user() -> String {
@@ -296,24 +295,21 @@ pub async fn resolve_name(name: &str) -> Response {
 }
 
 pub async fn list() -> Response {
-    match tokio::fs::read(MANIFEST_PATH).await {
-        Ok(data) => match serde_json::from_slice(&data) {
-            Ok(v) => Response::ok(Some(v)),
-            Err(e) => Response::err(format!("manifest parse error: {e}")),
-        },
-        Err(e) => Response::err(format!("manifest unavailable: {e}")),
-    }
+    let state = match State::load().await {
+        Ok(s) => s,
+        Err(e) => return Response::err(format!("state load failed: {e}")),
+    };
+    let pkgs: Vec<serde_json::Value> = state
+        .packages
+        .iter()
+        .map(|name| serde_json::json!({ "name": name }))
+        .collect();
+    Response::ok(Some(serde_json::json!(pkgs)))
 }
 
 pub async fn present(name: &str) -> Response {
-    match tokio::fs::read(MANIFEST_PATH).await {
-        Ok(data) => {
-            let pkgs: Vec<serde_json::Value> = serde_json::from_slice(&data).unwrap_or_default();
-            let found = pkgs
-                .iter()
-                .any(|p| p.get("name").and_then(|n| n.as_str()) == Some(name));
-            Response::ok(Some(serde_json::json!({ "present": found })))
-        }
-        Err(_) => Response::ok(Some(serde_json::json!({ "present": false }))),
-    }
+    let nix_attr = alias::resolve(name).unwrap_or(name).to_owned();
+    let state = State::load().await.unwrap_or_default();
+    let found = state.packages.contains(&nix_attr);
+    Response::ok(Some(serde_json::json!({ "present": found })))
 }

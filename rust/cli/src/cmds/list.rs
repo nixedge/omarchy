@@ -38,15 +38,6 @@ pub fn run() -> i32 {
         return 0;
     }
 
-    let max_name = pkgs
-        .iter()
-        .filter_map(|p| p.get("name").and_then(|n| n.as_str()))
-        .map(|n| n.len())
-        .max()
-        .unwrap_or(4);
-
-    println!("{}{:<width$}  VERSION{}", p.accent, "NAME", p.reset, width = max_name);
-
     let mut sorted = pkgs.to_vec();
     sorted.sort_by(|a, b| {
         let an = a.get("name").and_then(|n| n.as_str()).unwrap_or("");
@@ -56,8 +47,7 @@ pub fn run() -> i32 {
 
     for pkg in &sorted {
         let name = pkg.get("name").and_then(|n| n.as_str()).unwrap_or("");
-        let version = pkg.get("version").and_then(|v| v.as_str()).unwrap_or("");
-        println!("{:<width$}  {}{}{}", name, p.muted, version, p.reset, width = max_name);
+        println!("{}", name);
     }
 
     0
