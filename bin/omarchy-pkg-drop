@@ -24,9 +24,20 @@ if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
   exit 1
 fi
 
+# ── Resolve alias: get the correct nixpkgs attr (or an actionable error) ────────
+resolve_frame=$(printf '{"cmd":"pkg-resolve","name":"%s"}\n' "$pkg" \
+  | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+resolve_ok=$(printf '%s' "$resolve_frame" | jq -r '.ok // false')
+if [[ $resolve_ok != "true" ]]; then
+  resolve_err=$(printf '%s' "$resolve_frame" | jq -r '.error // "unknown error"')
+  printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$resolve_err" "$RESET" >&2
+  exit 1
+fi
+attr=$(printf '%s' "$resolve_frame" | jq -r '.data')
+
 # ── Phase 1: remove from nix profile immediately (may not exist — ignore errors) ─
 nix --extra-experimental-features 'nix-command flakes' \
-  profile remove "nixpkgs#${pkg}" >/dev/null 2>&1 || true
+  profile remove "nixpkgs#${attr}" >/dev/null 2>&1 || true
 
 printf '%b%s %s removed%b\n' "$C_GREEN" "$GLYPH_OK" "$pkg" "$RESET"
 
@@ -55,7 +66,7 @@ if [[ $async == "true" ]]; then
   exit 0
 fi
 
-# ── DEFAULT: stream filtered rebuild progress ──────────────────────────────────
+# ── DEFAULT: stream filtered rebuild progress ─────────────────────────────────
 printf '%b%s Syncing system config\xe2\x80\xa6%b\n' "$C_ACCENT" "$GLYPH_PKG" "$RESET"
 
 coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }

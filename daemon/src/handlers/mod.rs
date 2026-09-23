@@ -41,6 +41,7 @@ pub async fn dispatch(
                 Request::PkgSync => pkg::sync(rebuild_lock).await,
                 Request::PkgList => pkg::list().await,
                 Request::PkgPresent { name } => pkg::present(&name).await,
+                Request::PkgResolve { name } => pkg::resolve_name(&name).await,
                 Request::PkgAdd { .. } | Request::PkgRemove { .. } => unreachable!(),
             }
         }
@@ -58,6 +59,7 @@ pub async fn dispatch_simple(req: Request, rebuild_lock: Arc<Mutex<()>>) -> Resp
         Request::Status => system::status().await,
         Request::PkgList => pkg::list().await,
         Request::PkgPresent { name } => pkg::present(&name).await,
+        Request::PkgResolve { name } => pkg::resolve_name(&name).await,
         _ => {
             let (tx, _rx) = mpsc::unbounded_channel();
             match req {

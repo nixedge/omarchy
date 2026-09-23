@@ -333,6 +333,19 @@ pub async fn sync(rebuild_lock: Arc<Mutex<()>>) -> Response {
     Response::ok_pending()
 }
 
+pub async fn resolve_name(name: &str) -> Response {
+    match alias::resolve(name) {
+        Ok(attr) => Response::ok(Some(serde_json::Value::String(attr.to_owned()))),
+        Err(ResolveError::ServiceManaged(opt)) => Response::err(format!(
+            "'{name}' is managed by NixOS option `{opt}`; \
+             use omarchy-setup to toggle it"
+        )),
+        Err(ResolveError::Eliminated(reason)) => {
+            Response::err(format!("'{name}' is not available on NixOS: {reason}"))
+        }
+    }
+}
+
 pub async fn list() -> Response {
     match tokio::fs::read(MANIFEST_PATH).await {
         Ok(data) => match serde_json::from_slice(&data) {

@@ -15,6 +15,9 @@ pub enum Request {
     PkgSync,
     PkgList,
     PkgPresent { name: String },
+    /// Resolve a user-supplied package name through the alias table.
+    /// Returns `{"ok":true,"data":"<attr>"}` or `{"ok":false,"error":"..."}`.
+    PkgResolve { name: String },
     Status,
 }
 

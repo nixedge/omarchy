@@ -24,9 +24,20 @@ if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
   exit 1
 fi
 
-# ── Phase 1: install to nix profile so the package is usable immediately ──────
+# ── Resolve alias: get the correct nixpkgs attr (or an actionable error) ────────
+resolve_frame=$(printf '{"cmd":"pkg-resolve","name":"%s"}\n' "$pkg" \
+  | socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null)
+resolve_ok=$(printf '%s' "$resolve_frame" | jq -r '.ok // false')
+if [[ $resolve_ok != "true" ]]; then
+  resolve_err=$(printf '%s' "$resolve_frame" | jq -r '.error // "unknown error"')
+  printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$resolve_err" "$RESET" >&2
+  exit 1
+fi
+attr=$(printf '%s' "$resolve_frame" | jq -r '.data')
+
+# ── Phase 1: install to nix profile so the package is usable immediately ────────
 if ! nix_err=$(nix --extra-experimental-features 'nix-command flakes' \
-    profile install "nixpkgs#${pkg}" 2>&1); then
+    profile install "nixpkgs#${attr}" 2>&1); then
   printf '%b%s package not found or install failed: %s%b\n' \
     "$C_RED" "$GLYPH_FAIL" "$pkg" "$RESET" >&2
   printf '%bSearch with: nix search nixpkgs %s%b\n' "$C_MUTED" "$pkg" "$RESET" >&2
@@ -55,14 +66,14 @@ if [[ $async == "true" ]]; then
       "$C_MUTED" "$GLYPH_PKG" "$RESET"
   else
     nix --extra-experimental-features 'nix-command flakes' \
-      profile remove "nixpkgs#${pkg}" >/dev/null 2>&1 || true
+      profile remove "nixpkgs#${attr}" >/dev/null 2>&1 || true
     printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
     exit 1
   fi
   exit 0
 fi
 
-# ── DEFAULT: stream filtered rebuild progress (package already usable above) ──
+# ── DEFAULT: stream filtered rebuild progress (package already usable above) ────
 printf '%b%s Syncing system config\xe2\x80\xa6%b\n' "$C_ACCENT" "$GLYPH_PKG" "$RESET"
 
 coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
@@ -90,14 +101,11 @@ wait "$DAEMON_PID" 2>/dev/null
 if (( exit_code == 0 )); then
   # Package is now in the system config — remove the redundant profile entry.
   nix --extra-experimental-features 'nix-command flakes' \
-    profile remove "nixpkgs#${pkg}" >/dev/null 2>&1 || true
+    profile remove "nixpkgs#${attr}" >/dev/null 2>&1 || true
   printf '%b%s System sync complete%b\n' "$C_GREEN" "$GLYPH_OK" "$RESET"
 else
   # Rebuild failed — keep the profile entry so the package stays usable.
   printf '%b%s System sync failed: %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
-  if [[ $err_msg =~ attribute|undefined|"does not exist" ]]; then
-    printf '%bSearch with: nix search nixpkgs %s%b\n' "$C_MUTED" "$pkg" "$RESET" >&2
-  fi
   printf '%bPackage stays usable. Retry with: omarchy pkg sync%b\n' \
     "$C_MUTED" "$RESET" >&2
   exit 1
