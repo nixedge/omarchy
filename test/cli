@@ -236,7 +236,7 @@ pass "aliases are included in JSON metadata"
 
 output=$("$CLI" pkg add --help)
 assert_output_contains "pkg add help resolves" "$output" "omarchy-pkg-add"
-assert_output_contains "pkg add help shows direct route" "$output" "omarchy pkg add [--verbose] <package>"
+assert_output_contains "pkg add help shows direct route" "$output" "omarchy pkg add [--async] <package>"
 
 output=$("$CLI" system reboot --help)
 assert_output_contains "system command help is safe" "$output" "omarchy-system-reboot"
