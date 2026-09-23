@@ -33,7 +33,11 @@
             install -d $out/share/bash-completion/completions \
                        $out/share/zsh/site-functions \
                        $out/share/fish/vendor_completions.d
+            # clap_complete splits hyphenated binary names differently in the
+            # state-machine loop vs the opts handler section, producing mismatched
+            # state names. Normalize by replacing the broken opts-section prefix.
             $out/bin/omarchy-cli completions bash \
+              | sed 's/omarchy__subcmd__cli/omarchy__cli/g' \
               > $out/share/bash-completion/completions/omarchy-cli
             $out/bin/omarchy-cli completions zsh \
               > $out/share/zsh/site-functions/_omarchy-cli
