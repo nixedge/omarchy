@@ -12,7 +12,7 @@
       system = pkgs.stdenv.hostPlatform.system;
       omarchy = inputs.self.packages.${system}.omarchy;
       daemon = inputs.self.packages.${system}.omarchy-nix-daemon;
-      omarchyPkg = inputs.self.packages.${system}.omarchy-pkg;
+      omarchyCli = inputs.self.packages.${system}.omarchy-cli;
     in
     {
       # Import daemon-managed packages when the module file exists on disk.
@@ -246,7 +246,7 @@
           [
             omarchy
             daemon
-            omarchyPkg
+            omarchyCli
 
             # Session manager (launches Hyprland under a proper systemd user session)
             uwsm

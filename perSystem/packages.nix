@@ -25,20 +25,20 @@
           cargoExtraArgs = "--package omarchy-nix-daemon";
         });
 
-        omarchy-pkg = common.craneLib.buildPackage (muslArgs // {
-          pname = "omarchy-pkg";
+        omarchy-cli = common.craneLib.buildPackage (muslArgs // {
+          pname = "omarchy-cli";
           version = "0.1.0";
-          cargoExtraArgs = "--package omarchy-pkg";
+          cargoExtraArgs = "--package omarchy-cli";
           postInstall = ''
             install -d $out/share/bash-completion/completions \
                        $out/share/zsh/site-functions \
                        $out/share/fish/vendor_completions.d
-            $out/bin/omarchy-pkg completions bash \
-              > $out/share/bash-completion/completions/omarchy-pkg
-            $out/bin/omarchy-pkg completions zsh \
-              > $out/share/zsh/site-functions/_omarchy-pkg
-            $out/bin/omarchy-pkg completions fish \
-              > $out/share/fish/vendor_completions.d/omarchy-pkg.fish
+            $out/bin/omarchy-cli completions bash \
+              > $out/share/bash-completion/completions/omarchy-cli
+            $out/bin/omarchy-cli completions zsh \
+              > $out/share/zsh/site-functions/_omarchy-cli
+            $out/bin/omarchy-cli completions fish \
+              > $out/share/fish/vendor_completions.d/omarchy-cli.fish
           '';
         });
 

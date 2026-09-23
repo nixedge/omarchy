@@ -7,22 +7,24 @@ mod theme;
 
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
-use cli::{Cli, Cmd};
+use cli::{Cli, Cmd, PkgCmd};
 use std::process;
 
 fn main() {
     let cli = Cli::parse();
     let code = match cli.cmd {
-        Cmd::Add { name, async_flag } => cmds::add::run(&name, async_flag),
-        Cmd::Drop { name, async_flag } => cmds::drop::run(&name, async_flag),
-        Cmd::List => cmds::list::run(),
-        Cmd::Search { query } => cmds::search::run(&query),
-        Cmd::Sync => cmds::sync::run(),
-        Cmd::Present { name } => cmds::present::run(&name),
-        Cmd::Missing { name } => cmds::missing::run(&name),
-        Cmd::Resolve { name } => cmds::resolve::run(&name),
+        Cmd::Pkg { subcmd } => match subcmd {
+            PkgCmd::Add { name, async_flag } => cmds::add::run(&name, async_flag),
+            PkgCmd::Drop { name, async_flag } => cmds::drop::run(&name, async_flag),
+            PkgCmd::List => cmds::list::run(),
+            PkgCmd::Search { query } => cmds::search::run(&query),
+            PkgCmd::Sync => cmds::sync::run(),
+            PkgCmd::Present { name } => cmds::present::run(&name),
+            PkgCmd::Missing { name } => cmds::missing::run(&name),
+            PkgCmd::Resolve { name } => cmds::resolve::run(&name),
+        },
         Cmd::Completions { shell } => {
-            generate(shell, &mut Cli::command(), "omarchy-pkg", &mut std::io::stdout());
+            generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());
             0
         }
     };

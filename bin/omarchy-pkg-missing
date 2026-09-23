@@ -1,4 +1,4 @@
 #!/bin/bash
 # omarchy:summary=Returns true if the named package is not installed
 # omarchy:args=<package>
-exec omarchy-pkg missing "$@"
+exec omarchy-cli pkg missing "$@"

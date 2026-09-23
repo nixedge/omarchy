@@ -1,4 +1,4 @@
 #!/bin/bash
 # omarchy:summary=Retry the background system rebuild for all installed packages
 # omarchy:group=pkg
-exec omarchy-pkg sync "$@"
+exec omarchy-cli pkg sync "$@"

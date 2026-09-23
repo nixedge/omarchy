@@ -1,4 +1,4 @@
 #!/bin/bash
 # omarchy:summary=Returns true if the named package is installed
 # omarchy:args=<package>
-exec omarchy-pkg present "$@"
+exec omarchy-cli pkg present "$@"

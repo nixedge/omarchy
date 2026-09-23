@@ -2,4 +2,4 @@
 # omarchy:summary=Add a package
 # omarchy:args=[--async] <package>
 # omarchy:examples=omarchy pkg add git
-exec omarchy-pkg add "$@"
+exec omarchy-cli pkg add "$@"

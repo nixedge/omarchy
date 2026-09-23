@@ -2,4 +2,4 @@
 # omarchy:summary=Remove a package
 # omarchy:args=[--async] <package>
 # omarchy:examples=omarchy pkg drop git
-exec omarchy-pkg drop "$@"
+exec omarchy-cli pkg drop "$@"

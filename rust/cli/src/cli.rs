@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use clap_complete::Shell;
 
 #[derive(Parser)]
-#[command(name = "omarchy-pkg", about = "Package management for Omarchy")]
+#[command(name = "omarchy-cli", about = "Omarchy command-line interface")]
 pub struct Cli {
     #[command(subcommand)]
     pub cmd: Cmd,
@@ -10,6 +10,17 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Cmd {
+    #[command(about = "Package management")]
+    Pkg {
+        #[command(subcommand)]
+        subcmd: PkgCmd,
+    },
+    #[command(hide = true, about = "Print shell completion script")]
+    Completions { shell: Shell },
+}
+
+#[derive(Subcommand)]
+pub enum PkgCmd {
     #[command(about = "Add a package")]
     Add {
         name: String,
@@ -34,6 +45,4 @@ pub enum Cmd {
     Missing { name: String },
     #[command(about = "Resolve package name to nixpkgs attribute")]
     Resolve { name: String },
-    #[command(hide = true, about = "Print shell completion script")]
-    Completions { shell: Shell },
 }
