@@ -1,5 +1,6 @@
-use clap::{Parser, Subcommand};
+use clap::{builder::PossibleValuesParser, Parser, Subcommand};
 use clap_complete::Shell;
+use omarchy_lib::services;
 
 #[derive(Parser)]
 #[command(name = "omarchy-cli", about = "Omarchy command-line interface")]
@@ -42,9 +43,15 @@ pub enum ConfigCmd {
 #[derive(Subcommand)]
 pub enum ServiceCmd {
     #[command(about = "Enable a service")]
-    Enable { name: String },
+    Enable {
+        #[arg(value_parser = PossibleValuesParser::new(services::KNOWN))]
+        name: String,
+    },
     #[command(about = "Disable a service")]
-    Disable { name: String },
+    Disable {
+        #[arg(value_parser = PossibleValuesParser::new(services::KNOWN))]
+        name: String,
+    },
     #[command(about = "List available and enabled services")]
     List,
 }

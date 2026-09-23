@@ -1,25 +1,9 @@
 use crate::rebuild;
 use crate::state::State;
 use omarchy_lib::protocol::Response;
+use omarchy_lib::services::KNOWN as KNOWN_SERVICES;
 use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
-
-// Known service names — guards against enabling arbitrary NixOS options.
-const KNOWN_SERVICES: &[&str] = &[
-    "1password",
-    "dropbox",
-    "fido2",
-    "fingerprint",
-    "hibernation",
-    "hybrid-gpu",
-    "nordvpn",
-    "signal",
-    "spotify",
-    "sshd",
-    "sudoless-docker",
-    "sunshine",
-    "tailscale",
-];
 
 pub async fn enable(
     name: &str,

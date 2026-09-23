@@ -1,0 +1,15 @@
+pub const KNOWN: &[&str] = &[
+    "1password",
+    "dropbox",
+    "fido2",
+    "fingerprint",
+    "hibernation",
+    "hybrid-gpu",
+    "nordvpn",
+    "signal",
+    "spotify",
+    "sshd",
+    "sudoless-docker",
+    "sunshine",
+    "tailscale",
+];
