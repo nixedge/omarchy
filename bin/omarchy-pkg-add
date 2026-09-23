@@ -36,6 +36,7 @@ fi
 attr=$(printf '%s' "$resolve_frame" | jq -r '.data')
 
 # ── Phase 1: install to nix profile so the package is usable immediately ────────
+printf '%b%s Fetching %s\xe2\x80\xa6%b\n' "$C_ACCENT" "$GLYPH_PKG" "$pkg" "$RESET"
 if ! nix_err=$(nix --extra-experimental-features 'nix-command flakes' \
     profile install "nixpkgs#${attr}" 2>&1); then
   printf '%b%s package not found or install failed: %s%b\n' \
