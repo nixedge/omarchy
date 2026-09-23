@@ -27,8 +27,9 @@ fi
 if [[ $verbose == "false" ]]; then
   # ── FAST PATH ─────────────────────────────────────────────────────────────
   # Phase 1: install to nix profile immediately so the package is usable now.
-  if ! nix --extra-experimental-features 'nix-command flakes' \
-      profile install "nixpkgs#${pkg}" 2>&1; then
+  # Suppress output on success; the point of the fast path is a quiet install.
+  if ! nix_err=$(nix --extra-experimental-features 'nix-command flakes' \
+      profile install "nixpkgs#${pkg}" 2>&1); then
     printf '%b%s package not found or install failed: %s%b\n' \
       "$C_RED" "$GLYPH_FAIL" "$pkg" "$RESET" >&2
     printf '%bSearch with: nix search nixpkgs %s%b\n' "$C_MUTED" "$pkg" "$RESET" >&2

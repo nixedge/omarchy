@@ -26,10 +26,11 @@ fi
 
 if [[ $verbose == "false" ]]; then
   # ── FAST PATH ─────────────────────────────────────────────────────────────
-  # Phase 1: remove from nix profile immediately (ignore errors; may not be there
-  # if installed before this fast-path was added, or already cleaned up).
+  # Phase 1: remove from nix profile immediately; suppress output.
+  # Ignore errors: the profile entry may not exist if the package was installed
+  # before the fast-path was introduced or was already cleaned up after a rebuild.
   nix --extra-experimental-features 'nix-command flakes' \
-    profile remove "nixpkgs#${pkg}" 2>/dev/null || true
+    profile remove "nixpkgs#${pkg}" >/dev/null 2>&1 || true
 
   # Phase 2: signal daemon to update state.json and queue async rebuild.
   coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }

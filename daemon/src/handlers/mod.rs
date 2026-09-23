@@ -24,16 +24,26 @@ pub async fn dispatch(
         }
     });
 
+    // For rebuild operations, progress_tx is consumed by the handler so the
+    // forwarder task exits naturally when the handler returns.  For all other
+    // commands, explicitly drop it first so the forwarder exits immediately
+    // rather than blocking forever waiting for a sender that will never be used.
     let resp = match req {
-        Request::Ping => system::ping().await,
-        Request::Status => system::status().await,
         Request::PkgAdd { name } => pkg::add(&name, rebuild_lock, progress_tx).await,
         Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, progress_tx).await,
-        Request::PkgAddAsync { name } => pkg::add_async(&name, rebuild_lock).await,
-        Request::PkgDropAsync { name } => pkg::drop_async(&name, rebuild_lock).await,
-        Request::PkgSync => pkg::sync(rebuild_lock).await,
-        Request::PkgList => pkg::list().await,
-        Request::PkgPresent { name } => pkg::present(&name).await,
+        req => {
+            drop(progress_tx);
+            match req {
+                Request::Ping => system::ping().await,
+                Request::Status => system::status().await,
+                Request::PkgAddAsync { name } => pkg::add_async(&name, rebuild_lock).await,
+                Request::PkgDropAsync { name } => pkg::drop_async(&name, rebuild_lock).await,
+                Request::PkgSync => pkg::sync(rebuild_lock).await,
+                Request::PkgList => pkg::list().await,
+                Request::PkgPresent { name } => pkg::present(&name).await,
+                Request::PkgAdd { .. } | Request::PkgRemove { .. } => unreachable!(),
+            }
+        }
     };
 
     let _ = forwarder.await;
