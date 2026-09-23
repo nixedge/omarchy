@@ -26,6 +26,5 @@ in
     boot.kernelParams = lib.optional (svc.resumeOffset != 0)
       "resume_offset=${toString svc.resumeOffset}";
     swapDevices = lib.optional (svc.swapDevice != "") { device = svc.swapDevice; };
-    boot.initrd.systemd.enableHibernation = true;
   };
 }
