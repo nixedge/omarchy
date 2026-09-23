@@ -54,37 +54,7 @@ async fn send_desktop_notification(msg: &str, urgency: &str) {
     }
 }
 
-async fn cleanup_profile(attr: &str) {
-    let user = get_login_user();
-    let uid = get_login_uid(&user).await;
-    let xdg = format!("/run/user/{uid}");
-    let installable = format!("nixpkgs#{attr}");
-    let result = Command::new("systemd-run")
-        .args([
-            "--uid", &uid.to_string(),
-            "--user",
-            "--no-ask-password",
-            "--pipe",
-            "--quiet",
-            "--",
-            "nix",
-            "--extra-experimental-features", "nix-command flakes",
-            "profile", "remove", &installable,
-        ])
-        .env("XDG_RUNTIME_DIR", &xdg)
-        .output()
-        .await;
-    if let Err(e) = result {
-        tracing::warn!("profile cleanup failed for {attr}: {e}");
-    }
-}
-
-async fn run_background_rebuild(
-    rebuild_lock: Arc<Mutex<()>>,
-    name: String,
-    attr: String,
-    is_removal: bool,
-) {
+async fn run_background_rebuild(rebuild_lock: Arc<Mutex<()>>, name: String, is_removal: bool) {
     let _guard = rebuild_lock.lock().await;
     let state = match State::load().await {
         Ok(s) => s,
@@ -94,19 +64,14 @@ async fn run_background_rebuild(
         }
     };
     let (tx, _rx) = mpsc::unbounded_channel::<String>();
+    let verb = if is_removal { "removed" } else { "installed" };
     match rebuild::run(&state, tx).await {
         Ok(_) => {
-            if !is_removal {
-                cleanup_profile(&attr).await;
-            }
-            send_desktop_notification(&format!("\u{f00c} {name} installed"), "low").await;
+            send_desktop_notification(&format!("\u{f00c} {name} {verb}"), "low").await;
         }
         Err(e) => {
             tracing::error!("background rebuild failed for {name}: {e}");
             let _ = State::restore_backup().await;
-            if !is_removal {
-                cleanup_profile(&attr).await;
-            }
             send_desktop_notification(
                 &format!("\u{f00d} {name}: system sync failed \u{2014} run omarchy pkg sync to retry"),
                 "critical",
@@ -246,9 +211,8 @@ pub async fn add_async(name: &str, rebuild_lock: Arc<Mutex<()>>) -> Response {
         return Response::err(format!("state save failed: {e}"));
     }
 
-    let attr_owned = nix_attr.to_owned();
     let name_owned = name.to_owned();
-    tokio::spawn(run_background_rebuild(rebuild_lock, name_owned, attr_owned, false));
+    tokio::spawn(run_background_rebuild(rebuild_lock, name_owned, false));
 
     tracing::info!("pkg-add-async: {name} → {nix_attr} queued");
     Response::ok_pending()
@@ -288,8 +252,7 @@ pub async fn drop_async(name: &str, rebuild_lock: Arc<Mutex<()>>) -> Response {
     }
 
     let name_owned = name.to_owned();
-    let attr_owned = nix_attr.to_owned();
-    tokio::spawn(run_background_rebuild(rebuild_lock, name_owned, attr_owned, true));
+    tokio::spawn(run_background_rebuild(rebuild_lock, name_owned, true));
 
     tracing::info!("pkg-drop-async: {name} → {nix_attr} queued");
     Response::ok_pending()
