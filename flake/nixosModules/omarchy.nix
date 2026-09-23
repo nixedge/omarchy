@@ -369,6 +369,11 @@
               > "$stub"
             chown omarchy-daemon:omarchy "$stub"
           fi
+
+          # Write the primary login user so the daemon can deliver desktop notifications.
+          mkdir -p /run/omarchy
+          printf '%s\n' '${cfg.user}' > /run/omarchy/login-user
+          chmod 644 /run/omarchy/login-user
         '';
 
         # ── Copy default configs to the user's home on first boot ──────────────

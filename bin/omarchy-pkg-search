@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# omarchy:summary=Search for packages in nixpkgs
+# omarchy:args=<term>
+# omarchy:examples=omarchy pkg search json
+
+[[ -z $1 ]] && { echo "Usage: omarchy-pkg-search <term>" >&2; exit 1; }
+
+term="$1"
+
+# shellcheck source=omarchy-pkg-colors
+source omarchy-pkg-colors
+
+STATE_JSON="/var/lib/omarchy/state.json"
+installed=()
+if [[ -f $STATE_JSON ]]; then
+  mapfile -t installed < <(jq -r '.packages // [] | .[]' "$STATE_JSON" 2>/dev/null)
+fi
+
+_is_installed() {
+  local name="$1"
+  local p
+  for p in "${installed[@]}"; do
+    [[ $p == "$name" ]] && return 0
+  done
+  return 1
+}
+
+results=$(nix --extra-experimental-features 'nix-command flakes' \
+  search nixpkgs "$term" --json 2>/dev/null)
+
+if [[ -z $results || $results == "{}" ]]; then
+  printf '%bNo packages found.%b\n' "$C_MUTED" "$RESET"
+  exit 0
+fi
+
+count=0
+while IFS= read -r line; do
+  (( count >= 20 )) && break
+
+  name=$(printf '%s' "$line" | jq -r '.attrName // empty')
+  ver=$(printf '%s' "$line"  | jq -r '.version // "—"')
+  desc=$(printf '%s' "$line" | jq -r '.description // ""' | cut -c1-60)
+
+  [[ -z $name ]] && continue
+
+  if _is_installed "$name"; then
+    printf '%b%s %-28s%b  %b%-12s%b  %s\n' \
+      "$C_GREEN" "$GLYPH_OK" "$name" "$RESET" \
+      "$C_MUTED" "$ver" "$RESET" \
+      "$desc"
+  else
+    printf '  %-28s  %b%-12s%b  %s\n' \
+      "$name" \
+      "$C_MUTED" "$ver" "$RESET" \
+      "$desc"
+  fi
+
+  (( count++ ))
+done < <(printf '%s' "$results" | jq -c \
+  'to_entries[]
+   | {attrName: .key, version: .value.version, description: .value.description}')

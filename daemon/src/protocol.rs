@@ -6,6 +6,13 @@ pub enum Request {
     Ping,
     PkgAdd { name: String },
     PkgRemove { name: String },
+    /// Fast path: update state.json and queue a background nixos-rebuild.
+    /// Returns Done immediately; rebuild notification arrives via desktop notification.
+    PkgAddAsync { name: String },
+    /// Fast path: update state.json and queue a background nixos-rebuild removal.
+    PkgDropAsync { name: String },
+    /// Retry the background rebuild for all packages currently in state.json.
+    PkgSync,
     PkgList,
     PkgPresent { name: String },
     Status,
@@ -14,6 +21,9 @@ pub enum Request {
 #[derive(Serialize)]
 pub struct Response {
     pub ok: bool,
+    /// True when a background rebuild has been queued (fast-path async commands).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pending: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -24,7 +34,17 @@ impl Response {
     pub fn ok(data: impl Into<Option<serde_json::Value>>) -> Self {
         Self {
             ok: true,
+            pending: None,
             data: data.into(),
+            error: None,
+        }
+    }
+
+    pub fn ok_pending() -> Self {
+        Self {
+            ok: true,
+            pending: Some(true),
+            data: None,
             error: None,
         }
     }
@@ -32,6 +52,7 @@ impl Response {
     pub fn err(msg: impl Into<String>) -> Self {
         Self {
             ok: false,
+            pending: None,
             data: None,
             error: Some(msg.into()),
         }

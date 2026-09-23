@@ -3,4 +3,44 @@
 # omarchy:summary=List installed packages
 # omarchy:group=pkg
 
-jq -r '.[].name' /run/omarchy/packages.json
+# shellcheck source=omarchy-pkg-colors
+source omarchy-pkg-colors
+
+STATE_JSON="/var/lib/omarchy/state.json"
+PACKAGES_JSON="/run/omarchy/packages.json"
+
+if [[ ! -f $STATE_JSON ]]; then
+  printf '%bNo packages installed.%b\n' "$C_MUTED" "$RESET"
+  exit 0
+fi
+
+mapfile -t packages < <(jq -r '.packages // [] | .[]' "$STATE_JSON" 2>/dev/null | sort)
+
+if (( ${#packages[@]} == 0 )); then
+  printf '%bNo packages installed.%b\n' "$C_MUTED" "$RESET"
+  exit 0
+fi
+
+_lookup_version() {
+  local name="$1"
+  if [[ ! -f $PACKAGES_JSON ]]; then
+    echo "—"
+    return
+  fi
+  local ver
+  ver=$(jq -r --arg n "$name" 'first(.[] | select(.name == $n) | .version) // "—"' \
+    "$PACKAGES_JSON" 2>/dev/null)
+  echo "${ver:-—}"
+}
+
+max_len=0
+for p in "${packages[@]}"; do
+  (( ${#p} > max_len )) && max_len=${#p}
+done
+
+for p in "${packages[@]}"; do
+  ver=$(_lookup_version "$p")
+  printf '%b%-*s%b  %b%s%b\n' \
+    "$C_FG" "$max_len" "$p" "$RESET" \
+    "$C_MUTED" "$ver" "$RESET"
+done

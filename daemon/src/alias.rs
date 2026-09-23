@@ -12,6 +12,12 @@
 /// NixOS equivalent and should not be installed.
 pub fn resolve(name: &str) -> Result<&str, ResolveError> {
     match name {
+        // ── Common ecosystem names → nixpkgs attributes ────────────────────
+        "python" => Ok("python3"),
+        "node" => Ok("nodejs"),
+        "code" => Ok("vscode"),
+        "chromium-browser" => Ok("chromium"),
+
         // ── Arch name differs from nixpkgs attribute ───────────────────────
         "dua-cli" => Ok("dua"),
         "gvfs-mtp" | "gvfs-nfs" | "gvfs-smb" => Ok("gvfs"),
@@ -70,6 +76,16 @@ pub fn resolve(name: &str) -> Result<&str, ResolveError> {
             Err(ResolveError::ServiceManaged("programs.hyprland.enable"))
         }
         "plymouth" => Err(ResolveError::ServiceManaged("boot.plymouth.enable")),
+
+        // ── Names that are meaningful but map to a different install path ──
+        "rust" => Err(ResolveError::Eliminated(
+            "use `rustup` or install via `omarchy pkg add rustup`; \
+             bare `rust` is not a nixpkgs attribute"
+        )),
+        "java" => Err(ResolveError::Eliminated(
+            "use a specific JDK: jdk21, jdk17, etc. \
+             (e.g. omarchy pkg add jdk21)"
+        )),
 
         // ── Arch-only / AUR packages with no NixOS equivalent ─────────────
         "yay" | "paru" | "expac" | "fakeroot" | "makepkg" => {
@@ -145,5 +161,33 @@ mod tests {
     fn eliminated() {
         assert!(matches!(resolve("yay"), Err(ResolveError::Eliminated(_))));
         assert!(matches!(resolve("paru"), Err(ResolveError::Eliminated(_))));
+        assert!(matches!(resolve("rust"), Err(ResolveError::Eliminated(_))));
+        assert!(matches!(resolve("java"), Err(ResolveError::Eliminated(_))));
+    }
+
+    #[test]
+    fn ecosystem_aliases() {
+        assert_eq!(resolve("python").unwrap(), "python3");
+        assert_eq!(resolve("node").unwrap(), "nodejs");
+        assert_eq!(resolve("code").unwrap(), "vscode");
+        assert_eq!(resolve("chromium-browser").unwrap(), "chromium");
+    }
+
+    #[test]
+    fn passthroughs_unchanged() {
+        assert_eq!(resolve("python3").unwrap(), "python3");
+        assert_eq!(resolve("nodejs").unwrap(), "nodejs");
+        assert_eq!(resolve("php").unwrap(), "php");
+        assert_eq!(resolve("ruby").unwrap(), "ruby");
+        assert_eq!(resolve("go").unwrap(), "go");
+        assert_eq!(resolve("google-chrome").unwrap(), "google-chrome");
+    }
+
+    #[test]
+    fn regression_existing_aliases() {
+        assert_eq!(resolve("nvim").unwrap(), "neovim");
+        assert_eq!(resolve("libreoffice-fresh").unwrap(), "libreoffice");
+        assert_eq!(resolve("dua-cli").unwrap(), "dua");
+        assert_eq!(resolve("vi").unwrap(), "vim");
     }
 }

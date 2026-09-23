@@ -29,6 +29,9 @@ pub async fn dispatch(
         Request::Status => system::status().await,
         Request::PkgAdd { name } => pkg::add(&name, rebuild_lock, progress_tx).await,
         Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, progress_tx).await,
+        Request::PkgAddAsync { name } => pkg::add_async(&name, rebuild_lock).await,
+        Request::PkgDropAsync { name } => pkg::drop_async(&name, rebuild_lock).await,
+        Request::PkgSync => pkg::sync(rebuild_lock).await,
         Request::PkgList => pkg::list().await,
         Request::PkgPresent { name } => pkg::present(&name).await,
     };

@@ -1,41 +1,99 @@
 #!/bin/bash
 
 # omarchy:summary=Add a package
-# omarchy:args=<package>
+# omarchy:args=[--verbose] <package>
 # omarchy:examples=omarchy pkg add git
 
-[[ -z $1 ]] && { echo "Usage: omarchy-pkg-add <package>" >&2; exit 1; }
+verbose=false
+pkg=""
+for arg in "$@"; do
+  case "$arg" in
+    --verbose|-v) verbose=true ;;
+    -*) echo "Unknown flag: $arg" >&2; exit 1 ;;
+    *) pkg="$arg" ;;
+  esac
+done
 
-pkg="$1"
+[[ -z $pkg ]] && { echo "Usage: omarchy-pkg-add [--verbose] <package>" >&2; exit 1; }
+
+# shellcheck source=omarchy-pkg-colors
+source omarchy-pkg-colors
 
 if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
   echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
   exit 1
 fi
 
-# Keep socat's stdin open via coproc so it doesn't close the socket when the
-# request is sent.  Close it explicitly after the Done frame arrives.
-coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
-
-printf '{"cmd":"pkg-add","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
-
-exit_code=0
-
-while IFS= read -r frame <&"${DAEMON[0]}"; do
-  type=$(printf '%s' "$frame" | jq -r '.type // empty')
-  if [[ $type == "progress" ]]; then
-    printf '%s' "$frame" | jq -r '.line'
-  else
-    ok=$(printf '%s' "$frame" | jq -r '.ok // false')
-    if [[ $ok != "true" ]]; then
-      printf '%s' "$frame" | jq -r '.error // "unknown error"' >&2
-      exit_code=1
-    fi
-    break
+if [[ $verbose == "false" ]]; then
+  # ── FAST PATH ─────────────────────────────────────────────────────────────
+  # Phase 1: install to nix profile immediately so the package is usable now.
+  if ! nix --extra-experimental-features 'nix-command flakes' \
+      profile install "nixpkgs#${pkg}" 2>&1; then
+    printf '%b%s package not found or install failed: %s%b\n' \
+      "$C_RED" "$GLYPH_FAIL" "$pkg" "$RESET" >&2
+    printf '%bSearch with: nix search nixpkgs %s%b\n' "$C_MUTED" "$pkg" "$RESET" >&2
+    exit 1
   fi
-done
 
-exec {DAEMON[1]}>&-
-wait "$DAEMON_PID" 2>/dev/null
+  # Phase 2: signal daemon to update state.json and queue async rebuild.
+  coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
+  printf '{"cmd":"pkg-add-async","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
 
-exit $exit_code
+  ok=false
+  err_msg="daemon error"
+  while IFS= read -r frame <&"${DAEMON[0]}"; do
+    ok=$(printf '%s' "$frame" | jq -r '.ok // false')
+    err_msg=$(printf '%s' "$frame" | jq -r '.error // "daemon error"')
+    break
+  done
+  exec {DAEMON[1]}>&-
+  wait "$DAEMON_PID" 2>/dev/null
+
+  if [[ $ok == "true" ]]; then
+    printf '%b%s %s installed (system sync in progress\xe2\x80\xa6)%b\n' \
+      "$C_GREEN" "$GLYPH_OK" "$pkg" "$RESET"
+  else
+    # Daemon rejected the request (e.g. already installed, alias error).
+    # Undo the profile install.
+    nix --extra-experimental-features 'nix-command flakes' \
+      profile remove "nixpkgs#${pkg}" 2>/dev/null || true
+    printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
+    exit 1
+  fi
+
+else
+  # ── VERBOSE / SYNC PATH ───────────────────────────────────────────────────
+  # Blocks until the rebuild completes; streams filtered progress to the terminal.
+  # Keep socat's stdin open via coproc so it doesn't close the socket early.
+  coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
+  printf '{"cmd":"pkg-add","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
+
+  exit_code=0
+  err_msg=""
+  _PKG_BUILDING_SHOWN=false
+  while IFS= read -r frame <&"${DAEMON[0]}"; do
+    type=$(printf '%s' "$frame" | jq -r '.type // empty')
+    if [[ $type == "progress" ]]; then
+      _pkg_filter_rebuild_line "$(printf '%s' "$frame" | jq -r '.line')"
+    else
+      ok=$(printf '%s' "$frame" | jq -r '.ok // false')
+      if [[ $ok != "true" ]]; then
+        err_msg=$(printf '%s' "$frame" | jq -r '.error // "unknown error"')
+        exit_code=1
+      fi
+      break
+    fi
+  done
+  exec {DAEMON[1]}>&-
+  wait "$DAEMON_PID" 2>/dev/null
+
+  if (( exit_code == 0 )); then
+    printf '%b%s %s installed%b\n' "$C_GREEN" "$GLYPH_OK" "$pkg" "$RESET"
+  else
+    printf '%b%s rebuild failed: %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
+    if [[ $err_msg =~ attribute|undefined|"does not exist" ]]; then
+      printf '%bSearch with: nix search nixpkgs %s%b\n' "$C_MUTED" "$pkg" "$RESET" >&2
+    fi
+    exit 1
+  fi
+fi

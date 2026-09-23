@@ -6,22 +6,41 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 — Readable rebuild progress (P1)
+### User Story 0 — Fast package install (P1)
 
-When adding or removing a package, the terminal output is concise and readable — not a wall of raw `nixos-rebuild` build logs. The user sees a handful of status lines in the omarchy visual style, and the command returns cleanly when the rebuild is done.
+When a user adds a package, the command returns within seconds and the package is immediately usable — without waiting for a full NixOS rebuild. The system configuration is updated asynchronously in the background and the user receives a desktop notification when it completes.
 
-**Why this priority**: Every pkg-add and pkg-drop triggers a nixos-rebuild that generates 50–300 lines of nix output (store path copies, derivation build steps, git cache unpacking). This noise makes the command feel like a raw system tool instead of an omarchy command. Filtering it down is the single highest-impact UX change for the port.
+**Why this priority**: The current flow blocks for 1–3 minutes on `nixos-rebuild switch` even for packages already in the nix binary cache. This is the single biggest obstacle to the NixOS port feeling like a real package manager. Fixing it requires a two-phase design: Phase 1 (fast, sync) installs via `nix profile`; Phase 2 (slow, async) rebuilds the system config and cleans up.
 
-**Independent Test**: Run `omarchy pkg add hello` on a live VM with a cold nix cache. Count the output lines printed to the terminal. Should be ≤ 15.
+**Independent Test**: Run `omarchy pkg add bat` on a live VM with `bat` present in the binary cache. Measure wall-clock time from command start to shell prompt return. Must be ≤ 10 seconds.
 
 **Acceptance Scenarios**:
 
-1. **Given** a working omarchy session, **When** `omarchy pkg add bat`, **Then** the output fits in a 24-line terminal without scrolling, even for a cold build that fetches hundreds of paths.
-2. **Given** a rebuild in progress, **When** individual nix store paths are being copied or built, **Then** those individual lines are not printed to the terminal in default mode.
-3. **Given** a rebuild that fails, **When** the failure is a nix evaluation or build error, **Then** the relevant error message is printed and the command exits non-zero.
-4. **Given** the `--verbose` flag, **When** `omarchy pkg add bat --verbose`, **Then** the full raw nixos-rebuild output streams to the terminal.
-5. **Given** a successful rebuild, **When** the command completes, **Then** the final output line indicates success, e.g. `✓ bat installed`.
-6. **Given** a failed rebuild, **When** the command exits non-zero, **Then** the final output line indicates failure, e.g. `✗ rebuild failed`.
+1. **Given** bat is available in the nix binary cache, **When** `omarchy pkg add bat`, **Then** the shell prompt returns within 10 seconds.
+2. **Given** the command has returned, **When** the user runs `bat --version`, **Then** it succeeds — the package is immediately accessible.
+3. **Given** a package that does not exist in nixpkgs, **When** `omarchy pkg add nosuchpkg`, **Then** Phase 1 fails within 10 seconds and the command exits non-zero without triggering a background rebuild.
+4. **Given** Phase 1 succeeds, **When** the daemon finishes the background nixos-rebuild, **Then** the user receives a desktop notification: `✓ bat installed`.
+5. **Given** Phase 1 succeeds but the background rebuild fails, **When** the daemon detects the failure, **Then** the user receives a desktop notification: `✗ bat: system sync failed — run omarchy pkg sync to retry`, and the package remains accessible via nix profile until the user retries.
+6. **Given** Phase 2 succeeds, **When** the system rebuild is complete, **Then** the nix profile entry for the package is removed (the package now comes from the system configuration).
+
+---
+
+### User Story 1 — Readable rebuild notifications (P1)
+
+When the background system rebuild (Phase 2) completes, the desktop notification is clean and actionable — not a raw dump of nixos-rebuild output. When `--verbose` is passed to `pkg add`, the rebuild output streams live to the terminal (synchronous mode, no background).
+
+**Why this priority**: Phase 2 runs asynchronously, so the user's terminal is not blocked. The notification is the only output surface for Phase 2 status. It must be concise. The `--verbose` flag is the escape hatch for users who want to watch the rebuild live (e.g., for debugging a failed install) — in verbose mode the command blocks synchronously and streams filtered output, matching the behavior described in the original US1.
+
+**Independent Test**: Run `omarchy pkg add hello --verbose` on a live VM with a cold nix cache. Count the output lines printed to the terminal. Should be ≤ 15 for a typical package.
+
+**Acceptance Scenarios**:
+
+1. **Given** `--verbose` is NOT passed, **When** `omarchy pkg add bat`, **Then** the command returns after Phase 1 with a one-line confirmation; rebuild output does not appear on the terminal.
+2. **Given** `--verbose` IS passed, **When** `omarchy pkg add bat --verbose`, **Then** the command blocks until the rebuild completes and streams filtered output to the terminal (≤ 15 lines for a typical cold-cache package install).
+3. **Given** verbose mode and a rebuild in progress, **When** individual nix store paths are being copied or built, **Then** those individual lines are not printed.
+4. **Given** verbose mode, **When** `omarchy pkg add bat --verbose`, **Then** the full raw nixos-rebuild output is shown instead of filtered output.
+5. **Given** verbose mode and a successful rebuild, **When** the command completes, **Then** the final line indicates success, e.g. `✓ bat installed`.
+6. **Given** verbose mode and a failed rebuild, **When** the command exits non-zero, **Then** the final line indicates failure, e.g. `✗ rebuild failed`.
 
 ---
 
@@ -114,11 +133,25 @@ A user can search for available packages by name or description without leaving 
 
 ### Functional Requirements
 
-**FR-001** — Default progress filtering: in default mode, the following nixos-rebuild output line types are suppressed: `unpacking '...'`, `copying path '/nix/store/...'`, `these N derivations will be built:`, `these N paths will be fetched`, individual derivation build lines, and nix evaluation trace lines.
+**FR-000** — Fast-path Phase 1: `omarchy pkg add <name>` runs `nix profile install nixpkgs#<resolved-attr>` as the current user. This is a synchronous operation: if it fails (package not found, nix evaluation error), the command exits non-zero immediately and no daemon interaction occurs. If it succeeds, the package is usable immediately.
 
-**FR-002** — Summary progress lines: the following semantic events produce a single visible line each during a rebuild: dependency resolution start, fetch summary (N packages, N MB), build start, activation start, and completion.
+**FR-000a** — Fast-path Phase 2: after Phase 1 succeeds, the shim signals the daemon (`pkg-add-async`) so the daemon updates state.json and queues an async `nixos-rebuild switch`. The shim exits immediately after receiving the daemon's acknowledgement (Done frame) — it does not wait for the rebuild.
 
-**FR-003** — Verbose passthrough: `--verbose` on `omarchy pkg add` and `omarchy pkg drop` disables all filtering and streams raw nixos-rebuild output to the terminal.
+**FR-000b** — Background rebuild notification: when the daemon's background rebuild completes successfully, it sends a desktop notification via `omarchy-notification-send` with the text `✓ <name> installed`. When it fails, the notification text is `✗ <name>: system sync failed — run omarchy pkg sync to retry`.
+
+**FR-000c** — Background rebuild failure recovery: if the background nixos-rebuild fails, the daemon reverts state.json to its pre-install state and runs `nix profile remove nixpkgs#<resolved-attr>` to undo Phase 1. The package is no longer accessible.
+
+**FR-000d** — Background rebuild success cleanup: when the nixos-rebuild succeeds, the daemon runs `nix profile remove nixpkgs#<resolved-attr>` to remove the redundant profile entry (the package is now provided by the system configuration).
+
+**FR-000e** — `omarchy pkg drop` fast path: `omarchy pkg drop <name>` runs `nix profile remove nixpkgs#<resolved-attr>` as the synchronous Phase 1 (fast, unlinks immediately), then signals the daemon for an async rebuild (Phase 2). Error behavior mirrors `pkg add`.
+
+**FR-000f** — Verbose mode is synchronous: when `--verbose` is passed, `omarchy pkg add` skips Phase 1 (no `nix profile install`) and falls back to the original blocking daemon flow, streaming filtered rebuild output to the terminal until completion. This gives users a way to watch the full rebuild live and is equivalent to the behavior described in US1.
+
+**FR-001** — Default progress filtering (verbose mode only): when `--verbose` is active, the following nixos-rebuild output line types are suppressed: `unpacking '...'`, `copying path '/nix/store/...'`, `these N derivations will be built:`, `these N paths will be fetched`, individual derivation build lines, and nix evaluation trace lines.
+
+**FR-002** — Summary progress lines (verbose mode only): the following semantic events produce a single visible line each during a rebuild: dependency resolution start, fetch summary (N packages, N MB), build start, activation start, and completion.
+
+**FR-003** — Verbose passthrough: `--verbose` on `omarchy pkg add` and `omarchy pkg drop` disables all output filtering and streams raw nixos-rebuild output to the terminal (in the synchronous blocking flow).
 
 **FR-004** — List source: `omarchy pkg list` reads user-installed packages from `/var/lib/omarchy/state.json`, not from `/run/omarchy/packages.json`.
 
@@ -170,7 +203,9 @@ A user can search for available packages by name or description without leaving 
 
 ## Success Criteria
 
-**SC-001** — After `omarchy pkg add <package>` completes, the number of lines printed to the terminal in default mode is ≤ 15 for any package, regardless of how many nix store paths are fetched or built.
+**SC-000** — `omarchy pkg add bat` returns to the shell prompt within 10 seconds when `bat` is present in the binary cache (Phase 1 fast path). The package is immediately usable after the command returns.
+
+**SC-001** — After `omarchy pkg add <package> --verbose` completes, the number of lines printed to the terminal is ≤ 15 for any package, regardless of how many nix store paths are fetched or built.
 
 **SC-002** — `omarchy pkg list` after installing 3 packages returns exactly 3 data lines within 500 ms (reads local files only, no network or nix calls).
 
@@ -195,8 +230,11 @@ A user can search for available packages by name or description without leaving 
 - Spec 002 daemon infrastructure is working: state.json, daemon socket, and nixos-rebuild integration all function correctly.
 - The active terminal is alacritty with JetBrains Mono Nerd Font as shipped by omarchy; nerd font glyphs U+F040E, U+F00C, U+F00D are available.
 - ANSI 24-bit color (truecolor) is supported in the target terminal.
-- Progress filtering is implemented in the shell shims (`omarchy-pkg-add`, `omarchy-pkg-drop`), not in the daemon. The daemon continues to stream all nixos-rebuild output as progress frames; the shim decides what to display.
-- The `--verbose` flag is parsed by the shim. The daemon protocol does not change.
-- Detecting whether a nixpkgs attribute is valid *before* triggering a rebuild (pre-flight validation) is out of scope. FR-009 covers the error path when nixos-rebuild evaluation fails.
+- `nix profile install/remove` uses the `nix-command` experimental feature, which is already enabled in the VM's `nix.conf` (confirmed in spec 002 work).
+- Phase 1 (`nix profile install`) runs as the logged-in user in their shell; the daemon is not involved in Phase 1.
+- Desktop notifications from the daemon (a system service) require delivering to the user's D-Bus session. Implementation approach: the daemon looks up the user's runtime directory via `/run/user/<uid>/bus` or calls `omarchy-notification-send` via `sudo -u <user>`. The exact mechanism is an implementation detail for the plan.
+- In `--verbose` mode, the command is synchronous and the fast path is skipped; the daemon flow from spec 002 is used unchanged.
+- Progress filtering in verbose mode is implemented in the shell shim, not the daemon. The daemon streams all nixos-rebuild output as progress frames; the shim decides what to display.
 - `packages.json` version lookup uses the `name` field (pname), which may differ from the nixpkgs attribute name; exact matching heuristics are an implementation detail.
 - A shared color helper is an acceptable implementation approach. The spec does not prescribe whether it is a sourced bash function, a standalone script, or something else.
+- `omarchy pkg sync` is a new command that retries the async rebuild for any packages in state.json that failed Phase 2. It is the recovery path for background rebuild failures.

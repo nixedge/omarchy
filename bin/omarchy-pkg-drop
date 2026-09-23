@@ -1,31 +1,87 @@
 #!/bin/bash
 
-# omarchy:summary=Remove all the named packages from the system if they're installed (otherwise ignore).
-# omarchy:args=<packages...>
-# omarchy:requires-sudo=true
+# omarchy:summary=Remove a package
+# omarchy:args=[--verbose] <package>
+# omarchy:examples=omarchy pkg drop git
 
-installed=()
-declare -A installed_exact=()
-declare -A selected=()
+verbose=false
+pkg=""
+for arg in "$@"; do
+  case "$arg" in
+    --verbose|-v) verbose=true ;;
+    -*) echo "Unknown flag: $arg" >&2; exit 1 ;;
+    *) pkg="$arg" ;;
+  esac
+done
 
-if ! installed_packages=$(pacman -Qq); then
-  echo "Unable to query installed packages; no packages were removed." >&2
+[[ -z $pkg ]] && { echo "Usage: omarchy-pkg-drop [--verbose] <package>" >&2; exit 1; }
+
+# shellcheck source=omarchy-pkg-colors
+source omarchy-pkg-colors
+
+if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
+  echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
   exit 1
 fi
 
-while IFS= read -r package_name; do
-  if [[ -n $package_name ]]; then
-    installed_exact[$package_name]=1
-  fi
-done <<< "$installed_packages"
+if [[ $verbose == "false" ]]; then
+  # ── FAST PATH ─────────────────────────────────────────────────────────────
+  # Phase 1: remove from nix profile immediately (ignore errors; may not be there
+  # if installed before this fast-path was added, or already cleaned up).
+  nix --extra-experimental-features 'nix-command flakes' \
+    profile remove "nixpkgs#${pkg}" 2>/dev/null || true
 
-for pkg in "$@"; do
-  if [[ -n ${installed_exact[$pkg]} && -z ${selected[$pkg]} ]]; then
-    installed+=("$pkg")
-    selected[$pkg]=1
-  fi
-done
+  # Phase 2: signal daemon to update state.json and queue async rebuild.
+  coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
+  printf '{"cmd":"pkg-drop-async","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
 
-if (( ${#installed[@]} > 0 )); then
-  sudo pacman -Rns --noconfirm "${installed[@]}"
+  ok=false
+  err_msg="daemon error"
+  while IFS= read -r frame <&"${DAEMON[0]}"; do
+    ok=$(printf '%s' "$frame" | jq -r '.ok // false')
+    err_msg=$(printf '%s' "$frame" | jq -r '.error // "daemon error"')
+    break
+  done
+  exec {DAEMON[1]}>&-
+  wait "$DAEMON_PID" 2>/dev/null
+
+  if [[ $ok == "true" ]]; then
+    printf '%b%s %s removed (system sync in progress\xe2\x80\xa6)%b\n' \
+      "$C_GREEN" "$GLYPH_OK" "$pkg" "$RESET"
+  else
+    printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
+    exit 1
+  fi
+
+else
+  # ── VERBOSE / SYNC PATH ───────────────────────────────────────────────────
+  # Blocks until the rebuild completes; streams filtered progress to the terminal.
+  coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
+  printf '{"cmd":"pkg-remove","name":"%s"}\n' "$pkg" >&"${DAEMON[1]}"
+
+  exit_code=0
+  err_msg=""
+  _PKG_BUILDING_SHOWN=false
+  while IFS= read -r frame <&"${DAEMON[0]}"; do
+    type=$(printf '%s' "$frame" | jq -r '.type // empty')
+    if [[ $type == "progress" ]]; then
+      _pkg_filter_rebuild_line "$(printf '%s' "$frame" | jq -r '.line')"
+    else
+      ok=$(printf '%s' "$frame" | jq -r '.ok // false')
+      if [[ $ok != "true" ]]; then
+        err_msg=$(printf '%s' "$frame" | jq -r '.error // "unknown error"')
+        exit_code=1
+      fi
+      break
+    fi
+  done
+  exec {DAEMON[1]}>&-
+  wait "$DAEMON_PID" 2>/dev/null
+
+  if (( exit_code == 0 )); then
+    printf '%b%s %s removed%b\n' "$C_GREEN" "$GLYPH_OK" "$pkg" "$RESET"
+  else
+    printf '%b%s rebuild failed: %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
+    exit 1
+  fi
 fi
