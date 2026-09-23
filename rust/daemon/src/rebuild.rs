@@ -12,16 +12,11 @@ const FLAKE_URI_PATH: &str = "/etc/omarchy/flake-uri";
 const REBUILD_OPTS_PATH: &str = "/etc/omarchy/rebuild-opts";
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 
-// NixOS puts the sudo setuid wrapper here; not in the default systemd PATH.
 const SUDO: &str = "/run/wrappers/bin/sudo";
 const NIXOS_REBUILD: &str = "/run/current-system/sw/bin/nixos-rebuild";
 
 pub fn generate_module(state: &State) -> String {
-    let attrs: Vec<String> = state
-        .packages
-        .iter()
-        .map(|p| format!("    pkgs.{p}"))
-        .collect();
+    let attrs: Vec<String> = state.packages.iter().map(|p| format!("    pkgs.{p}")).collect();
     let list = attrs.join("\n");
     format!(
         "# Managed by omarchy-nix-daemon — do not edit manually.\n\
@@ -37,37 +32,26 @@ pub fn generate_module(state: &State) -> String {
 pub async fn write_module(state: &State) -> Result<()> {
     let content = generate_module(state);
     let tmp = format!("{MODULE_PATH}.tmp");
-    tokio::fs::write(&tmp, &content)
-        .await
-        .with_context(|| format!("writing {tmp}"))?;
-    tokio::fs::rename(&tmp, MODULE_PATH)
-        .await
-        .with_context(|| format!("renaming {tmp} → {MODULE_PATH}"))?;
+    tokio::fs::write(&tmp, &content).await.with_context(|| format!("writing {tmp}"))?;
+    tokio::fs::rename(&tmp, MODULE_PATH).await.with_context(|| format!("renaming {tmp} → {MODULE_PATH}"))?;
     Ok(())
 }
 
 async fn flake_uri() -> Result<String> {
-    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH)
-        .await
-        .with_context(|| {
-            format!(
-                "{FLAKE_URI_PATH} not found; \
-                 rebuild the VM from the latest omarchy flake so the \
-                 activation script can write this file"
-            )
-        })?;
+    let uri = tokio::fs::read_to_string(FLAKE_URI_PATH).await.with_context(|| {
+        format!(
+            "{FLAKE_URI_PATH} not found; rebuild the VM from the latest omarchy flake \
+             so the activation script can write this file"
+        )
+    })?;
     Ok(uri.trim().to_owned())
 }
 
-/// Write the managed module, run nixos-rebuild switch (streaming stderr to
-/// `progress_tx`), and update packages.json on success.
-/// Restores state.json from backup on rebuild failure.
 pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
     write_module(state).await?;
 
     let flake_arg = flake_uri().await?;
 
-    // Optional extra flags (e.g. --no-install-bootloader for VM environments).
     let extra_opts: Vec<String> = tokio::fs::read_to_string(REBUILD_OPTS_PATH)
         .await
         .unwrap_or_default()
@@ -93,7 +77,6 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
         .spawn()
         .with_context(|| format!("spawning {SUDO} {NIXOS_REBUILD}"))?;
 
-    // Merge stdout and stderr into the progress stream so no output is lost.
     use tokio::io::AsyncReadExt;
     let stdout = child.stdout.take();
     let stderr = child.stderr.take();

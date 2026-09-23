@@ -1,15 +1,13 @@
-use crate::alias::{self, ResolveError};
-use crate::protocol::Response;
 use crate::rebuild;
 use crate::state::State;
+use omarchy_lib::alias::{self, ResolveError};
+use omarchy_lib::protocol::Response;
 use std::sync::Arc;
 use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
 const LOGIN_USER_PATH: &str = "/run/omarchy/login-user";
-
-// ── Notification and profile helpers ──────────────────────────────────────────
 
 fn get_login_user() -> String {
     std::fs::read_to_string(LOGIN_USER_PATH)
@@ -35,7 +33,6 @@ async fn send_desktop_notification(msg: &str, urgency: &str) {
     let uid = get_login_uid(&user).await;
     let dbus = format!("unix:path=/run/user/{uid}/bus");
     let xdg = format!("/run/user/{uid}");
-    // systemd-run --user delivers into the user's session even from a system service
     let result = Command::new("systemd-run")
         .args([
             "--uid", &uid.to_string(),
@@ -111,9 +108,7 @@ async fn run_background_rebuild(
                 cleanup_profile(&attr).await;
             }
             send_desktop_notification(
-                &format!(
-                    "\u{f00d} {name}: system sync failed \u{2014} run omarchy pkg sync to retry"
-                ),
+                &format!("\u{f00d} {name}: system sync failed \u{2014} run omarchy pkg sync to retry"),
                 "critical",
             )
             .await;
@@ -130,8 +125,7 @@ pub async fn add(
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
             return Response::err(format!(
-                "'{name}' is managed by NixOS option `{opt}`; \
-                 use omarchy-setup to toggle it"
+                "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
             ));
         }
         Err(ResolveError::Eliminated(reason)) => {
@@ -140,7 +134,6 @@ pub async fn add(
     };
 
     let _ = progress_tx.send(format!("queuing rebuild for '{name}'…"));
-
     let _guard = rebuild_lock.lock().await;
     let _ = progress_tx.send("rebuild lock acquired, loading state…".into());
 
@@ -181,8 +174,7 @@ pub async fn remove(
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
             return Response::err(format!(
-                "'{name}' is managed by NixOS option `{opt}`; \
-                 use omarchy-setup to toggle it"
+                "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
             ));
         }
         Err(ResolveError::Eliminated(reason)) => {
@@ -191,7 +183,6 @@ pub async fn remove(
     };
 
     let _ = progress_tx.send(format!("queuing rebuild to remove '{name}'…"));
-
     let _guard = rebuild_lock.lock().await;
 
     let mut state = match State::load().await {
@@ -224,15 +215,12 @@ pub async fn remove(
     Response::ok(None)
 }
 
-// ── Fast-path async handlers ──────────────────────────────────────────────────
-
 pub async fn add_async(name: &str, rebuild_lock: Arc<Mutex<()>>) -> Response {
     let nix_attr = match alias::resolve(name) {
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
             return Response::err(format!(
-                "'{name}' is managed by NixOS option `{opt}`; \
-                 use omarchy-setup to toggle it"
+                "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
             ));
         }
         Err(ResolveError::Eliminated(reason)) => {
@@ -271,8 +259,7 @@ pub async fn drop_async(name: &str, rebuild_lock: Arc<Mutex<()>>) -> Response {
         Ok(a) => a,
         Err(ResolveError::ServiceManaged(opt)) => {
             return Response::err(format!(
-                "'{name}' is managed by NixOS option `{opt}`; \
-                 use omarchy-setup to toggle it"
+                "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
             ));
         }
         Err(ResolveError::Eliminated(reason)) => {
@@ -337,8 +324,7 @@ pub async fn resolve_name(name: &str) -> Response {
     match alias::resolve(name) {
         Ok(attr) => Response::ok(Some(serde_json::Value::String(attr.to_owned()))),
         Err(ResolveError::ServiceManaged(opt)) => Response::err(format!(
-            "'{name}' is managed by NixOS option `{opt}`; \
-             use omarchy-setup to toggle it"
+            "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
         )),
         Err(ResolveError::Eliminated(reason)) => {
             Response::err(format!("'{name}' is not available on NixOS: {reason}"))

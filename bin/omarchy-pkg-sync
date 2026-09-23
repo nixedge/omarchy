@@ -1,32 +1,4 @@
 #!/bin/bash
-
 # omarchy:summary=Retry the background system rebuild for all installed packages
 # omarchy:group=pkg
-
-# shellcheck source=omarchy-pkg-colors
-source omarchy-pkg-colors
-
-if ! socat -u /dev/null UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; then
-  echo "omarchy: daemon not reachable at /run/omarchy/daemon.sock" >&2
-  exit 1
-fi
-
-coproc DAEMON { socat - UNIX-CONNECT:/run/omarchy/daemon.sock 2>/dev/null; }
-printf '{"cmd":"pkg-sync"}\n' >&"${DAEMON[1]}"
-
-ok=false
-err_msg="daemon error"
-while IFS= read -r frame <&"${DAEMON[0]}"; do
-  ok=$(printf '%s' "$frame" | jq -r '.ok // false')
-  err_msg=$(printf '%s' "$frame" | jq -r '.error // "daemon error"')
-  break
-done
-exec {DAEMON[1]}>&-
-wait "$DAEMON_PID" 2>/dev/null
-
-if [[ $ok == "true" ]]; then
-  printf '%b%s System rebuild queued\xe2\x80\xa6%b\n' "$C_ACCENT" "$GLYPH_PKG" "$RESET"
-else
-  printf '%b%s %s%b\n' "$C_RED" "$GLYPH_FAIL" "$err_msg" "$RESET" >&2
-  exit 1
-fi
+exec omarchy-pkg sync "$@"

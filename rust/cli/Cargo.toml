@@ -1,0 +1,16 @@
+[package]
+name = "omarchy-pkg"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "omarchy-pkg"
+path = "src/main.rs"
+
+[dependencies]
+omarchy-lib = { path = "../lib" }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
+serde_json = "1"
+toml = "0.8"

@@ -7,18 +7,40 @@
       system,
       ...
     }:
+    let
+      muslLinker = "${pkgs.pkgsStatic.stdenv.cc}/bin/${pkgs.pkgsStatic.stdenv.cc.targetPrefix}cc";
+      muslArgs = {
+        src = common.rustSrc;
+        strictDeps = true;
+        CARGO_BUILD_TARGET = "x86_64-unknown-linux-musl";
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = muslLinker;
+        doCheck = false;
+      };
+    in
     {
       packages = {
-        omarchy-nix-daemon = common.craneLib.buildPackage {
-          src = common.daemonSrc;
+        omarchy-nix-daemon = common.craneLib.buildPackage (muslArgs // {
           pname = "omarchy-nix-daemon";
           version = "0.1.0";
-          strictDeps = true;
-          CARGO_BUILD_TARGET = "x86_64-unknown-linux-musl";
-          CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsStatic.stdenv.cc}/bin/${pkgs.pkgsStatic.stdenv.cc.targetPrefix}cc";
-          # Tests require a running system; skip in the build sandbox.
-          doCheck = false;
-        };
+          cargoExtraArgs = "--package omarchy-nix-daemon";
+        });
+
+        omarchy-pkg = common.craneLib.buildPackage (muslArgs // {
+          pname = "omarchy-pkg";
+          version = "0.1.0";
+          cargoExtraArgs = "--package omarchy-pkg";
+          postInstall = ''
+            install -d $out/share/bash-completion/completions \
+                       $out/share/zsh/site-functions \
+                       $out/share/fish/vendor_completions.d
+            $out/bin/omarchy-pkg completions bash \
+              > $out/share/bash-completion/completions/omarchy-pkg
+            $out/bin/omarchy-pkg completions zsh \
+              > $out/share/zsh/site-functions/_omarchy-pkg
+            $out/bin/omarchy-pkg completions fish \
+              > $out/share/fish/vendor_completions.d/omarchy-pkg.fish
+          '';
+        });
 
         omarchy = pkgs.stdenv.mkDerivation {
           pname = "omarchy";
@@ -38,7 +60,7 @@
             # via a ../../../../ symlink that resolves to the package root.
             [ -f icon.png ] && cp icon.png $out/
 
-            # Shell completions.
+            # omarchy bash-router completions (for `omarchy pkg …` etc.)
             install -Dm644 completions/bash/omarchy \
               $out/share/bash-completion/completions/omarchy
             install -Dm644 completions/zsh/_omarchy \

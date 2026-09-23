@@ -8,6 +8,7 @@ name = "omarchy-nix-daemon"
 path = "src/main.rs"
 
 [dependencies]
+omarchy-lib = { path = "../lib" }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

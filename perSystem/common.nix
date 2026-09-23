@@ -13,17 +13,19 @@
 
       craneLib = (inputs.crane.mkLib pkgs).overrideToolchain muslToolchain;
 
-      daemonSrc = pkgs.lib.fileset.toSource {
-        root = ../daemon;
+      rustSrc = pkgs.lib.fileset.toSource {
+        root = ../rust;
         fileset = pkgs.lib.fileset.unions [
-          ../daemon/Cargo.toml
-          ../daemon/Cargo.lock
-          ../daemon/src
+          ../rust/Cargo.toml
+          ../rust/Cargo.lock
+          ../rust/lib
+          ../rust/daemon
+          ../rust/cli
         ];
       };
 
       common = {
-        inherit craneLib muslToolchain daemonSrc;
+        inherit craneLib muslToolchain rustSrc;
       };
     in
     {

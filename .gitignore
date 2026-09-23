@@ -7,6 +7,7 @@ __pycache__/
 
 # Rust build output
 daemon/target/
+rust/target/
 
 # Nix build outputs and VM artifacts
 result

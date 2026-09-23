@@ -1,11 +1,10 @@
-mod alias;
 mod handlers;
 mod manifest;
-mod protocol;
 mod rebuild;
 mod state;
 
 use anyhow::Result;
+use omarchy_lib::protocol;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -62,7 +61,6 @@ async fn handle_connection(mut stream: UnixStream, rebuild_lock: Arc<Mutex<()>>)
         let (frame_tx, mut frame_rx) = mpsc::unbounded_channel::<protocol::Frame>();
         let lock = rebuild_lock.clone();
 
-        // Run the handler concurrently so we can forward frames as they arrive.
         let handler = tokio::spawn(handlers::dispatch(req, lock, frame_tx));
 
         while let Some(frame) = frame_rx.recv().await {
