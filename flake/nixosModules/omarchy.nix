@@ -18,8 +18,11 @@
       # Import daemon-managed packages when the module file exists on disk.
       # Requires --impure on nixos-rebuild so builtins.pathExists can read
       # the live filesystem rather than being restricted to the Nix store.
-      imports = lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
-        /var/lib/omarchy/omarchy-managed.nix;
+      imports =
+        lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
+          /var/lib/omarchy/omarchy-managed.nix
+        ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-user.nix)
+          /var/lib/omarchy/omarchy-user.nix;
 
       options.programs.omarchy = {
         enable = lib.mkEnableOption "Omarchy Cinque desktop environment";

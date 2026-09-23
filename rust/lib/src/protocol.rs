@@ -12,6 +12,9 @@ pub enum Request {
     PkgList,
     PkgPresent { name: String },
     PkgResolve { name: String },
+    ConfigGet,
+    ConfigApply { content: String },
+    ConfigCheck,
     Status,
 }
 

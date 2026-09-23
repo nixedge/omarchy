@@ -15,8 +15,23 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: PkgCmd,
     },
+    #[command(about = "User NixOS configuration")]
+    Config {
+        #[command(subcommand)]
+        subcmd: ConfigCmd,
+    },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
+}
+
+#[derive(Subcommand)]
+pub enum ConfigCmd {
+    #[command(about = "Edit user configuration in $EDITOR")]
+    Edit,
+    #[command(about = "Show current user configuration")]
+    Show,
+    #[command(about = "Validate configuration without applying (dry-activate)")]
+    Check,
 }
 
 #[derive(Subcommand)]

@@ -1,4 +1,5 @@
 pub mod add;
+pub mod config;
 pub mod drop;
 pub mod list;
 pub mod missing;

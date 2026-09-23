@@ -1,3 +1,4 @@
+pub mod config;
 pub mod pkg;
 pub mod system;
 
@@ -20,8 +21,11 @@ pub async fn dispatch(
     });
 
     let resp = match req {
+        // Streaming handlers — keep progress_tx alive through the rebuild.
         Request::PkgAdd { name } => pkg::add(&name, rebuild_lock, progress_tx).await,
         Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, progress_tx).await,
+        Request::ConfigApply { content } => config::apply(content, rebuild_lock, progress_tx).await,
+        Request::ConfigCheck => config::check(rebuild_lock, progress_tx).await,
         req => {
             drop(progress_tx);
             match req {
@@ -33,30 +37,15 @@ pub async fn dispatch(
                 Request::PkgList => pkg::list().await,
                 Request::PkgPresent { name } => pkg::present(&name).await,
                 Request::PkgResolve { name } => pkg::resolve_name(&name).await,
-                Request::PkgAdd { .. } | Request::PkgRemove { .. } => unreachable!(),
+                Request::ConfigGet => config::get().await,
+                Request::PkgAdd { .. }
+                | Request::PkgRemove { .. }
+                | Request::ConfigApply { .. }
+                | Request::ConfigCheck => unreachable!(),
             }
         }
     };
 
     let _ = forwarder.await;
     let _ = frame_tx.send(Frame::Done(resp));
-}
-
-#[allow(dead_code)]
-pub async fn dispatch_simple(req: Request, rebuild_lock: Arc<Mutex<()>>) -> Response {
-    match req {
-        Request::Ping => system::ping().await,
-        Request::Status => system::status().await,
-        Request::PkgList => pkg::list().await,
-        Request::PkgPresent { name } => pkg::present(&name).await,
-        Request::PkgResolve { name } => pkg::resolve_name(&name).await,
-        _ => {
-            let (tx, _rx) = mpsc::unbounded_channel();
-            match req {
-                Request::PkgAdd { name } => pkg::add(&name, rebuild_lock, tx).await,
-                Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, tx).await,
-                _ => Response::err("unreachable"),
-            }
-        }
-    }
 }

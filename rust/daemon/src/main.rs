@@ -33,6 +33,16 @@ async fn main() -> Result<()> {
         info!("manifest written to {MANIFEST_PATH}");
     }
 
+    // Create user config stub if it doesn't exist yet.
+    let user_cfg = handlers::config::USER_CONFIG_PATH;
+    if !Path::new(user_cfg).exists() {
+        if let Err(e) = tokio::fs::write(user_cfg, handlers::config::STUB).await {
+            error!("user config stub creation failed (non-fatal): {e}");
+        } else {
+            info!("created user config stub at {user_cfg}");
+        }
+    }
+
     let _ = tokio::fs::remove_file(SOCKET_PATH).await;
     let listener = UnixListener::bind(SOCKET_PATH)?;
     info!("listening on {SOCKET_PATH}");

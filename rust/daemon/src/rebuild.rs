@@ -47,7 +47,12 @@ async fn flake_uri() -> Result<String> {
     Ok(uri.trim().to_owned())
 }
 
-pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
+pub enum Mode {
+    Switch,
+    DryActivate,
+}
+
+pub async fn run(state: &State, mode: Mode, progress_tx: mpsc::UnboundedSender<String>) -> Result<()> {
     write_module(state).await?;
 
     let flake_arg = flake_uri().await?;
@@ -59,16 +64,23 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
         .map(str::to_owned)
         .collect();
 
+    let subcommand = match mode {
+        Mode::Switch => "switch",
+        Mode::DryActivate => "dry-activate",
+    };
+
     let mut args = vec![
         "--".to_owned(),
         NIXOS_REBUILD.to_owned(),
-        "switch".to_owned(),
+        subcommand.to_owned(),
         "--impure".to_owned(),
         "--accept-flake-config".to_owned(),
         "--flake".to_owned(),
         flake_arg,
     ];
-    args.extend(extra_opts);
+    if matches!(mode, Mode::Switch) {
+        args.extend(extra_opts);
+    }
 
     let mut child = Command::new(SUDO)
         .args(&args)
@@ -106,12 +118,16 @@ pub async fn run(state: &State, progress_tx: mpsc::UnboundedSender<String>) -> R
     let status = child.wait().await?;
 
     if !status.success() {
-        State::restore_backup().await?;
-        anyhow::bail!("nixos-rebuild switch failed (exit {})", status);
+        if matches!(mode, Mode::Switch) {
+            State::restore_backup().await?;
+        }
+        anyhow::bail!("nixos-rebuild {} failed (exit {})", subcommand, status);
     }
 
-    if let Err(e) = manifest::write_manifest(Path::new(MANIFEST_PATH)).await {
-        tracing::warn!("manifest update failed (non-fatal): {e}");
+    if matches!(mode, Mode::Switch) {
+        if let Err(e) = manifest::write_manifest(Path::new(MANIFEST_PATH)).await {
+            tracing::warn!("manifest update failed (non-fatal): {e}");
+        }
     }
 
     Ok(())

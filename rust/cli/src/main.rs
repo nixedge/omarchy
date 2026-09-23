@@ -7,7 +7,7 @@ mod theme;
 
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
-use cli::{Cli, Cmd, PkgCmd};
+use cli::{Cli, Cmd, ConfigCmd, PkgCmd};
 use std::process;
 
 fn main() {
@@ -22,6 +22,11 @@ fn main() {
             PkgCmd::Present { name } => cmds::present::run(&name),
             PkgCmd::Missing { name } => cmds::missing::run(&name),
             PkgCmd::Resolve { name } => cmds::resolve::run(&name),
+        },
+        Cmd::Config { subcmd } => match subcmd {
+            ConfigCmd::Edit => cmds::config::edit::run(),
+            ConfigCmd::Show => cmds::config::show::run(),
+            ConfigCmd::Check => cmds::config::check::run(),
         },
         Cmd::Completions { shell } => {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());

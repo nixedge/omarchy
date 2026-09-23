@@ -65,7 +65,7 @@ async fn run_background_rebuild(rebuild_lock: Arc<Mutex<()>>, name: String, is_r
     };
     let (tx, _rx) = mpsc::unbounded_channel::<String>();
     let verb = if is_removal { "removed" } else { "installed" };
-    match rebuild::run(&state, tx).await {
+    match rebuild::run(&state, rebuild::Mode::Switch, tx).await {
         Ok(_) => {
             send_desktop_notification(&format!("\u{f00c} {name} {verb}"), "low").await;
         }
@@ -122,7 +122,7 @@ pub async fn add(
 
     let _ = progress_tx.send(format!("running nixos-rebuild switch for '{name}'…"));
 
-    if let Err(e) = rebuild::run(&state, progress_tx).await {
+    if let Err(e) = rebuild::run(&state, rebuild::Mode::Switch, progress_tx).await {
         return Response::err(format!("rebuild failed: {e}"));
     }
 
@@ -172,7 +172,7 @@ pub async fn remove(
 
     let _ = progress_tx.send(format!("running nixos-rebuild switch to remove '{name}'…"));
 
-    if let Err(e) = rebuild::run(&state, progress_tx).await {
+    if let Err(e) = rebuild::run(&state, rebuild::Mode::Switch, progress_tx).await {
         return Response::err(format!("rebuild failed: {e}"));
     }
 
@@ -266,7 +266,7 @@ pub async fn sync(rebuild_lock: Arc<Mutex<()>>) -> Response {
     tokio::spawn(async move {
         let _guard = rebuild_lock.lock().await;
         let (tx, _rx) = mpsc::unbounded_channel::<String>();
-        match rebuild::run(&state, tx).await {
+        match rebuild::run(&state, rebuild::Mode::Switch, tx).await {
             Ok(_) => {
                 send_desktop_notification("\u{f00c} System sync complete", "low").await;
             }
