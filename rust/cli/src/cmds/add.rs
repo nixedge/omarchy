@@ -21,7 +21,7 @@ pub fn run(name: &str, async_flag: bool) -> i32 {
     output::status(&p, &format!("{} Fetching {name}\u{2026}", output::GLYPH_PKG));
     let installable = format!("nixpkgs#{attr}");
     let ok = Command::new("nix")
-        .args(["--extra-experimental-features", "nix-command flakes", "profile", "install", &installable])
+        .args(["--extra-experimental-features", "nix-command flakes", "profile", "add", &installable])
         .status()
         .map(|s| s.success())
         .unwrap_or(false);
