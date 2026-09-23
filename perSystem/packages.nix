@@ -39,6 +39,21 @@
               > $out/share/zsh/site-functions/_omarchy-cli
             $out/bin/omarchy-cli completions fish \
               > $out/share/fish/vendor_completions.d/omarchy-cli.fish
+
+            # Backward-compatible symlinks — argv[0] dispatch routes each name
+            # to the right subcommand without wrapper scripts.
+            for name in \
+              omarchy-pkg-add \
+              omarchy-pkg-drop \
+              omarchy-pkg-install \
+              omarchy-pkg-list \
+              omarchy-pkg-missing \
+              omarchy-pkg-present \
+              omarchy-pkg-resolve \
+              omarchy-pkg-search \
+              omarchy-pkg-sync; do
+              ln -s $out/bin/omarchy-cli $out/bin/$name
+            done
           '';
         });
 
@@ -90,14 +105,6 @@
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 
-            # NixOS-specific replacement shims for package management commands.
-            for cmd in \
-              omarchy-pkg-drop \
-              omarchy-pkg-present \
-              omarchy-pkg-missing \
-              omarchy-pkg-install; do
-              install -m 0755 ${../pkgs/omarchy/cinque-shims}/$cmd $out/cinque-shims/$cmd
-            done
 
             runHook postInstall
           '';

@@ -1,5 +1,0 @@
-#!/bin/bash
-# omarchy:summary=Search for packages in nixpkgs
-# omarchy:args=<term>
-# omarchy:examples=omarchy pkg search json
-exec omarchy-cli pkg search "$@"

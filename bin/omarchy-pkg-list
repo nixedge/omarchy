@@ -1,4 +1,0 @@
-#!/bin/bash
-# omarchy:summary=List installed packages
-# omarchy:group=pkg
-exec omarchy-cli pkg list "$@"
