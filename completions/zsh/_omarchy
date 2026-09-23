@@ -4,21 +4,28 @@ _omarchy() {
   local json
   json=$(omarchy commands --json 2>/dev/null) || return
 
-  local -a groups subcmds
-  local group="${words[2]}"
+  local curcontext="$curcontext" state line
+  _arguments -C \
+    '1: :->group' \
+    '2: :->subcommand' \
+    '*: :'
 
-  if (( CURRENT == 2 )); then
-    groups=(${(f)"$(printf '%s' "$json" | jq -r '.commands[].group' | sort -u)"})
-    _values 'group' $groups
-    return
-  fi
-
-  if (( CURRENT == 3 )); then
-    subcmds=(${(f)"$(printf '%s' "$json" | jq -r --arg g "$group" \
-      '.commands[] | select(.group == $g and .name != "") | .name + "\t" + .summary' | sort -u)"})
-    _describe 'command' subcmds
-    return
-  fi
+  case $state in
+    group)
+      local -a groups
+      groups=(${(f)"$(printf '%s' "$json" \
+        | jq -r '[.commands[].group] | unique | .[]')"})
+      _values 'group' $groups
+      ;;
+    subcommand)
+      local -a subcmds
+      subcmds=(${(f)"$(printf '%s' "$json" \
+        | jq -r --arg g "${words[2]}" \
+            '[.commands[] | select(.group == $g and .name != "") | .name + ":" + .summary]
+             | unique | .[]')"})
+      _describe 'subcommand' subcmds
+      ;;
+  esac
 }
 
 _omarchy
