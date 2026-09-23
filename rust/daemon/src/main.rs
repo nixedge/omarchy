@@ -33,7 +33,19 @@ async fn main() -> Result<()> {
         info!("manifest written to {MANIFEST_PATH}");
     }
 
-    // Create user config stub if it doesn't exist yet.
+    // Sync both daemon-managed nix files from state on every startup so they
+    // stay consistent with state.json even across daemon restarts.
+    let state = crate::state::State::load().await.unwrap_or_default();
+    if let Err(e) = crate::rebuild::write_module(&state).await {
+        error!("managed module write failed (non-fatal): {e}");
+    }
+    if let Err(e) = crate::rebuild::write_services_module(&state).await {
+        error!("services module write failed (non-fatal): {e}");
+    }
+    info!("daemon-managed nix modules synced from state");
+
+    // Create user config stub only if activation somehow didn't — belt and
+    // suspenders in case the file was manually deleted.
     let user_cfg = handlers::config::USER_CONFIG_PATH;
     if !Path::new(user_cfg).exists() {
         if let Err(e) = tokio::fs::write(user_cfg, handlers::config::STUB).await {
@@ -41,14 +53,6 @@ async fn main() -> Result<()> {
         } else {
             info!("created user config stub at {user_cfg}");
         }
-    }
-
-    // Write the initial services module from current state (creates the file if absent).
-    let state = crate::state::State::load().await.unwrap_or_default();
-    if let Err(e) = crate::rebuild::write_services_module(&state).await {
-        error!("services module write failed (non-fatal): {e}");
-    } else {
-        info!("services module written");
     }
 
     let _ = tokio::fs::remove_file(SOCKET_PATH).await;

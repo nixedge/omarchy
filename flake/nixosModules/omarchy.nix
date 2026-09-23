@@ -19,7 +19,7 @@
       # Requires --impure on nixos-rebuild so builtins.pathExists can read
       # the live filesystem rather than being restricted to the Nix store.
       imports =
-        [ ./services ]
+        [ ../../nixosModules/services ]
         ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-managed.nix)
           /var/lib/omarchy/omarchy-managed.nix
         ++ lib.optional (builtins.pathExists /var/lib/omarchy/omarchy-services.nix)
@@ -366,22 +366,47 @@
           ]
           ++ lib.optionals (builtins.hasAttr "quickshell" pkgs) [ pkgs.quickshell ];
 
-        # ── Bootstrap /var/lib/omarchy/omarchy-managed.nix on first activation ──
-        # The stub ensures nixos-rebuild with builtins.pathExists finds the file
-        # even before the daemon has written any packages.
-        system.activationScripts.omarchyManagedStub = lib.stringAfter [ "var" ] ''
-          stub=/var/lib/omarchy/omarchy-managed.nix
-          if [[ ! -f $stub ]]; then
-            mkdir -p /var/lib/omarchy
-            printf '# Managed by omarchy-nix-daemon — do not edit manually.\n{ ... }: { }\n' \
-              > "$stub"
-            chown omarchy-daemon:omarchy "$stub"
-          fi
+        # ── Bootstrap /var/lib/omarchy stub files on first activation ────────────
+        # These stubs ensure builtins.pathExists finds each file on every
+        # nixos-rebuild --impure even before the daemon has run.  The daemon
+        # overwrites them with real content on startup; activation only creates
+        # them when absent so it never clobbers live data.
+        system.activationScripts.omarchyStubs = lib.stringAfter [ "var" ] ''
+          statedir=/var/lib/omarchy
+          mkdir -p "$statedir"
 
-          # Write the primary login user so the daemon can deliver desktop notifications.
-          mkdir -p /run/omarchy
-          printf '%s\n' '${cfg.user}' > /run/omarchy/login-user
-          chmod 644 /run/omarchy/login-user
+          create_stub() {
+            local path="$1" content="$2" owner="$3"
+            if [[ ! -f $path ]]; then
+              printf '%s' "$content" > "$path"
+              chown "$owner" "$path"
+            fi
+          }
+
+          create_stub "$statedir/omarchy-managed.nix" \
+            '# Managed by omarchy-nix-daemon — do not edit manually.
+{ ... }: { }
+' \
+            "omarchy-daemon:omarchy"
+
+          create_stub "$statedir/omarchy-services.nix" \
+            '# Managed by omarchy-nix-daemon — do not edit manually.
+{ ... }: { }
+' \
+            "omarchy-daemon:omarchy"
+
+          create_stub "$statedir/omarchy-user.nix" \
+            '# User-managed Omarchy configuration — edit with: omarchy config edit
+{ pkgs, lib, ... }: {
+}
+' \
+            "${cfg.user}:omarchy"
+
+          # Persist the login user in StateDirectory so it survives daemon
+          # restarts (RuntimeDirectory is wiped when the service stops).
+          printf '%s\n' '${cfg.user}' > "$statedir/login-user"
+          chown omarchy-daemon:omarchy "$statedir/login-user"
+          chmod 640 "$statedir/login-user"
         '';
 
         # ── Copy default configs to the user's home on first boot ──────────────

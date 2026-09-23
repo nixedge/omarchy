@@ -7,7 +7,7 @@ use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 
 const MANIFEST_PATH: &str = "/run/omarchy/packages.json";
-const LOGIN_USER_PATH: &str = "/run/omarchy/login-user";
+const LOGIN_USER_PATH: &str = "/var/lib/omarchy/login-user";
 
 fn get_login_user() -> String {
     std::fs::read_to_string(LOGIN_USER_PATH)
