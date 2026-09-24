@@ -214,6 +214,53 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: WeatherCmd,
     },
+    #[command(about = "Coding agent management")]
+    Agent {
+        #[command(subcommand)]
+        subcmd: AgentCmd,
+    },
+    #[command(about = "Branding customization")]
+    Branding {
+        #[command(subcommand)]
+        subcmd: BrandingCmd,
+    },
+    #[command(about = "Screen capture tools")]
+    Capture {
+        #[command(subcommand)]
+        subcmd: CaptureCmd,
+    },
+    #[command(name = "chromium-copy-url-host", about = "Native messaging host: copy tab URL", hide = true)]
+    ChromiumCopyUrlHost,
+    #[command(name = "chromium-ytdlp-host", about = "Native messaging host: yt-dlp downloader", hide = true)]
+    ChromiumYtdlpHost {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Clipboard management")]
+    Clipboard {
+        #[command(subcommand)]
+        subcmd: ClipboardCmd,
+    },
+    #[command(about = "Crash notification management")]
+    Crash {
+        #[command(subcommand)]
+        subcmd: CrashCmd,
+    },
+    #[command(about = "Debug and diagnostics")]
+    Debug {
+        #[command(subcommand)]
+        subcmd: DebugCmd,
+    },
+    #[command(name = "default", about = "Manage default applications")]
+    DefaultApp {
+        #[command(subcommand)]
+        subcmd: DefaultCmd,
+    },
+    #[command(about = "Run and install user hooks")]
+    Hook {
+        #[command(subcommand)]
+        subcmd: HookCmd,
+    },
     #[command(name = "bar-text-color", about = "Choose legible bar text color", hide = true)]
     BarTextColor {
         position: String,
@@ -917,6 +964,214 @@ pub enum UpdateCmd {
 pub enum SetupCmd {
     #[command(name = "direct-boot", about = "Manage EFI direct boot entry for Omarchy UKI")]
     DirectBoot,
+}
+
+#[derive(Subcommand)]
+pub enum AgentCmd {
+    #[command(about = "Launch the default coding agent")]
+    Run {
+        #[arg(long, help = "Run agent inline (no TUI wrapper)")]
+        inline: bool,
+        #[arg(long, help = "Pick agent if none set")]
+        pick: bool,
+        #[arg(long, help = "Pass a prompt to the agent")]
+        prompt: Option<String>,
+    },
+    #[command(about = "Diagnose a crashed process with the default coding agent")]
+    Crash {
+        pid: String,
+        comm: Option<String>,
+        exe: Option<String>,
+        signal: Option<String>,
+    },
+    #[command(about = "Launch the default coding agent with a prompt")]
+    Prompt {
+        #[arg(long, help = "Run agent inline (no TUI wrapper)")]
+        inline: bool,
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        prompt: Vec<String>,
+    },
+    #[command(name = "usage-claude", about = "Show Claude API usage")]
+    UsageClaude {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "usage-codex", about = "Show Codex usage")]
+    UsageCodex {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "usage-fireworks", about = "Show Fireworks usage")]
+    UsageFireworks {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "usage-update", about = "Regenerate agent usage data files")]
+    UsageUpdate {
+        #[arg(long, help = "Force refresh")]
+        force: bool,
+        #[arg(long, help = "Only update usage limits")]
+        limits_only: bool,
+        #[arg(long, value_name = "AGENT", help = "Exclude this agent")]
+        except: Vec<String>,
+        #[arg(help = "Agent(s) to update (default: all)")]
+        agents: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum BrandingCmd {
+    #[command(about = "Edit, set, or reset About branding")]
+    About {
+        #[arg(help = "image|text|reset")]
+        mode: String,
+    },
+    #[command(about = "Edit, set, or reset screensaver branding")]
+    Screensaver {
+        #[arg(help = "image|text|reset")]
+        mode: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum CaptureCmd {
+    #[command(about = "Decode a QR code from a screenshot region")]
+    Qr,
+    #[command(about = "Pick a screen region (shared helper)")]
+    Region {
+        #[arg(help = "region|windows|smart|fullscreen")]
+        mode: Option<String>,
+        #[arg(long, help = "Leave freeze running")]
+        keep_freeze: bool,
+        #[arg(long, help = "Print monitor:NAME when matched")]
+        match_monitor: bool,
+    },
+    #[command(about = "Start or stop screen recording")]
+    Screenrecording {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "screenrecording-with-webcam", about = "Screen recording with webcam overlay")]
+    ScreenrecordingWithWebcam,
+    #[command(about = "Take a screenshot")]
+    Screenshot {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Extract text from a screenshot region with OCR")]
+    Text,
+    #[command(name = "webcam-list", about = "List webcam devices")]
+    WebcamList,
+    #[command(name = "webcam-resize", about = "Resize the webcam overlay")]
+    WebcamResize {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum ClipboardCmd {
+    #[command(about = "Open a clipboard history entry")]
+    Open {
+        #[arg(long, help = "Index into clipboard history")]
+        history_index: u64,
+    },
+    #[command(name = "paste-file", about = "Copy a file to clipboard and paste it")]
+    PasteFile {
+        #[arg(long, help = "Only copy, don't paste")]
+        copy_only: bool,
+        #[arg(help = "MIME type")]
+        mime_type: String,
+        #[arg(help = "File path")]
+        path: String,
+    },
+    #[command(name = "paste-text", about = "Copy text to clipboard and optionally type it")]
+    PasteText {
+        #[arg(long, help = "Use Shift+Insert to paste")]
+        shift_insert: bool,
+        #[arg(long, help = "Only copy, don't paste")]
+        copy_only: bool,
+        #[arg(long, help = "Use history entry at index")]
+        history_index: Option<u64>,
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        text: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum CrashCmd {
+    #[command(about = "Silence crash notifications for a program")]
+    Mute {
+        #[arg(help = "Program name (omit to list)")]
+        program: Option<String>,
+        #[arg(help = "on|off|toggle", default_value = "on")]
+        action: String,
+    },
+    #[command(about = "Watch for process crashes and offer AI diagnosis")]
+    Watch,
+}
+
+#[derive(Subcommand)]
+pub enum DebugCmd {
+    #[command(about = "Print debugging information")]
+    Info {
+        #[arg(long, help = "Skip sudo commands")]
+        no_sudo: bool,
+        #[arg(long, help = "Print log instead of interactive menu")]
+        print: bool,
+    },
+    #[command(about = "Show idle, screensaver, and lock diagnostics")]
+    Idle {
+        #[arg(help = "Number of log lines", default_value = "200")]
+        log_lines: u64,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum DefaultCmd {
+    #[command(about = "Set and launch the default coding agent")]
+    Agent {
+        #[arg(long, help = "Install mode (run inside floating terminal)")]
+        install: bool,
+        #[arg(help = "Agent name")]
+        name: Option<String>,
+    },
+    #[command(about = "Set the default browser")]
+    Browser {
+        #[arg(long, help = "Install mode")]
+        install: bool,
+        #[arg(help = "Browser name")]
+        name: Option<String>,
+    },
+    #[command(about = "Set the default editor")]
+    Editor {
+        #[arg(long, help = "Install mode")]
+        install: bool,
+        #[arg(help = "Editor name")]
+        name: Option<String>,
+    },
+    #[command(about = "Set the default terminal")]
+    Terminal {
+        #[arg(long, help = "Install mode")]
+        install: bool,
+        #[arg(help = "Terminal name")]
+        name: Option<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum HookCmd {
+    #[command(about = "Run a named hook")]
+    Run {
+        name: String,
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Install a hook file")]
+    Install {
+        hook_type: String,
+        file: String,
+    },
 }
 
 #[derive(Subcommand)]

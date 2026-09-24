@@ -9,8 +9,9 @@ mod theme;
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use cli::{
-    AudioCmd, BluetoothCmd, BrightnessCmd, Cli, Cmd, BatteryCmd, CmdCheckCmd, ConfigCmd,
-    FontCmd, HwCmd, InstallCmd, NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
+    AgentCmd, AudioCmd, BluetoothCmd, BrandingCmd, BrightnessCmd, CaptureCmd, Cli, Cmd,
+    BatteryCmd, ClipboardCmd, CmdCheckCmd, ConfigCmd, CrashCmd, DebugCmd, DefaultCmd,
+    FontCmd, HookCmd, HwCmd, InstallCmd, NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
     RemoveCmd, RestartCmd, ServiceCmd, SetupCmd, SudoCmd, TailscaleCmd, ToggleCmd, UpdateCmd,
     WeatherCmd,
 };
@@ -279,6 +280,47 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-weather-icon" => Some(&["weather", "icon"]),
         "omarchy-weather-location" => Some(&["weather", "location"]),
         "omarchy-weather-status" => Some(&["weather", "status"]),
+        // agent
+        "omarchy-agent" => Some(&["agent", "run"]),
+        "omarchy-agent-crash" => Some(&["agent", "crash"]),
+        "omarchy-agent-prompt" => Some(&["agent", "prompt"]),
+        "omarchy-agent-usage-claude" => Some(&["agent", "usage-claude"]),
+        "omarchy-agent-usage-codex" => Some(&["agent", "usage-codex"]),
+        "omarchy-agent-usage-fireworks" => Some(&["agent", "usage-fireworks"]),
+        "omarchy-agent-usage-update" => Some(&["agent", "usage-update"]),
+        // branding
+        "omarchy-branding-about" => Some(&["branding", "about"]),
+        "omarchy-branding-screensaver" => Some(&["branding", "screensaver"]),
+        // capture
+        "omarchy-capture-qr" => Some(&["capture", "qr"]),
+        "omarchy-capture-region" => Some(&["capture", "region"]),
+        "omarchy-capture-screenrecording" => Some(&["capture", "screenrecording"]),
+        "omarchy-capture-screenrecording-with-webcam" => Some(&["capture", "screenrecording-with-webcam"]),
+        "omarchy-capture-screenshot" => Some(&["capture", "screenshot"]),
+        "omarchy-capture-text" => Some(&["capture", "text"]),
+        "omarchy-capture-webcam-list" => Some(&["capture", "webcam-list"]),
+        "omarchy-capture-webcam-resize" => Some(&["capture", "webcam-resize"]),
+        // chromium hosts
+        "omarchy-chromium-copy-url-host" => Some(&["chromium-copy-url-host"]),
+        "omarchy-chromium-ytdlp-host" => Some(&["chromium-ytdlp-host"]),
+        // clipboard
+        "omarchy-clipboard-open" => Some(&["clipboard", "open"]),
+        "omarchy-clipboard-paste-file" => Some(&["clipboard", "paste-file"]),
+        "omarchy-clipboard-paste-text" => Some(&["clipboard", "paste-text"]),
+        // crash
+        "omarchy-crash-mute" => Some(&["crash", "mute"]),
+        "omarchy-crash-watch" => Some(&["crash", "watch"]),
+        // debug
+        "omarchy-debug" => Some(&["debug", "info"]),
+        "omarchy-debug-idle" => Some(&["debug", "idle"]),
+        // default
+        "omarchy-default-agent" => Some(&["default", "agent"]),
+        "omarchy-default-browser" => Some(&["default", "browser"]),
+        "omarchy-default-editor" => Some(&["default", "editor"]),
+        "omarchy-default-terminal" => Some(&["default", "terminal"]),
+        // hook
+        "omarchy-hook" => Some(&["hook", "run"]),
+        "omarchy-hook-install" => Some(&["hook", "install"]),
         _ => None,
     }
 }
@@ -584,6 +626,78 @@ fn main() {
                 }
             }
             WeatherCmd::Status => cmds::weather::status(),
+        },
+        Cmd::Agent { subcmd } => match subcmd {
+            AgentCmd::Run { inline, pick, prompt } => {
+                cmds::agent::run(inline, pick, prompt.as_deref())
+            }
+            AgentCmd::Crash { pid, comm, exe, signal } => {
+                cmds::agent::crash(&pid, comm.as_deref(), exe.as_deref(), signal.as_deref())
+            }
+            AgentCmd::Prompt { inline, prompt } => {
+                cmds::agent::agent_prompt(inline, &prompt)
+            }
+            AgentCmd::UsageClaude { args } => cmds::agent::usage_claude(&args),
+            AgentCmd::UsageCodex { args } => cmds::agent::usage_codex(&args),
+            AgentCmd::UsageFireworks { args } => cmds::agent::usage_fireworks(&args),
+            AgentCmd::UsageUpdate { force, limits_only, except, agents } => {
+                cmds::agent::usage_update(force, limits_only, &except, &agents)
+            }
+        },
+        Cmd::Branding { subcmd } => match subcmd {
+            BrandingCmd::About { mode } => cmds::branding::about(&mode),
+            BrandingCmd::Screensaver { mode } => cmds::branding::screensaver(&mode),
+        },
+        Cmd::Capture { subcmd } => match subcmd {
+            CaptureCmd::Qr => cmds::capture::qr(),
+            CaptureCmd::Region { mode, keep_freeze, match_monitor } => {
+                cmds::capture::region(mode.as_deref(), keep_freeze, match_monitor)
+            }
+            CaptureCmd::Screenrecording { args } => cmds::capture::screenrecording(&args),
+            CaptureCmd::ScreenrecordingWithWebcam => cmds::capture::screenrecording_with_webcam(),
+            CaptureCmd::Screenshot { args } => cmds::capture::screenshot(&args),
+            CaptureCmd::Text => cmds::capture::text(),
+            CaptureCmd::WebcamList => cmds::capture::webcam_list(),
+            CaptureCmd::WebcamResize { args } => cmds::capture::webcam_resize(&args),
+        },
+        Cmd::ChromiumCopyUrlHost => cmds::chromium_host::copy_url_host(),
+        Cmd::ChromiumYtdlpHost { args } => cmds::chromium_host::ytdlp_host(&args),
+        Cmd::Clipboard { subcmd } => match subcmd {
+            ClipboardCmd::Open { history_index } => cmds::clipboard::open(history_index),
+            ClipboardCmd::PasteFile { copy_only, mime_type, path } => {
+                cmds::clipboard::paste_file(copy_only, &mime_type, &path)
+            }
+            ClipboardCmd::PasteText { shift_insert, copy_only, history_index, text } => {
+                cmds::clipboard::paste_text(shift_insert, copy_only, history_index, &text)
+            }
+        },
+        Cmd::Crash { subcmd } => match subcmd {
+            CrashCmd::Mute { program, action } => {
+                cmds::crash::mute(program.as_deref(), &action)
+            }
+            CrashCmd::Watch => cmds::crash::watch(),
+        },
+        Cmd::Debug { subcmd } => match subcmd {
+            DebugCmd::Info { no_sudo, print } => cmds::debug::run(no_sudo, print),
+            DebugCmd::Idle { log_lines } => cmds::debug::idle(log_lines),
+        },
+        Cmd::DefaultApp { subcmd } => match subcmd {
+            DefaultCmd::Agent { install, name } => {
+                cmds::default_cmd::agent(install, name.as_deref())
+            }
+            DefaultCmd::Browser { install, name } => {
+                cmds::default_cmd::browser(install, name.as_deref())
+            }
+            DefaultCmd::Editor { install, name } => {
+                cmds::default_cmd::editor(install, name.as_deref())
+            }
+            DefaultCmd::Terminal { install, name } => {
+                cmds::default_cmd::terminal(install, name.as_deref())
+            }
+        },
+        Cmd::Hook { subcmd } => match subcmd {
+            HookCmd::Run { name, args } => cmds::hook::run(&name, &args),
+            HookCmd::Install { hook_type, file } => cmds::hook::install(&hook_type, &file),
         },
         Cmd::Completions { shell } => {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());

@@ -269,7 +269,39 @@
               omarchy-font-set \
               omarchy-weather-icon \
               omarchy-weather-location \
-              omarchy-weather-status; do
+              omarchy-weather-status \
+              omarchy-agent \
+              omarchy-agent-crash \
+              omarchy-agent-prompt \
+              omarchy-agent-usage-claude \
+              omarchy-agent-usage-codex \
+              omarchy-agent-usage-fireworks \
+              omarchy-agent-usage-update \
+              omarchy-branding-about \
+              omarchy-branding-screensaver \
+              omarchy-capture-qr \
+              omarchy-capture-region \
+              omarchy-capture-screenrecording \
+              omarchy-capture-screenrecording-with-webcam \
+              omarchy-capture-screenshot \
+              omarchy-capture-text \
+              omarchy-capture-webcam-list \
+              omarchy-capture-webcam-resize \
+              omarchy-chromium-copy-url-host \
+              omarchy-chromium-ytdlp-host \
+              omarchy-clipboard-open \
+              omarchy-clipboard-paste-file \
+              omarchy-clipboard-paste-text \
+              omarchy-crash-mute \
+              omarchy-crash-watch \
+              omarchy-debug \
+              omarchy-debug-idle \
+              omarchy-default-agent \
+              omarchy-default-browser \
+              omarchy-default-editor \
+              omarchy-default-terminal \
+              omarchy-hook \
+              omarchy-hook-install; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';
@@ -340,7 +372,15 @@
               omarchy-version-channel \
               omarchy-version-pkgs \
               omarchy-dev-pkg-test \
-              omarchy-upgrade-to-quattro; do
+              omarchy-upgrade-to-quattro \
+              omarchy-apply-hardware \
+              omarchy-apply-system \
+              omarchy-apply-lock \
+              omarchy-channel-current \
+              omarchy-channel-set \
+              omarchy-hibernation-available \
+              omarchy-hibernation-remove \
+              omarchy-hibernation-setup; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 
