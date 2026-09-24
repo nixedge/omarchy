@@ -8,7 +8,7 @@ mod theme;
 
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
-use cli::{Cli, Cmd, ConfigCmd, InstallCmd, PkgCmd, RemoveCmd, ServiceCmd};
+use cli::{Cli, Cmd, ConfigCmd, HwCmd, InstallCmd, PkgCmd, RemoveCmd, ServiceCmd};
 use std::process;
 
 // Maps legacy omarchy-* binary names to the subcommand args they expand to,
@@ -118,6 +118,35 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-installed-service-tailscale" => Some(&["service", "active", "tailscale"]),
         "omarchy-installed-service-dropbox" => Some(&["service", "active", "dropbox"]),
         "omarchy-install-ai-openclaw" => Some(&["install", "ai-openclaw"]),
+        // hw-* → hw check / hw state
+        "omarchy-hw-asus-rog" => Some(&["hw", "check", "asus-rog"]),
+        "omarchy-hw-asus-expertbook-b9406" => Some(&["hw", "check", "asus-expertbook"]),
+        "omarchy-hw-asus-zenbook-ux5406aa" => Some(&["hw", "check", "asus-zenbook"]),
+        "omarchy-hw-dell-xps13-sidecar-amps" => Some(&["hw", "check", "dell-xps13-sidecar-amps"]),
+        "omarchy-hw-dell-xps-haptic-touchpad" => Some(&["hw", "check", "dell-xps-haptic"]),
+        "omarchy-hw-dell-xps-oled" => Some(&["hw", "check", "dell-xps-oled"]),
+        "omarchy-hw-elgato-camlink-4k" => Some(&["hw", "check", "elgato-camlink"]),
+        "omarchy-hw-fingerprint" => Some(&["hw", "check", "fingerprint"]),
+        "omarchy-hw-framework16" => Some(&["hw", "check", "framework16"]),
+        "omarchy-hw-hybrid-gpu" => Some(&["hw", "check", "hybrid-gpu"]),
+        "omarchy-hw-intel" => Some(&["hw", "check", "intel"]),
+        "omarchy-hw-intel-ptl" => Some(&["hw", "check", "intel-ptl"]),
+        "omarchy-hw-intel-sof" => Some(&["hw", "check", "intel-sof"]),
+        "omarchy-hw-laptop" => Some(&["hw", "check", "laptop"]),
+        "omarchy-hw-match" => Some(&["hw", "check", "match"]),
+        "omarchy-hw-nvidia" => Some(&["hw", "check", "nvidia"]),
+        "omarchy-hw-nvidia-gsp" => Some(&["hw", "check", "nvidia-gsp"]),
+        "omarchy-hw-nvidia-without-gsp" => Some(&["hw", "check", "nvidia-without-gsp"]),
+        "omarchy-hw-surface" => Some(&["hw", "check", "surface"]),
+        "omarchy-hw-vulkan" => Some(&["hw", "check", "vulkan"]),
+        "omarchy-hw-clamshell" => Some(&["hw", "state", "clamshell"]),
+        "omarchy-hw-display" => Some(&["hw", "state", "display"]),
+        "omarchy-hw-external-monitors" => Some(&["hw", "state", "external-monitors"]),
+        "omarchy-hw-laptop-closed" => Some(&["hw", "state", "lid"]),
+        "omarchy-hw-touchpad" => Some(&["hw", "state", "touchpad"]),
+        "omarchy-hw-touchscreen" => Some(&["hw", "state", "touchscreen"]),
+        "omarchy-hw-webcam" => Some(&["hw", "state", "webcam"]),
+        "omarchy-hw-recover-internal-monitor" => Some(&["hw", "recover-internal-monitor"]),
         _ => None,
     }
 }
@@ -244,6 +273,23 @@ fn main() {
                 cmds::remove::launcher_entry::run(&desktop_id, entry_name.as_deref())
             }
             RemoveCmd::AiOpenclaw => cmds::remove::ai::openclaw(),
+        },
+        Cmd::Hw { subcmd } => match subcmd {
+            HwCmd::Detect => cmds::hw::detect::run(),
+            HwCmd::Check { name, pattern } => cmds::hw::check::run(&name, pattern.as_deref()),
+            HwCmd::State { name } => cmds::hw::state::run(&name),
+            HwCmd::RecoverInternalMonitor => {
+                let toggle = format!(
+                    "{}/.local/state/omarchy/toggles/hypr/internal-monitor-disable.lua",
+                    std::env::var("HOME").unwrap_or_default()
+                );
+                if std::path::Path::new(&toggle).exists()
+                    && cmds::hw::state::run("external-monitors") != 0
+                {
+                    let _ = std::fs::remove_file(&toggle);
+                }
+                0
+            }
         },
         Cmd::Completions { shell } => {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());

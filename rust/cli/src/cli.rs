@@ -2,6 +2,17 @@ use clap::{builder::PossibleValuesParser, Parser, Subcommand, ValueEnum};
 use clap_complete::Shell;
 use omarchy_lib::services;
 
+pub const HW_CHECKS: &[&str] = &[
+    "nvidia", "nvidia-gsp", "nvidia-without-gsp", "intel", "intel-ptl", "intel-sof",
+    "laptop", "fingerprint", "vulkan", "hybrid-gpu", "asus-rog", "asus-expertbook",
+    "asus-zenbook", "framework16", "surface", "dell-xps-oled", "dell-xps-haptic",
+    "dell-xps13-sidecar-amps", "elgato-camlink", "match",
+];
+
+pub const HW_STATES: &[&str] = &[
+    "lid", "external-monitors", "clamshell", "display", "touchpad", "touchscreen", "webcam",
+];
+
 #[derive(Parser)]
 #[command(name = "omarchy-cli", about = "Omarchy command-line interface")]
 pub struct Cli {
@@ -36,8 +47,33 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: RemoveCmd,
     },
+    #[command(about = "Hardware detection")]
+    Hw {
+        #[command(subcommand)]
+        subcmd: HwCmd,
+    },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
+}
+
+#[derive(Subcommand)]
+pub enum HwCmd {
+    #[command(about = "Detect all hardware and print JSON summary")]
+    Detect,
+    #[command(about = "Check if a hardware feature is present (exit 0 = present)")]
+    Check {
+        #[arg(value_parser = PossibleValuesParser::new(HW_CHECKS))]
+        name: String,
+        #[arg(help = "Pattern for 'match' check")]
+        pattern: Option<String>,
+    },
+    #[command(about = "Query dynamic hardware state (exit 0 = true)")]
+    State {
+        #[arg(value_parser = PossibleValuesParser::new(HW_STATES))]
+        name: String,
+    },
+    #[command(name = "recover-internal-monitor", about = "Clear internal-monitor-disable toggle if no external display")]
+    RecoverInternalMonitor,
 }
 
 #[derive(Subcommand)]

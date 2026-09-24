@@ -139,7 +139,35 @@
               omarchy-remove-ai-openclaw \
               omarchy-install-ai-openclaw \
               omarchy-installed-service-tailscale \
-              omarchy-installed-service-dropbox; do
+              omarchy-installed-service-dropbox \
+              omarchy-hw-asus-rog \
+              omarchy-hw-asus-expertbook-b9406 \
+              omarchy-hw-asus-zenbook-ux5406aa \
+              omarchy-hw-clamshell \
+              omarchy-hw-dell-xps13-sidecar-amps \
+              omarchy-hw-dell-xps-haptic-touchpad \
+              omarchy-hw-dell-xps-oled \
+              omarchy-hw-display \
+              omarchy-hw-elgato-camlink-4k \
+              omarchy-hw-external-monitors \
+              omarchy-hw-fingerprint \
+              omarchy-hw-framework16 \
+              omarchy-hw-hybrid-gpu \
+              omarchy-hw-intel \
+              omarchy-hw-intel-ptl \
+              omarchy-hw-intel-sof \
+              omarchy-hw-laptop \
+              omarchy-hw-laptop-closed \
+              omarchy-hw-match \
+              omarchy-hw-nvidia \
+              omarchy-hw-nvidia-gsp \
+              omarchy-hw-nvidia-without-gsp \
+              omarchy-hw-recover-internal-monitor \
+              omarchy-hw-surface \
+              omarchy-hw-touchpad \
+              omarchy-hw-touchscreen \
+              omarchy-hw-vulkan \
+              omarchy-hw-webcam; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';
