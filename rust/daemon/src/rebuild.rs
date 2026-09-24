@@ -17,16 +17,26 @@ const SUDO: &str = "/run/wrappers/bin/sudo";
 const NIXOS_REBUILD: &str = "/run/current-system/sw/bin/nixos-rebuild";
 
 pub fn generate_module(state: &State) -> String {
-    let attrs: Vec<String> = state.packages.iter().map(|p| format!("    pkgs.{p}")).collect();
-    let list = attrs.join("\n");
+    let pkg_attrs: Vec<String> = state.packages.iter().map(|p| format!("    pkgs.{p}")).collect();
+    let pkg_list = pkg_attrs.join("\n");
+
+    let fonts_section = if state.fonts.is_empty() {
+        String::new()
+    } else {
+        let font_attrs: Vec<String> =
+            state.fonts.iter().map(|f| format!("    pkgs.{f}")).collect();
+        let font_list = font_attrs.join("\n");
+        format!("  fonts.packages = [\n{font_list}\n  ];\n")
+    };
+
     format!(
         "# Managed by omarchy-nix-daemon — do not edit manually.\n\
          {{ pkgs, ... }}:\n\
          {{\n\
            environment.systemPackages = [\n\
-         {list}\n\
+         {pkg_list}\n\
            ];\n\
-         }}\n"
+         {fonts_section}}}\n"
     )
 }
 

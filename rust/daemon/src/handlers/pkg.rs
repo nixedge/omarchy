@@ -80,6 +80,119 @@ async fn run_background_rebuild(rebuild_lock: Arc<Mutex<()>>, name: String, is_r
     }
 }
 
+pub async fn add_many(
+    names: &[String],
+    rebuild_lock: Arc<Mutex<()>>,
+    progress_tx: mpsc::UnboundedSender<String>,
+) -> Response {
+    let mut resolved = Vec::with_capacity(names.len());
+    for name in names {
+        match alias::resolve(name) {
+            Ok(a) => resolved.push((name.as_str(), a)),
+            Err(ResolveError::ServiceManaged(opt)) => {
+                return Response::err(format!(
+                    "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
+                ));
+            }
+            Err(ResolveError::Eliminated(reason)) => {
+                return Response::err(format!("'{name}' is not available on NixOS: {reason}"));
+            }
+        }
+    }
+
+    let _ = progress_tx.send("acquiring rebuild lock…".into());
+    let _guard = rebuild_lock.lock().await;
+
+    let mut state = match State::load().await {
+        Ok(s) => s,
+        Err(e) => return Response::err(format!("state load failed: {e}")),
+    };
+
+    let mut added = Vec::new();
+    for (name, nix_attr) in &resolved {
+        if !state.packages.contains(&nix_attr.to_string()) {
+            state.packages.push(nix_attr.to_string());
+            added.push(*name);
+        }
+    }
+
+    if added.is_empty() {
+        return Response::err("all packages are already installed");
+    }
+
+    if let Err(e) = State::save_backup().await {
+        tracing::warn!("backup failed (non-fatal): {e}");
+    }
+
+    if let Err(e) = state.save().await {
+        return Response::err(format!("state save failed: {e}"));
+    }
+
+    let _ = progress_tx.send(format!("running nixos-rebuild switch for {} packages…", added.len()));
+
+    if let Err(e) = rebuild::run(&state, rebuild::Mode::Switch, progress_tx).await {
+        return Response::err(format!("rebuild failed: {e}"));
+    }
+
+    tracing::info!("pkg-add-many: {:?} installed", added);
+    Response::ok(None)
+}
+
+pub async fn remove_many(
+    names: &[String],
+    rebuild_lock: Arc<Mutex<()>>,
+    progress_tx: mpsc::UnboundedSender<String>,
+) -> Response {
+    let mut resolved = Vec::with_capacity(names.len());
+    for name in names {
+        match alias::resolve(name) {
+            Ok(a) => resolved.push((name.as_str(), a)),
+            Err(ResolveError::ServiceManaged(opt)) => {
+                return Response::err(format!(
+                    "'{name}' is managed by NixOS option `{opt}`; use omarchy-setup to toggle it"
+                ));
+            }
+            Err(ResolveError::Eliminated(reason)) => {
+                return Response::err(format!("'{name}' is not available on NixOS: {reason}"));
+            }
+        }
+    }
+
+    let _ = progress_tx.send("acquiring rebuild lock…".into());
+    let _guard = rebuild_lock.lock().await;
+
+    let mut state = match State::load().await {
+        Ok(s) => s,
+        Err(e) => return Response::err(format!("state load failed: {e}")),
+    };
+
+    if let Err(e) = State::save_backup().await {
+        tracing::warn!("backup failed (non-fatal): {e}");
+    }
+
+    let before = state.packages.len();
+    let nix_attrs: Vec<&str> = resolved.iter().map(|(_, a)| *a).collect();
+    state.packages.retain(|p| !nix_attrs.contains(&p.as_str()));
+    let removed_count = before - state.packages.len();
+
+    if removed_count == 0 {
+        return Response::err("none of the specified packages are installed");
+    }
+
+    if let Err(e) = state.save().await {
+        return Response::err(format!("state save failed: {e}"));
+    }
+
+    let _ = progress_tx.send(format!("running nixos-rebuild switch to remove {removed_count} packages…"));
+
+    if let Err(e) = rebuild::run(&state, rebuild::Mode::Switch, progress_tx).await {
+        return Response::err(format!("rebuild failed: {e}"));
+    }
+
+    tracing::info!("pkg-remove-many: {:?} removed", names);
+    Response::ok(None)
+}
+
 pub async fn add(
     name: &str,
     rebuild_lock: Arc<Mutex<()>>,

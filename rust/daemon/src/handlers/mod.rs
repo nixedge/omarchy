@@ -1,4 +1,5 @@
 pub mod config;
+pub mod font;
 pub mod pkg;
 pub mod service;
 pub mod system;
@@ -24,11 +25,15 @@ pub async fn dispatch(
     let resp = match req {
         // Streaming handlers — keep progress_tx alive through the rebuild.
         Request::PkgAdd { name } => pkg::add(&name, rebuild_lock, progress_tx).await,
+        Request::PkgAddMany { names } => pkg::add_many(&names, rebuild_lock, progress_tx).await,
         Request::PkgRemove { name } => pkg::remove(&name, rebuild_lock, progress_tx).await,
+        Request::PkgRemoveMany { names } => pkg::remove_many(&names, rebuild_lock, progress_tx).await,
         Request::ConfigApply { content } => config::apply(content, rebuild_lock, progress_tx).await,
         Request::ConfigCheck => config::check(rebuild_lock, progress_tx).await,
         Request::ServiceEnable { name } => service::enable(&name, rebuild_lock, progress_tx).await,
         Request::ServiceDisable { name } => service::disable(&name, rebuild_lock, progress_tx).await,
+        Request::FontAdd { name } => font::add(&name, rebuild_lock, progress_tx).await,
+        Request::FontRemove { name } => font::remove(&name, rebuild_lock, progress_tx).await,
         req => {
             drop(progress_tx);
             match req {
@@ -42,12 +47,17 @@ pub async fn dispatch(
                 Request::PkgResolve { name } => pkg::resolve_name(&name).await,
                 Request::ConfigGet => config::get().await,
                 Request::ServiceList => service::list().await,
+                Request::FontList => font::list().await,
                 Request::PkgAdd { .. }
+                | Request::PkgAddMany { .. }
                 | Request::PkgRemove { .. }
+                | Request::PkgRemoveMany { .. }
                 | Request::ConfigApply { .. }
                 | Request::ConfigCheck
                 | Request::ServiceEnable { .. }
-                | Request::ServiceDisable { .. } => unreachable!(),
+                | Request::ServiceDisable { .. }
+                | Request::FontAdd { .. }
+                | Request::FontRemove { .. } => unreachable!(),
             }
         }
     };

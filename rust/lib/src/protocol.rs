@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 pub enum Request {
     Ping,
     PkgAdd { name: String },
+    PkgAddMany { names: Vec<String> },
     PkgRemove { name: String },
+    PkgRemoveMany { names: Vec<String> },
     PkgAddAsync { name: String },
     PkgDropAsync { name: String },
     PkgSync,
@@ -18,6 +20,9 @@ pub enum Request {
     ServiceEnable { name: String },
     ServiceDisable { name: String },
     ServiceList,
+    FontAdd { name: String },
+    FontRemove { name: String },
+    FontList,
     Status,
 }
 

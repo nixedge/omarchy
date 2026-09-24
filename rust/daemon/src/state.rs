@@ -10,6 +10,8 @@ pub struct State {
     pub packages: Vec<String>,
     #[serde(default)]
     pub services: Vec<String>,
+    #[serde(default)]
+    pub fonts: Vec<String>,
 }
 
 impl State {

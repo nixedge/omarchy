@@ -18,6 +18,26 @@ pub fn resolve(name: &str) -> Result<&str, ResolveError> {
         "code" => Ok("vscode"),
         "chromium-browser" => Ok("chromium"),
 
+        // ── Gaming ────────────────────────────────────────────────────────
+        "heroic-games-launcher-bin" => Ok("heroic"),
+        "wine-staging" => Ok("wine-staging"),
+        "wine-mono" => Ok("winemono"),
+        "wine-gecko" => Ok("winegecko"),
+        "python-protobuf" => Ok("python3Packages.protobuf"),
+        "retroarch-full" => Ok("retroarch-full"),
+        "xpadneo-dkms" => Ok("linuxKernel.packages.linux_zen.xpadneo"),
+        "minecraft-launcher" => Ok("minecraft-launchers"),
+
+        // ── Editors ───────────────────────────────────────────────────────
+        "visual-studio-code-bin" => Ok("vscode"),
+        "zed" | "omazed" => Ok("zed-editor"),
+
+        // ── AI tools ──────────────────────────────────────────────────────
+        "claude-desktop" => Ok("claude-desktop"),
+        "t3code-bin" => Ok("t3code"),
+        "lmstudio-bin" => Ok("lmstudio"),
+        "openai-codex-desktop" => Ok("openai-codex-desktop"),
+
         // ── Arch name differs from nixpkgs attribute ───────────────────────
         "dua-cli" => Ok("dua"),
         "gvfs-mtp" | "gvfs-nfs" | "gvfs-smb" => Ok("gvfs"),
@@ -106,6 +126,46 @@ pub fn resolve(name: &str) -> Result<&str, ResolveError> {
 
         // ── Pass through unchanged ─────────────────────────────────────────
         name => Ok(name),
+    }
+}
+
+/// Resolve an Arch Linux font package name to the corresponding nixpkgs font attribute.
+///
+/// Font packages must go in `fonts.packages`, not `environment.systemPackages`, for
+/// proper NixOS fontconfig discovery. Returns the attribute path relative to `pkgs`.
+/// Falls back to the original name if no mapping is known.
+pub fn resolve_font(name: &str) -> &str {
+    match name {
+        // Nerd Fonts — nixpkgs provides them as nerd-fonts.<variant>
+        "ttf-cascadia-mono-nerd" | "ttf-cascadia-code-nerd" => "nerd-fonts.cascadia-code",
+        "ttf-jetbrains-mono-nerd" | "ttf-jetbrains-mono-nerd-basic" => "nerd-fonts.jetbrains-mono",
+        "ttf-fira-code-nerd" => "nerd-fonts.fira-code",
+        "ttf-hack-nerd" => "nerd-fonts.hack",
+        "ttf-iosevka-nerd" => "nerd-fonts.iosevka",
+        "ttf-iosevka-term-nerd" => "nerd-fonts.iosevka-term",
+        "ttf-inconsolata-nerd" => "nerd-fonts.inconsolata",
+        "ttf-mononoki-nerd" => "nerd-fonts.mononoki",
+        "ttf-sourcecodepro-nerd" => "nerd-fonts.sauce-code-pro",
+        "ttf-noto-nerd" => "nerd-fonts.noto",
+        "ttf-ubuntu-nerd" => "nerd-fonts.ubuntu",
+        "ttf-ubuntu-mono-nerd" => "nerd-fonts.ubuntu-mono",
+        "ttf-droid-nerd" => "nerd-fonts.droid-sans-mono",
+        "ttf-meslo-nerd" => "nerd-fonts.meslo-lg",
+        "ttf-roboto-mono-nerd" => "nerd-fonts.roboto-mono",
+        "ttf-dejavu-nerd" => "nerd-fonts.dejavu-sans-mono",
+        "ttf-liberation-nerd" => "nerd-fonts.liberation",
+        "ttf-anonymouspro-nerd" => "nerd-fonts.anonymous-pro",
+        "ttf-agave-nerd" => "nerd-fonts.agave",
+        "ttf-terminus-nerd" => "nerd-fonts.terminess-ttf",
+
+        // Other fonts with different Arch/nixpkgs names
+        "ttf-ia-writer" => "ia-writer-duospace",
+        "woff2-font-awesome" => "font-awesome",
+        "noto-fonts-cjk" => "noto-fonts-cjk-sans",
+        "noto-fonts-emoji" => "noto-fonts-color-emoji",
+
+        // Pass through unchanged
+        name => name,
     }
 }
 
