@@ -167,7 +167,70 @@
               omarchy-hw-touchpad \
               omarchy-hw-touchscreen \
               omarchy-hw-vulkan \
-              omarchy-hw-webcam; do
+              omarchy-hw-webcam \
+              omarchy-restart-app \
+              omarchy-restart-audio \
+              omarchy-restart-bluetooth \
+              omarchy-restart-btop \
+              omarchy-restart-gum \
+              omarchy-restart-helix \
+              omarchy-restart-herdr \
+              omarchy-restart-hyprctl \
+              omarchy-restart-hyprsunset \
+              omarchy-restart-opencode \
+              omarchy-restart-shell \
+              omarchy-restart-terminal \
+              omarchy-restart-tmux \
+              omarchy-restart-trackpad \
+              omarchy-restart-wifi \
+              omarchy-restart-xcompose \
+              omarchy-notification-battery \
+              omarchy-notification-time \
+              omarchy-notification-weather \
+              omarchy-notification-dismiss \
+              omarchy-notification-wait \
+              omarchy-notification-send \
+              omarchy-battery-present \
+              omarchy-battery-low \
+              omarchy-battery-status \
+              omarchy-power-present \
+              omarchy-cmd-missing \
+              omarchy-cmd-present \
+              omarchy-cmd-terminal-cwd \
+              omarchy-state \
+              omarchy-done \
+              omarchy-show-done \
+              omarchy-show-logo \
+              omarchy-version \
+              omarchy-version-branch \
+              omarchy-powerprofiles-init \
+              omarchy-powerprofiles-list \
+              omarchy-powerprofiles-set \
+              omarchy-osd \
+              omarchy-windows-key \
+              omarchy-windows-vm \
+              omarchy-tailscale-receive \
+              omarchy-tailscale-send \
+              omarchy-update-dev \
+              omarchy-update-firmware \
+              omarchy-update-lock \
+              omarchy-update-requires-free-space \
+              omarchy-update-status \
+              omarchy-update-stay-awake \
+              omarchy-update-time \
+              omarchy-update-user-notify \
+              omarchy-setup-direct-boot \
+              omarchy-sudo-docker \
+              omarchy-sudo-keepalive \
+              omarchy-sudo-passwordless \
+              omarchy-screensaver \
+              omarchy-git-url-check \
+              omarchy-games-retro-cores \
+              omarchy-games-retro-install \
+              omarchy-monitor-state \
+              omarchy-disk-speedtest \
+              omarchy-reminder \
+              omarchy-display-text-size; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';

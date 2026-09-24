@@ -8,7 +8,11 @@ mod theme;
 
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
-use cli::{Cli, Cmd, ConfigCmd, HwCmd, InstallCmd, PkgCmd, RemoveCmd, ServiceCmd};
+use cli::{
+    Cli, Cmd, BatteryCmd, CmdCheckCmd, ConfigCmd, HwCmd, InstallCmd, NotificationCmd,
+    PkgCmd, PowerCmd, PowerprofilesCmd, RemoveCmd, RestartCmd, ServiceCmd,
+    SetupCmd, SudoCmd, TailscaleCmd, UpdateCmd,
+};
 use std::process;
 
 // Maps legacy omarchy-* binary names to the subcommand args they expand to,
@@ -147,6 +151,86 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-hw-touchscreen" => Some(&["hw", "state", "touchscreen"]),
         "omarchy-hw-webcam" => Some(&["hw", "state", "webcam"]),
         "omarchy-hw-recover-internal-monitor" => Some(&["hw", "recover-internal-monitor"]),
+        // restart-* → restart <subcmd>
+        "omarchy-restart-app" => Some(&["restart", "app"]),
+        "omarchy-restart-audio" => Some(&["restart", "audio"]),
+        "omarchy-restart-bluetooth" => Some(&["restart", "bluetooth"]),
+        "omarchy-restart-btop" => Some(&["restart", "btop"]),
+        "omarchy-restart-gum" => Some(&["restart", "gum"]),
+        "omarchy-restart-helix" => Some(&["restart", "helix"]),
+        "omarchy-restart-herdr" => Some(&["restart", "herdr"]),
+        "omarchy-restart-hyprctl" => Some(&["restart", "hyprctl"]),
+        "omarchy-restart-hyprsunset" => Some(&["restart", "hyprsunset"]),
+        "omarchy-restart-opencode" => Some(&["restart", "opencode"]),
+        "omarchy-restart-shell" => Some(&["restart", "shell"]),
+        "omarchy-restart-terminal" => Some(&["restart", "terminal"]),
+        "omarchy-restart-tmux" => Some(&["restart", "tmux"]),
+        "omarchy-restart-trackpad" => Some(&["restart", "trackpad"]),
+        "omarchy-restart-wifi" => Some(&["restart", "wifi"]),
+        "omarchy-restart-xcompose" => Some(&["restart", "xcompose"]),
+        // notification-* → notification <subcmd>
+        "omarchy-notification-battery" => Some(&["notification", "battery"]),
+        "omarchy-notification-time" => Some(&["notification", "time"]),
+        "omarchy-notification-weather" => Some(&["notification", "weather"]),
+        "omarchy-notification-dismiss" => Some(&["notification", "dismiss"]),
+        "omarchy-notification-wait" => Some(&["notification", "wait"]),
+        "omarchy-notification-send" => Some(&["notification", "send"]),
+        // battery-* → battery <subcmd>
+        "omarchy-battery-present" => Some(&["battery", "present"]),
+        "omarchy-battery-low" => Some(&["battery", "low"]),
+        "omarchy-battery-status" => Some(&["battery", "status"]),
+        // power-* → power <subcmd>
+        "omarchy-power-present" => Some(&["power", "present"]),
+        // cmd-* → cmd <subcmd>
+        "omarchy-cmd-missing" => Some(&["cmd", "missing"]),
+        "omarchy-cmd-present" => Some(&["cmd", "present"]),
+        "omarchy-cmd-terminal-cwd" => Some(&["cmd", "terminal-cwd"]),
+        // state
+        "omarchy-state" => Some(&["state"]),
+        // done
+        "omarchy-done" => Some(&["done"]),
+        "omarchy-show-done" => Some(&["show-done"]),
+        "omarchy-show-logo" => Some(&["show-logo"]),
+        // version
+        "omarchy-version" => Some(&["version"]),
+        "omarchy-version-branch" => Some(&["version-branch"]),
+        // powerprofiles
+        "omarchy-powerprofiles-init" => Some(&["powerprofiles", "init"]),
+        "omarchy-powerprofiles-list" => Some(&["powerprofiles", "list"]),
+        "omarchy-powerprofiles-set" => Some(&["powerprofiles", "set"]),
+        // osd
+        "omarchy-osd" => Some(&["osd"]),
+        // windows
+        "omarchy-windows-key" => Some(&["windows-key"]),
+        "omarchy-windows-vm" => Some(&["windows-vm"]),
+        // tailscale
+        "omarchy-tailscale-receive" => Some(&["tailscale", "receive"]),
+        "omarchy-tailscale-send" => Some(&["tailscale", "send"]),
+        // update
+        "omarchy-update-dev" => Some(&["update", "dev"]),
+        "omarchy-update-firmware" => Some(&["update", "firmware"]),
+        "omarchy-update-lock" => Some(&["update", "lock"]),
+        "omarchy-update-requires-free-space" => Some(&["update", "requires-free-space"]),
+        "omarchy-update-status" => Some(&["update", "status"]),
+        "omarchy-update-stay-awake" => Some(&["update", "stay-awake"]),
+        "omarchy-update-time" => Some(&["update", "time"]),
+        "omarchy-update-user-notify" => Some(&["update", "user-notify"]),
+        // setup
+        "omarchy-setup-direct-boot" => Some(&["setup", "direct-boot"]),
+        // sudo
+        "omarchy-sudo-docker" => Some(&["sudo", "docker"]),
+        "omarchy-sudo-keepalive" => Some(&["sudo", "keepalive"]),
+        "omarchy-sudo-passwordless" => Some(&["sudo", "passwordless"]),
+        // screensaver
+        "omarchy-screensaver" => Some(&["screensaver"]),
+        // misc
+        "omarchy-git-url-check" => Some(&["git-url-check"]),
+        "omarchy-games-retro-cores" => Some(&["games-retro-cores"]),
+        "omarchy-games-retro-install" => Some(&["games-retro-install"]),
+        "omarchy-monitor-state" => Some(&["monitor-state"]),
+        "omarchy-disk-speedtest" => Some(&["disk-speedtest"]),
+        "omarchy-reminder" => Some(&["reminder"]),
+        "omarchy-display-text-size" => Some(&["display-text-size"]),
         _ => None,
     }
 }
@@ -291,6 +375,95 @@ fn main() {
                 0
             }
         },
+        Cmd::Restart { subcmd } => match subcmd {
+            RestartCmd::App { name, args } => cmds::restart::app(&name, &args),
+            RestartCmd::Audio => cmds::restart::audio::run(),
+            RestartCmd::Bluetooth => cmds::restart::bluetooth(),
+            RestartCmd::Btop => cmds::restart::btop(),
+            RestartCmd::Gum => cmds::restart::gum(),
+            RestartCmd::Helix => cmds::restart::helix(),
+            RestartCmd::Herdr => cmds::restart::herdr(),
+            RestartCmd::Hyprctl => cmds::restart::hyprctl(),
+            RestartCmd::Hyprsunset => cmds::restart::hyprsunset(),
+            RestartCmd::Opencode => cmds::restart::opencode(),
+            RestartCmd::Shell => cmds::restart::shell(),
+            RestartCmd::Terminal => cmds::restart::terminal(),
+            RestartCmd::Tmux => cmds::restart::tmux(),
+            RestartCmd::Trackpad => cmds::restart::trackpad(),
+            RestartCmd::Wifi => cmds::restart::wifi(),
+            RestartCmd::Xcompose => cmds::restart::xcompose(),
+        },
+        Cmd::Notification { subcmd } => match subcmd {
+            NotificationCmd::Battery => cmds::notification::battery(),
+            NotificationCmd::Time => cmds::notification::time(),
+            NotificationCmd::Weather => cmds::notification::weather(),
+            NotificationCmd::Dismiss { summary } => cmds::notification::dismiss(&summary),
+            NotificationCmd::Wait { seconds } => cmds::notification::wait(seconds),
+            NotificationCmd::Send { args } => cmds::notification::send::run(&args),
+        },
+        Cmd::Battery { subcmd } => match subcmd {
+            BatteryCmd::Present => cmds::battery::present(),
+            BatteryCmd::Low { percentage } => cmds::battery::low(percentage),
+            BatteryCmd::Status { shell } => cmds::battery::status(shell),
+        },
+        Cmd::Power { subcmd } => match subcmd {
+            PowerCmd::Present => cmds::power::present(),
+        },
+        Cmd::CmdCheck { subcmd } => match subcmd {
+            CmdCheckCmd::Missing { cmds: c } => cmds::cmd_check::missing(&c),
+            CmdCheckCmd::Present { cmds: c } => cmds::cmd_check::present(&c),
+            CmdCheckCmd::TerminalCwd => cmds::cmd_check::terminal_cwd(),
+        },
+        Cmd::State { action, name } => cmds::state_cmd::run(&action, &name),
+        Cmd::Done { action, name } => cmds::done_cmd::done(&action, &name),
+        Cmd::ShowDone { exit_code } => cmds::done_cmd::show_done(exit_code),
+        Cmd::ShowLogo => cmds::done_cmd::show_logo(),
+        Cmd::Version => cmds::version_cmd::version(),
+        Cmd::VersionBranch => cmds::version_cmd::branch(),
+        Cmd::Powerprofiles { subcmd } => match subcmd {
+            PowerprofilesCmd::Init => cmds::powerprofiles::init(),
+            PowerprofilesCmd::List { active_state } => cmds::powerprofiles::list(active_state),
+            PowerprofilesCmd::Set { action, profile } => {
+                cmds::powerprofiles::set(action.as_deref(), profile.as_deref())
+            }
+        },
+        Cmd::Osd { icon, message, progress, duration } => {
+            cmds::osd::run(icon.as_deref(), message.as_deref(), progress.as_deref(), duration.as_deref())
+        }
+        Cmd::WindowsKey => cmds::windows::windows_key(),
+        Cmd::WindowsVm { args } => cmds::windows::windows_vm(&args),
+        Cmd::Tailscale { subcmd } => match subcmd {
+            TailscaleCmd::Receive { once, dir } => cmds::tailscale::receive(once, dir.as_deref()),
+            TailscaleCmd::Send { machine, files } => cmds::tailscale::send(&machine, &files),
+        },
+        Cmd::Update { subcmd } => match subcmd {
+            UpdateCmd::Dev => cmds::update::dev(),
+            UpdateCmd::Firmware => cmds::update::firmware(),
+            UpdateCmd::Lock { action, cmd_args } => cmds::update::lock(&action, &cmd_args),
+            UpdateCmd::RequiresFreeSpace => cmds::update::requires_free_space(),
+            UpdateCmd::Status => cmds::update::status(),
+            UpdateCmd::StayAwake { action } => cmds::update::stay_awake(&action),
+            UpdateCmd::Time => cmds::update::time(),
+            UpdateCmd::UserNotify { args } => cmds::update::user_notify(&args),
+        },
+        Cmd::Setup { subcmd } => match subcmd {
+            SetupCmd::DirectBoot => cmds::setup_cmd::direct_boot(),
+        },
+        Cmd::Sudo { subcmd } => match subcmd {
+            SudoCmd::Docker { configured } => cmds::sudo_cmd::docker(configured),
+            SudoCmd::Keepalive => cmds::sudo_cmd::keepalive(),
+            SudoCmd::Passwordless { minutes } => cmds::sudo_cmd::passwordless(minutes),
+        },
+        Cmd::Screensaver { force } => cmds::screensaver::run(force),
+        Cmd::GitUrlCheck { url } => cmds::git_url_check::run(&url),
+        Cmd::GamesRetroCores => cmds::games::retro_cores(),
+        Cmd::GamesRetroInstall { core, game } => {
+            cmds::games::retro_install(core.as_deref(), game.as_deref())
+        }
+        Cmd::MonitorState => cmds::monitor_state::run(),
+        Cmd::DiskSpeedtest { dir } => cmds::disk_speedtest::run(dir.as_deref()),
+        Cmd::Reminder { args } => cmds::reminder::run(&args),
+        Cmd::DisplayTextSize { size } => cmds::display_text_size::run(size.as_deref()),
         Cmd::Completions { shell } => {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());
             0

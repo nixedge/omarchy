@@ -52,6 +52,128 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: HwCmd,
     },
+    #[command(about = "Restart a component")]
+    Restart {
+        #[command(subcommand)]
+        subcmd: RestartCmd,
+    },
+    #[command(about = "Desktop notifications")]
+    Notification {
+        #[command(subcommand)]
+        subcmd: NotificationCmd,
+    },
+    #[command(about = "Battery information")]
+    Battery {
+        #[command(subcommand)]
+        subcmd: BatteryCmd,
+    },
+    #[command(about = "Power supply detection")]
+    Power {
+        #[command(subcommand)]
+        subcmd: PowerCmd,
+    },
+    #[command(name = "cmd", about = "Command presence checks")]
+    CmdCheck {
+        #[command(subcommand)]
+        subcmd: CmdCheckCmd,
+    },
+    #[command(about = "Omarchy state file management")]
+    State {
+        action: String,
+        name: String,
+    },
+    #[command(about = "Done marker management")]
+    Done {
+        action: String,
+        name: String,
+    },
+    #[command(name = "show-done", about = "Print colored Done!/Failed! to tty")]
+    ShowDone {
+        #[arg(help = "Optional exit code (0 = Done, nonzero = Failed)")]
+        exit_code: Option<i32>,
+    },
+    #[command(name = "show-logo", about = "Print the Omarchy logo")]
+    ShowLogo,
+    #[command(about = "Show Omarchy version")]
+    Version,
+    #[command(name = "version-branch", about = "Show current branch (dev checkout only)")]
+    VersionBranch,
+    #[command(about = "Power profile management")]
+    Powerprofiles {
+        #[command(subcommand)]
+        subcmd: PowerprofilesCmd,
+    },
+    #[command(about = "On-screen display")]
+    Osd {
+        #[arg(short = 'i', long, help = "Icon")]
+        icon: Option<String>,
+        #[arg(short = 'm', long, help = "Message")]
+        message: Option<String>,
+        #[arg(short = 'p', long, help = "Progress (0.0–1.0)")]
+        progress: Option<String>,
+        #[arg(short = 'd', long, help = "Duration in ms")]
+        duration: Option<String>,
+    },
+    #[command(name = "windows-key", about = "Extract Windows product key from MSDM table")]
+    WindowsKey,
+    #[command(name = "windows-vm", about = "Manage the Windows VM")]
+    WindowsVm {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Tailscale file transfer")]
+    Tailscale {
+        #[command(subcommand)]
+        subcmd: TailscaleCmd,
+    },
+    #[command(about = "System update helpers")]
+    Update {
+        #[command(subcommand)]
+        subcmd: UpdateCmd,
+    },
+    #[command(about = "System setup helpers")]
+    Setup {
+        #[command(subcommand)]
+        subcmd: SetupCmd,
+    },
+    #[command(about = "Sudo helpers")]
+    Sudo {
+        #[command(subcommand)]
+        subcmd: SudoCmd,
+    },
+    #[command(about = "Run the Omarchy screensaver")]
+    Screensaver {
+        #[arg(help = "Force start")]
+        force: bool,
+    },
+    #[command(name = "git-url-check", about = "Validate a git URL")]
+    GitUrlCheck { url: String },
+    #[command(name = "games-retro-cores", about = "List installed RetroArch cores")]
+    GamesRetroCores,
+    #[command(name = "games-retro-install", about = "Create a desktop launcher for a RetroArch game")]
+    GamesRetroInstall {
+        #[arg(help = "Core name or path")]
+        core: Option<String>,
+        #[arg(help = "Path to game ROM")]
+        game: Option<String>,
+    },
+    #[command(name = "monitor-state", about = "Print monitor panel state for the shell")]
+    MonitorState,
+    #[command(name = "disk-speedtest", about = "Measure live disk read and write speed")]
+    DiskSpeedtest {
+        #[arg(help = "Target directory for test files")]
+        dir: Option<String>,
+    },
+    #[command(about = "Set and show lightweight desktop reminders")]
+    Reminder {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "display-text-size", about = "Scale text in shell, GTK apps, and terminals")]
+    DisplayTextSize {
+        #[arg(help = "Size in px (9-20), 'reset', or omit to show current")]
+        size: Option<String>,
+    },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
 }
@@ -389,4 +511,191 @@ pub enum PkgCmd {
     Missing { name: String },
     #[command(about = "Resolve package name to nixpkgs attribute")]
     Resolve { name: String },
+}
+
+// ---- New command group enums ----
+
+#[derive(Subcommand)]
+pub enum RestartCmd {
+    #[command(about = "Restart an application")]
+    App {
+        name: String,
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Restart audio services and recover stuck USB audio")]
+    Audio,
+    #[command(about = "Unblock Bluetooth")]
+    Bluetooth,
+    #[command(about = "Send SIGUSR2 to btop")]
+    Btop,
+    #[command(about = "Print gum environment variables from current theme")]
+    Gum,
+    #[command(about = "Send SIGUSR1 to helix")]
+    Helix,
+    #[command(about = "Reload herdr server config")]
+    Herdr,
+    #[command(about = "Reload Hyprland config")]
+    Hyprctl,
+    #[command(about = "Restart hyprsunset")]
+    Hyprsunset,
+    #[command(about = "Send SIGUSR2 to opencode")]
+    Opencode,
+    #[command(about = "Restart the Omarchy shell")]
+    Shell,
+    #[command(about = "Reload terminal configs")]
+    Terminal,
+    #[command(about = "Reload tmux config")]
+    Tmux,
+    #[command(about = "Rebind i2c HID touchpad driver")]
+    Trackpad,
+    #[command(about = "Restart WiFi networking")]
+    Wifi,
+    #[command(about = "Restart fcitx5 for XCompose support")]
+    Xcompose,
+}
+
+#[derive(Subcommand)]
+pub enum NotificationCmd {
+    #[command(about = "Send a battery status notification")]
+    Battery,
+    #[command(about = "Send a time notification")]
+    Time,
+    #[command(about = "Toggle weather notification")]
+    Weather,
+    #[command(about = "Dismiss a notification by summary")]
+    Dismiss { summary: String },
+    #[command(about = "Wait for the notification server to be ready")]
+    Wait {
+        #[arg(default_value = "10", help = "Timeout in seconds")]
+        seconds: u64,
+    },
+    #[command(about = "Send a desktop notification")]
+    Send {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum BatteryCmd {
+    #[command(about = "Check if a battery is present (exit 0 = present)")]
+    Present,
+    #[command(about = "Send a low battery notification")]
+    Low {
+        #[arg(help = "Current battery percentage")]
+        percentage: u32,
+    },
+    #[command(about = "Print battery status")]
+    Status {
+        #[arg(long, help = "Output tab-separated fields for shell consumption")]
+        shell: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum PowerCmd {
+    #[command(about = "Check if AC power is present (exit 0 = present)")]
+    Present,
+}
+
+#[derive(Subcommand)]
+pub enum CmdCheckCmd {
+    #[command(about = "Check if any command is missing from PATH (exit 0 = missing)")]
+    Missing {
+        #[arg(required = true)]
+        cmds: Vec<String>,
+    },
+    #[command(about = "Check if all commands are present in PATH (exit 0 = all present)")]
+    Present {
+        #[arg(required = true)]
+        cmds: Vec<String>,
+    },
+    #[command(name = "terminal-cwd", about = "Print CWD of active terminal")]
+    TerminalCwd,
+}
+
+#[derive(Subcommand)]
+pub enum PowerprofilesCmd {
+    #[command(about = "Initialize power profile based on current power source")]
+    Init,
+    #[command(about = "List available power profiles")]
+    List {
+        #[arg(long, help = "Include active state (tab-separated)")]
+        active_state: bool,
+    },
+    #[command(about = "Set the active power profile")]
+    Set {
+        #[arg(help = "Mode: autodetect, ac, or battery")]
+        action: Option<String>,
+        #[arg(help = "Profile name to set and save")]
+        profile: Option<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum TailscaleCmd {
+    #[command(about = "Receive files via Taildrop")]
+    Receive {
+        #[arg(long, help = "Exit after receiving one batch")]
+        once: bool,
+        #[arg(help = "Download directory")]
+        dir: Option<String>,
+    },
+    #[command(about = "Send files via Taildrop")]
+    Send {
+        #[arg(help = "Target machine")]
+        machine: String,
+        #[arg(help = "Files to send")]
+        files: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum UpdateCmd {
+    #[command(about = "Pull latest dev checkout")]
+    Dev,
+    #[command(about = "Update firmware via fwupd")]
+    Firmware,
+    #[command(about = "Manage the update lock")]
+    Lock {
+        action: String,
+        #[arg(trailing_var_arg = true)]
+        cmd_args: Vec<String>,
+    },
+    #[command(name = "requires-free-space", about = "Check for 10GiB free space")]
+    RequiresFreeSpace,
+    #[command(about = "Check for updates and refresh indicators")]
+    Status,
+    #[command(name = "stay-awake", about = "Inhibit sleep during updates")]
+    StayAwake { action: String },
+    #[command(about = "Sync system clock")]
+    Time,
+    #[command(name = "user-notify", about = "Delegate to omarchy-migrate-notify")]
+    UserNotify {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum SetupCmd {
+    #[command(name = "direct-boot", about = "Manage EFI direct boot entry for Omarchy UKI")]
+    DirectBoot,
+}
+
+#[derive(Subcommand)]
+pub enum SudoCmd {
+    #[command(about = "Check if docker socket is writable")]
+    Docker {
+        #[arg(long, help = "Check group membership instead of socket writability")]
+        configured: bool,
+    },
+    #[command(about = "Keep sudo credentials alive in the background")]
+    Keepalive,
+    #[command(about = "Toggle passwordless sudo")]
+    Passwordless {
+        #[arg(help = "Duration in minutes (default 15)")]
+        minutes: Option<u32>,
+    },
 }
