@@ -182,14 +182,35 @@
             mkdir -p $out/cinque-shims
             for cmd in \
               omarchy-pkg-add-aur \
+              omarchy-pkg-aur-accessible \
+              omarchy-pkg-aur-add \
+              omarchy-pkg-aur-install \
+              omarchy-pkg-install \
               omarchy-pkg-remove \
+              omarchy-refresh-limine \
+              omarchy-refresh-pacman \
+              omarchy-reinstall \
+              omarchy-reinstall-configs \
+              omarchy-reinstall-pkgs \
+              omarchy-snapshot \
+              omarchy-update \
+              omarchy-update-analyze-logs \
+              omarchy-update-available \
               omarchy-update-aur-pkgs \
+              omarchy-update-confirm \
               omarchy-update-keyring \
-              omarchy-update-pacman-guard \
               omarchy-update-mise \
+              omarchy-update-orphan-pkgs \
+              omarchy-update-pacman-guard \
+              omarchy-update-pkg-prune \
+              omarchy-update-restart \
+              omarchy-update-system-pkgs \
+              omarchy-update-system-pkgs-when-conflicted \
+              omarchy-update-pacman \
+              omarchy-version-channel \
+              omarchy-version-pkgs \
               omarchy-dev-pkg-test \
-              omarchy-upgrade-to-quattro \
-              omarchy-refresh-pacman; do
+              omarchy-upgrade-to-quattro; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 
