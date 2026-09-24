@@ -11,9 +11,10 @@ use clap_complete::generate;
 use cli::{
     AgentCmd, AudioCmd, BluetoothCmd, BrandingCmd, BrightnessCmd, CaptureCmd, Cli, Cmd,
     BatteryCmd, ClipboardCmd, CmdCheckCmd, ConfigCmd, CrashCmd, DebugCmd, DefaultCmd,
-    FontCmd, HookCmd, HwCmd, InstallCmd, NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
-    RemoveCmd, RestartCmd, ServiceCmd, SetupCmd, SudoCmd, TailscaleCmd, ToggleCmd, UpdateCmd,
-    WeatherCmd,
+    FontCmd, HookCmd, HwCmd, HyprlandCmd, InstallCmd, LaunchCmd, MigrateCmd, NetworkCmd,
+    NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
+    RemoveCmd, RestartCmd, ServiceCmd, SetupCmd, SudoCmd, SystemCmd, TailscaleCmd, ToggleCmd,
+    UpdateCmd, WeatherCmd,
 };
 use std::process;
 
@@ -321,6 +322,81 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         // hook
         "omarchy-hook" => Some(&["hook", "run"]),
         "omarchy-hook-install" => Some(&["hook", "install"]),
+        // hyprland
+        "omarchy-hyprland-focus-app" => Some(&["hyprland", "focus-app"]),
+        "omarchy-hyprland-monitor-clamshell" => Some(&["hyprland", "monitor-clamshell"]),
+        "omarchy-hyprland-monitor-external-active" => Some(&["hyprland", "monitor-external-active"]),
+        "omarchy-hyprland-monitor-focused" => Some(&["hyprland", "monitor-focused"]),
+        "omarchy-hyprland-monitor-focused-apple" => Some(&["hyprland", "monitor-focused-apple"]),
+        "omarchy-hyprland-monitor-internal" => Some(&["hyprland", "monitor-internal"]),
+        "omarchy-hyprland-monitor-internal-mirror" => Some(&["hyprland", "monitor-internal-mirror"]),
+        "omarchy-hyprland-monitor-laptop" => Some(&["hyprland", "monitor-laptop"]),
+        "omarchy-hyprland-monitor-modeless" => Some(&["hyprland", "monitor-modeless"]),
+        "omarchy-hyprland-monitor-scaling" => Some(&["hyprland", "monitor-scaling"]),
+        "omarchy-hyprland-monitor-watch" => Some(&["hyprland", "monitor-watch"]),
+        "omarchy-hyprland-reload-guard" => Some(&["hyprland", "reload-guard"]),
+        "omarchy-hyprland-session-locked" => Some(&["hyprland", "session-locked"]),
+        "omarchy-hyprland-toggle" => Some(&["hyprland", "toggle"]),
+        "omarchy-hyprland-toggle-disabled" => Some(&["hyprland", "toggle-disabled"]),
+        "omarchy-hyprland-toggle-enabled" => Some(&["hyprland", "toggle-enabled"]),
+        "omarchy-hyprland-window-close-all" => Some(&["hyprland", "window-close-all"]),
+        "omarchy-hyprland-window-gaps-toggle" => Some(&["hyprland", "window-gaps-toggle"]),
+        "omarchy-hyprland-window-pop" => Some(&["hyprland", "window-pop"]),
+        "omarchy-hyprland-window-single-square-aspect-toggle" => Some(&["hyprland", "window-single-square-aspect-toggle"]),
+        "omarchy-hyprland-window-tiled-fullscreen-toggle" => Some(&["hyprland", "window-tiled-fullscreen-toggle"]),
+        "omarchy-hyprland-window-transparency-toggle" => Some(&["hyprland", "window-transparency-toggle"]),
+        "omarchy-hyprland-window-width" => Some(&["hyprland", "window-width"]),
+        "omarchy-hyprland-workspace-layout-toggle" => Some(&["hyprland", "workspace-layout-toggle"]),
+        // system
+        "omarchy-system-factory-reset" => Some(&["system", "factory-reset"]),
+        "omarchy-system-factory-reset-finish" => Some(&["system", "factory-reset-finish"]),
+        "omarchy-system-lid-close" => Some(&["system", "lid-close"]),
+        "omarchy-system-lock" => Some(&["system", "lock"]),
+        "omarchy-system-logout" => Some(&["system", "logout"]),
+        "omarchy-system-reboot" => Some(&["system", "reboot"]),
+        "omarchy-system-shutdown" => Some(&["system", "shutdown"]),
+        "omarchy-system-sleep-lock" => Some(&["system", "sleep-lock"]),
+        "omarchy-system-sleep-monitor" => Some(&["system", "sleep-monitor"]),
+        "omarchy-system-stats" => Some(&["system", "stats"]),
+        "omarchy-system-wake" => Some(&["system", "wake"]),
+        // launch
+        "omarchy-launch-1password" => Some(&["launch", "1password"]),
+        "omarchy-launch-about" => Some(&["launch", "about"]),
+        "omarchy-launch-battlenet" => Some(&["launch", "battlenet"]),
+        "omarchy-launch-browser" => Some(&["launch", "browser"]),
+        "omarchy-launch-config-editor" => Some(&["launch", "config-editor"]),
+        "omarchy-launch-discord-community" => Some(&["launch", "discord-community"]),
+        "omarchy-launch-docker-tui" => Some(&["launch", "docker-tui"]),
+        "omarchy-launch-editor" => Some(&["launch", "editor"]),
+        "omarchy-launch-floating-terminal-with-presentation" => Some(&["launch", "floating-terminal-with-presentation"]),
+        "omarchy-launch-nautilus" => Some(&["launch", "nautilus"]),
+        "omarchy-launch-nautilus-cwd" => Some(&["launch", "nautilus-cwd"]),
+        "omarchy-launch-openclaw" => Some(&["launch", "openclaw"]),
+        "omarchy-launch-or-focus" => Some(&["launch", "or-focus"]),
+        "omarchy-launch-or-focus-tui" => Some(&["launch", "or-focus-tui"]),
+        "omarchy-launch-or-focus-webapp" => Some(&["launch", "or-focus-webapp"]),
+        "omarchy-launch-screensaver" => Some(&["launch", "screensaver"]),
+        "omarchy-launch-shell" => Some(&["launch", "shell"]),
+        "omarchy-launch-signal" => Some(&["launch", "signal"]),
+        "omarchy-launch-spotify" => Some(&["launch", "spotify"]),
+        "omarchy-launch-terminal" => Some(&["launch", "terminal"]),
+        "omarchy-launch-terminal-herdr" => Some(&["launch", "terminal-herdr"]),
+        "omarchy-launch-terminal-tmux" => Some(&["launch", "terminal-tmux"]),
+        "omarchy-launch-tui" => Some(&["launch", "tui"]),
+        "omarchy-launch-webapp" => Some(&["launch", "webapp"]),
+        // shell IPC
+        "omarchy-shell" => Some(&["shell"]),
+        // migrate
+        "omarchy-migrate" => Some(&["migrate", "run"]),
+        "omarchy-migrate-notify" => Some(&["migrate", "notify"]),
+        // misc
+        "omarchy-dns" => Some(&["dns"]),
+        "omarchy-mise-install" => Some(&["mise-install"]),
+        "omarchy-network-band" => Some(&["network", "band"]),
+        "omarchy-network-password" => Some(&["network", "password"]),
+        "omarchy-network-qr" => Some(&["network", "qr"]),
+        "omarchy-network-speedtest" => Some(&["network", "speedtest"]),
+        "omarchy-network-status" => Some(&["network", "status"]),
         _ => None,
     }
 }
@@ -703,6 +779,104 @@ fn main() {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());
             0
         }
+        // ── Batch 3 ──────────────────────────────────────────────────────────
+        Cmd::Hyprland { subcmd } => match subcmd {
+            HyprlandCmd::FocusApp { app } => cmds::hyprland::focus_app(&app),
+            HyprlandCmd::MonitorClamshell => cmds::hyprland::monitor_clamshell(),
+            HyprlandCmd::MonitorExternalActive => cmds::hyprland::monitor_external_active(),
+            HyprlandCmd::MonitorFocused => cmds::hyprland::monitor_focused(),
+            HyprlandCmd::MonitorFocusedApple { monitor } => {
+                cmds::hyprland::monitor_focused_apple(monitor.as_deref())
+            }
+            HyprlandCmd::MonitorInternal { action } => cmds::hyprland::monitor_internal(&action),
+            HyprlandCmd::MonitorInternalMirror { action } => {
+                cmds::hyprland::monitor_internal_mirror(&action)
+            }
+            HyprlandCmd::MonitorLaptop => cmds::hyprland::monitor_laptop(),
+            HyprlandCmd::MonitorModeless => cmds::hyprland::monitor_modeless(),
+            HyprlandCmd::MonitorScaling { args } => cmds::hyprland::monitor_scaling(&args),
+            HyprlandCmd::MonitorWatch => cmds::hyprland::monitor_watch(),
+            HyprlandCmd::ReloadGuard { args } => cmds::hyprland::reload_guard(&args),
+            HyprlandCmd::SessionLocked => cmds::hyprland::session_locked(),
+            HyprlandCmd::Toggle { flag_name, action } => {
+                cmds::hyprland::toggle(&flag_name, &action)
+            }
+            HyprlandCmd::ToggleDisabled { flag_name } => {
+                cmds::hyprland::toggle_disabled(&flag_name)
+            }
+            HyprlandCmd::ToggleEnabled { flag_name } => {
+                cmds::hyprland::toggle_enabled(&flag_name)
+            }
+            HyprlandCmd::WindowCloseAll => cmds::hyprland::window_close_all(),
+            HyprlandCmd::WindowGapsToggle => cmds::hyprland::window_gaps_toggle(),
+            HyprlandCmd::WindowPop { args } => cmds::hyprland::window_pop(&args),
+            HyprlandCmd::WindowSingleSquareAspectToggle => {
+                cmds::hyprland::window_single_square_aspect_toggle()
+            }
+            HyprlandCmd::WindowTiledFullscreenToggle => {
+                cmds::hyprland::window_tiled_fullscreen_toggle()
+            }
+            HyprlandCmd::WindowTransparencyToggle => {
+                cmds::hyprland::window_transparency_toggle()
+            }
+            HyprlandCmd::WindowWidth { args } => cmds::hyprland::window_width(&args),
+            HyprlandCmd::WorkspaceLayoutToggle => cmds::hyprland::workspace_layout_toggle(),
+        },
+        Cmd::System { subcmd } => match subcmd {
+            SystemCmd::FactoryReset { args } => cmds::system::factory_reset(&args),
+            SystemCmd::FactoryResetFinish { args } => cmds::system::factory_reset_finish(&args),
+            SystemCmd::LidClose => cmds::system::lid_close(),
+            SystemCmd::Lock => cmds::system::lock(),
+            SystemCmd::Logout => cmds::system::logout(),
+            SystemCmd::Reboot => cmds::system::reboot(),
+            SystemCmd::Shutdown => cmds::system::shutdown(),
+            SystemCmd::SleepLock { args } => cmds::system::sleep_lock(&args),
+            SystemCmd::SleepMonitor { args } => cmds::system::sleep_monitor(&args),
+            SystemCmd::Stats { args } => cmds::system::stats(&args),
+            SystemCmd::Wake => cmds::system::wake(),
+        },
+        Cmd::Launch { subcmd } => match subcmd {
+            LaunchCmd::Onepassword => cmds::launch::onepassword(),
+            LaunchCmd::About { args } => cmds::launch::about(&args),
+            LaunchCmd::Battlenet { args } => cmds::launch::battlenet(&args),
+            LaunchCmd::Browser { args } => cmds::launch::browser(&args),
+            LaunchCmd::ConfigEditor { args } => cmds::launch::config_editor(&args),
+            LaunchCmd::DiscordCommunity => cmds::launch::discord_community(),
+            LaunchCmd::DockerTui => cmds::launch::docker_tui(),
+            LaunchCmd::Editor { args } => cmds::launch::editor(&args),
+            LaunchCmd::FloatingTerminalWithPresentation { args } => {
+                cmds::launch::floating_terminal_with_presentation(&args)
+            }
+            LaunchCmd::Nautilus => cmds::launch::nautilus(),
+            LaunchCmd::NautilusCwd => cmds::launch::nautilus_cwd(),
+            LaunchCmd::Openclaw { args } => cmds::launch::openclaw(&args),
+            LaunchCmd::OrFocus { args } => cmds::launch::or_focus(&args),
+            LaunchCmd::OrFocusTui { args } => cmds::launch::or_focus_tui(&args),
+            LaunchCmd::OrFocusWebapp { args } => cmds::launch::or_focus_webapp(&args),
+            LaunchCmd::Screensaver { args } => cmds::launch::screensaver(&args),
+            LaunchCmd::Shell { args } => cmds::launch::shell(&args),
+            LaunchCmd::Signal => cmds::launch::signal(),
+            LaunchCmd::Spotify => cmds::launch::spotify(),
+            LaunchCmd::Terminal { args } => cmds::launch::terminal(&args),
+            LaunchCmd::TerminalHerdr => cmds::launch::terminal_herdr(),
+            LaunchCmd::TerminalTmux => cmds::launch::terminal_tmux(),
+            LaunchCmd::Tui { args } => cmds::launch::tui(&args),
+            LaunchCmd::Webapp { args } => cmds::launch::webapp(&args),
+        },
+        Cmd::ShellIpc { args } => cmds::shell_cmd::run(&args),
+        Cmd::Migrate { subcmd } => match subcmd {
+            MigrateCmd::Run { args } => cmds::migrate::run(&args),
+            MigrateCmd::Notify => cmds::migrate::notify(),
+        },
+        Cmd::Dns { args } => cmds::dns_cmd::run(&args),
+        Cmd::MiseInstall { args } => cmds::mise_install::run(&args),
+        Cmd::Network { subcmd } => match subcmd {
+            NetworkCmd::Band { args } => cmds::network::band(&args),
+            NetworkCmd::Password { args } => cmds::network::password(&args),
+            NetworkCmd::Qr { args } => cmds::network::qr(&args),
+            NetworkCmd::Speedtest { args } => cmds::network::speedtest(&args),
+            NetworkCmd::Status { args } => cmds::network::status(&args),
+        },
     };
     process::exit(code);
 }

@@ -301,7 +301,76 @@
               omarchy-default-editor \
               omarchy-default-terminal \
               omarchy-hook \
-              omarchy-hook-install; do
+              omarchy-hook-install \
+              omarchy-hyprland-focus-app \
+              omarchy-hyprland-monitor-clamshell \
+              omarchy-hyprland-monitor-external-active \
+              omarchy-hyprland-monitor-focused \
+              omarchy-hyprland-monitor-focused-apple \
+              omarchy-hyprland-monitor-internal \
+              omarchy-hyprland-monitor-internal-mirror \
+              omarchy-hyprland-monitor-laptop \
+              omarchy-hyprland-monitor-modeless \
+              omarchy-hyprland-monitor-scaling \
+              omarchy-hyprland-monitor-watch \
+              omarchy-hyprland-reload-guard \
+              omarchy-hyprland-session-locked \
+              omarchy-hyprland-toggle \
+              omarchy-hyprland-toggle-disabled \
+              omarchy-hyprland-toggle-enabled \
+              omarchy-hyprland-window-close-all \
+              omarchy-hyprland-window-gaps-toggle \
+              omarchy-hyprland-window-pop \
+              omarchy-hyprland-window-single-square-aspect-toggle \
+              omarchy-hyprland-window-tiled-fullscreen-toggle \
+              omarchy-hyprland-window-transparency-toggle \
+              omarchy-hyprland-window-width \
+              omarchy-hyprland-workspace-layout-toggle \
+              omarchy-system-factory-reset \
+              omarchy-system-factory-reset-finish \
+              omarchy-system-lid-close \
+              omarchy-system-lock \
+              omarchy-system-logout \
+              omarchy-system-reboot \
+              omarchy-system-shutdown \
+              omarchy-system-sleep-lock \
+              omarchy-system-sleep-monitor \
+              omarchy-system-stats \
+              omarchy-system-wake \
+              omarchy-launch-1password \
+              omarchy-launch-about \
+              omarchy-launch-battlenet \
+              omarchy-launch-browser \
+              omarchy-launch-config-editor \
+              omarchy-launch-discord-community \
+              omarchy-launch-docker-tui \
+              omarchy-launch-editor \
+              omarchy-launch-floating-terminal-with-presentation \
+              omarchy-launch-nautilus \
+              omarchy-launch-nautilus-cwd \
+              omarchy-launch-openclaw \
+              omarchy-launch-or-focus \
+              omarchy-launch-or-focus-tui \
+              omarchy-launch-or-focus-webapp \
+              omarchy-launch-screensaver \
+              omarchy-launch-shell \
+              omarchy-launch-signal \
+              omarchy-launch-spotify \
+              omarchy-launch-terminal \
+              omarchy-launch-terminal-herdr \
+              omarchy-launch-terminal-tmux \
+              omarchy-launch-tui \
+              omarchy-launch-webapp \
+              omarchy-shell \
+              omarchy-migrate \
+              omarchy-migrate-notify \
+              omarchy-dns \
+              omarchy-mise-install \
+              omarchy-network-band \
+              omarchy-network-password \
+              omarchy-network-qr \
+              omarchy-network-speedtest \
+              omarchy-network-status; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';
@@ -380,7 +449,18 @@
               omarchy-channel-set \
               omarchy-hibernation-available \
               omarchy-hibernation-remove \
-              omarchy-hibernation-setup; do
+              omarchy-hibernation-setup \
+              omarchy-plymouth-current \
+              omarchy-plymouth-list \
+              omarchy-plymouth-preview \
+              omarchy-plymouth-reset \
+              omarchy-plymouth-set \
+              omarchy-plymouth-set-by-theme \
+              omarchy-plymouth-switcher \
+              omarchy-provision-first-run \
+              omarchy-provision-owner \
+              omarchy-provision-user \
+              omarchy-refresh-plymouth; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 

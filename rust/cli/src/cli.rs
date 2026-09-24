@@ -274,6 +274,47 @@ pub enum Cmd {
     },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
+    // ── Batch 3 ──────────────────────────────────────────────────────────────
+    #[command(about = "Hyprland window/monitor helpers")]
+    Hyprland {
+        #[command(subcommand)]
+        subcmd: HyprlandCmd,
+    },
+    #[command(about = "System power and session commands")]
+    System {
+        #[command(subcommand)]
+        subcmd: SystemCmd,
+    },
+    #[command(about = "Launch applications")]
+    Launch {
+        #[command(subcommand)]
+        subcmd: LaunchCmd,
+    },
+    #[command(name = "shell", about = "Send IPC calls to the Omarchy shell")]
+    ShellIpc {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Run or check pending migrations")]
+    Migrate {
+        #[command(subcommand)]
+        subcmd: MigrateCmd,
+    },
+    #[command(about = "Show or configure system DNS")]
+    Dns {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "mise-install", about = "Install a mise-backed tool wrapper")]
+    MiseInstall {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Network status and configuration")]
+    Network {
+        #[command(subcommand)]
+        subcmd: NetworkCmd,
+    },
 }
 
 #[derive(Subcommand)]
@@ -1156,6 +1197,263 @@ pub enum DefaultCmd {
         install: bool,
         #[arg(help = "Terminal name")]
         name: Option<String>,
+    },
+}
+
+// ── Batch 3 enums ─────────────────────────────────────────────────────────────
+
+#[derive(Subcommand)]
+pub enum HyprlandCmd {
+    #[command(name = "focus-app", about = "Focus a window by app class/title")]
+    FocusApp { app: String },
+    #[command(name = "monitor-clamshell", about = "Apply clamshell display state")]
+    MonitorClamshell,
+    #[command(name = "monitor-external-active", about = "Check if an external monitor is active (exit 0 = active)")]
+    MonitorExternalActive,
+    #[command(name = "monitor-focused", about = "Print focused monitor name")]
+    MonitorFocused,
+    #[command(name = "monitor-focused-apple", about = "Check if focused monitor is Apple (exit 0 = yes)")]
+    MonitorFocusedApple {
+        #[arg(help = "Monitor name (default: focused)")]
+        monitor: Option<String>,
+    },
+    #[command(name = "monitor-internal", about = "Enable/disable/toggle internal display")]
+    MonitorInternal {
+        #[arg(help = "on|off|toggle|recover")]
+        action: String,
+    },
+    #[command(name = "monitor-internal-mirror", about = "Enable/disable/toggle internal mirror")]
+    MonitorInternalMirror {
+        #[arg(help = "on|off|toggle|recover")]
+        action: String,
+    },
+    #[command(name = "monitor-laptop", about = "Print built-in laptop display name")]
+    MonitorLaptop,
+    #[command(name = "monitor-modeless", about = "Check for monitors with no mode (exit 0 = modeless found)")]
+    MonitorModeless,
+    #[command(name = "monitor-scaling", about = "Show/set/adjust monitor scaling")]
+    MonitorScaling {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "monitor-watch", about = "Watch monitor events and reconcile toggles")]
+    MonitorWatch,
+    #[command(name = "reload-guard", about = "Pause/resume/check Hyprland config auto-reload")]
+    ReloadGuard {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "session-locked", about = "Check if session is locked (exit 0 = locked)")]
+    SessionLocked,
+    #[command(name = "toggle", about = "Toggle a Hyprland feature flag lua file")]
+    Toggle {
+        flag_name: String,
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(name = "toggle-disabled", about = "Check if hyprland toggle flag is absent (exit 0 = disabled)")]
+    ToggleDisabled { flag_name: String },
+    #[command(name = "toggle-enabled", about = "Check if hyprland toggle flag exists (exit 0 = enabled)")]
+    ToggleEnabled { flag_name: String },
+    #[command(name = "window-close-all", about = "Close all windows and go to workspace 1")]
+    WindowCloseAll,
+    #[command(name = "window-gaps-toggle", about = "Toggle window gaps globally")]
+    WindowGapsToggle,
+    #[command(name = "window-pop", about = "Float/pin/size/center the active window")]
+    WindowPop {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "window-single-square-aspect-toggle", about = "Toggle single-window square aspect ratio")]
+    WindowSingleSquareAspectToggle,
+    #[command(name = "window-tiled-fullscreen-toggle", about = "Toggle tiled fullscreen for active window")]
+    WindowTiledFullscreenToggle,
+    #[command(name = "window-transparency-toggle", about = "Toggle opacity for active window")]
+    WindowTransparencyToggle,
+    #[command(name = "window-width", about = "Save or restore focused window width")]
+    WindowWidth {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "workspace-layout-toggle", about = "Toggle workspace layout between dwindle and scrolling")]
+    WorkspaceLayoutToggle,
+}
+
+#[derive(Subcommand)]
+pub enum SystemCmd {
+    #[command(name = "factory-reset", about = "Factory reset via btrfs snapshot")]
+    FactoryReset {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "factory-reset-finish", about = "Complete factory reset")]
+    FactoryResetFinish {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "lid-close", about = "Handle lid close event")]
+    LidClose,
+    #[command(about = "Lock the session")]
+    Lock,
+    #[command(about = "Log out of the session")]
+    Logout,
+    #[command(about = "Reboot the system")]
+    Reboot,
+    #[command(about = "Shut down the system")]
+    Shutdown,
+    #[command(name = "sleep-lock", about = "Lock before suspend")]
+    SleepLock {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "sleep-monitor", about = "Monitor sleep events and lock before suspend")]
+    SleepMonitor {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Print CPU/memory stats")]
+    Stats {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Wake displays and restore brightness")]
+    Wake,
+}
+
+#[derive(Subcommand)]
+pub enum LaunchCmd {
+    #[command(name = "1password", about = "Launch 1Password or its installer")]
+    Onepassword,
+    #[command(about = "Show system info with animation")]
+    About {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Launch Battle.net client")]
+    Battlenet {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Launch the default browser")]
+    Browser {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "config-editor", about = "Open a config file in the default editor")]
+    ConfigEditor {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "discord-community", about = "Open Omarchy Discord community")]
+    DiscordCommunity,
+    #[command(name = "docker-tui", about = "Open lazydocker TUI")]
+    DockerTui,
+    #[command(about = "Launch the default editor")]
+    Editor {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "floating-terminal-with-presentation", about = "Launch floating terminal with Omarchy presentation")]
+    FloatingTerminalWithPresentation {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Launch Files (Nautilus)")]
+    Nautilus,
+    #[command(name = "nautilus-cwd", about = "Launch Files in the terminal's current directory")]
+    NautilusCwd,
+    #[command(about = "Launch OpenClaw gateway/TUI")]
+    Openclaw {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "or-focus", about = "Launch or focus an existing window")]
+    OrFocus {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "or-focus-tui", about = "Launch or focus a TUI window")]
+    OrFocusTui {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "or-focus-webapp", about = "Launch or focus a web app window")]
+    OrFocusWebapp {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Launch screensaver on all monitors")]
+    Screensaver {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Start or restart the Omarchy shell")]
+    Shell {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Focus or launch Signal")]
+    Signal,
+    #[command(about = "Focus or launch Spotify")]
+    Spotify,
+    #[command(about = "Launch a terminal in the current directory")]
+    Terminal {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "terminal-herdr", about = "Launch terminal with herdr")]
+    TerminalHerdr,
+    #[command(name = "terminal-tmux", about = "Launch terminal attached to tmux")]
+    TerminalTmux,
+    #[command(about = "Launch a TUI command in the default terminal")]
+    Tui {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Launch a URL as a web app")]
+    Webapp {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum MigrateCmd {
+    #[command(about = "Run pending migrations")]
+    Run {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Notify user of pending migrations")]
+    Notify,
+}
+
+#[derive(Subcommand)]
+pub enum NetworkCmd {
+    #[command(about = "Show or pin the Wi-Fi band")]
+    Band {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Print the active Wi-Fi password")]
+    Password {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Generate a Wi-Fi QR code")]
+    Qr {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Measure internet speed")]
+    Speedtest {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Print active network status")]
+    Status {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
 }
 
