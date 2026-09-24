@@ -166,6 +166,8 @@ pub enum InstallCmd {
         #[arg(help = "MIME types")]
         mime_types: Option<String>,
     },
+    #[command(name = "ai-openclaw", about = "Install the OpenClaw agent platform")]
+    AiOpenclaw,
     #[command(name = "hermes-cli", about = "Ensure the Hermes agent CLI is installed")]
     HermesCli {
         #[arg(long, help = "Check if ready (exit 0 = ready)", conflicts_with_all = ["owns", "remove"])]
@@ -318,6 +320,11 @@ pub enum ServiceCmd {
     },
     #[command(about = "List available and enabled services")]
     List,
+    #[command(about = "Check if a service daemon is running (exit 0 = active)")]
+    Active {
+        #[arg(value_parser = PossibleValuesParser::new(services::KNOWN))]
+        name: String,
+    },
 }
 
 #[derive(Subcommand)]

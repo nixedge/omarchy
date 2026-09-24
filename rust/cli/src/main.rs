@@ -115,6 +115,9 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-remove-launcher-entry" => Some(&["remove", "launcher-entry"]),
         "omarchy-install-hermes-cli" => Some(&["install", "hermes-cli"]),
         "omarchy-remove-ai-openclaw" => Some(&["remove", "ai-openclaw"]),
+        "omarchy-installed-service-tailscale" => Some(&["service", "active", "tailscale"]),
+        "omarchy-installed-service-dropbox" => Some(&["service", "active", "dropbox"]),
+        "omarchy-install-ai-openclaw" => Some(&["install", "ai-openclaw"]),
         _ => None,
     }
 }
@@ -155,6 +158,7 @@ fn main() {
             ServiceCmd::Enable { name } => cmds::service::enable::run(&name),
             ServiceCmd::Disable { name } => cmds::service::disable::run(&name),
             ServiceCmd::List => cmds::service::list::run(),
+            ServiceCmd::Active { name } => cmds::service::active::run(&name),
         },
         Cmd::Install { subcmd } => match subcmd {
             InstallCmd::GamingSteam => cmds::install::gaming::steam(),
@@ -195,6 +199,7 @@ fn main() {
             InstallCmd::Webapp { name, url, icon, custom_exec, mime_types } => {
                 cmds::install::webapp::run(name.as_deref(), url.as_deref(), icon.as_deref(), custom_exec.as_deref(), mime_types.as_deref())
             }
+            InstallCmd::AiOpenclaw => cmds::install::ai::openclaw(),
             InstallCmd::HermesCli { check, owns, remove } => cmds::install::hermes_cli::run(check, owns, remove),
         },
         Cmd::Remove { subcmd } => match subcmd {

@@ -54,6 +54,57 @@ pub fn chatgpt() -> i32 {
     0
 }
 
+pub fn openclaw() -> i32 {
+    println!("Installing OpenClaw…");
+    let rc = add::run("openclaw", true);
+    if rc != 0 {
+        return rc;
+    }
+
+    // Icon ships inside the openclaw package. On NixOS it lands in the nix
+    // store and is symlinked into /run/current-system/sw.
+    let icon_candidates = [
+        "/run/current-system/sw/lib/node_modules/openclaw/dist/control-ui/apple-touch-icon.png",
+        "/run/current-system/sw/share/openclaw/apple-touch-icon.png",
+    ];
+    let icon = icon_candidates
+        .iter()
+        .find(|p| std::path::Path::new(p).is_file())
+        .copied()
+        .unwrap_or("applications-internet");
+
+    println!("Installing the OpenClaw web app…");
+    let rc = super::webapp::run(
+        Some("OpenClaw"),
+        Some("http://127.0.0.1:18789"),
+        Some(icon),
+        Some("omarchy-launch-openclaw"),
+        None,
+    );
+    if rc != 0 {
+        return rc;
+    }
+
+    let home = std::env::var("HOME").unwrap_or_default();
+    let config_file = format!("{home}/.openclaw/openclaw.json");
+
+    if std::path::Path::new(&config_file).exists() {
+        println!("Opening OpenClaw…");
+        super::launch_desktop("OpenClaw");
+    } else {
+        let onboarded = Command::new("omarchy-openclaw-onboard")
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false);
+        if onboarded && std::path::Path::new(&config_file).exists() {
+            println!("Opening OpenClaw…");
+            super::launch_desktop("OpenClaw");
+        }
+    }
+
+    0
+}
+
 /// Hermes install delegates to the original bash script logic embedded here.
 pub fn hermes() -> i32 {
     let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();

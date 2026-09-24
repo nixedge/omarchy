@@ -136,7 +136,10 @@
               omarchy-webapp-remove-all \
               omarchy-remove-launcher-entry \
               omarchy-install-hermes-cli \
-              omarchy-remove-ai-openclaw; do
+              omarchy-remove-ai-openclaw \
+              omarchy-install-ai-openclaw \
+              omarchy-installed-service-tailscale \
+              omarchy-installed-service-dropbox; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';
