@@ -1,9 +1,11 @@
 pub mod add;
 pub mod config;
 pub mod drop;
+pub mod install;
 pub mod list;
 pub mod missing;
 pub mod present;
+pub mod remove;
 pub mod resolve;
 pub mod search;
 pub mod service;

@@ -74,7 +74,69 @@
               omarchy-remove-security-fingerprint \
               omarchy-remove-security-fido2 \
               omarchy-remove-security-sshd \
-              omarchy-remove-security-sudoless-docker; do
+              omarchy-remove-security-sudoless-docker \
+              omarchy-install-gaming-steam \
+              omarchy-install-gaming-heroic \
+              omarchy-install-gaming-lutris \
+              omarchy-install-gaming-retroarch \
+              omarchy-install-gaming-xbox-controllers \
+              omarchy-install-gaming-xbox-cloud \
+              omarchy-install-gaming-battlenet \
+              omarchy-install-gaming-geforce-now \
+              omarchy-install-gaming-gpu-lib32 \
+              omarchy-remove-gaming-steam \
+              omarchy-remove-gaming-heroic \
+              omarchy-remove-gaming-lutris \
+              omarchy-remove-gaming-retroarch \
+              omarchy-remove-gaming-minecraft \
+              omarchy-remove-gaming-xbox-controllers \
+              omarchy-remove-gaming-xbox-cloud \
+              omarchy-remove-gaming-battlenet \
+              omarchy-remove-gaming-geforce-now \
+              omarchy-install-editor-helix \
+              omarchy-install-editor-vscode \
+              omarchy-install-editor-emacs \
+              omarchy-install-editor-zed \
+              omarchy-install-ai-claude \
+              omarchy-install-ai-hermes \
+              omarchy-install-ai-t3-code \
+              omarchy-install-ai-chatgpt \
+              omarchy-remove-ai-claude \
+              omarchy-remove-ai-hermes \
+              omarchy-remove-ai-t3-code \
+              omarchy-remove-ai-ollama \
+              omarchy-remove-ai-chatgpt \
+              omarchy-remove-ai-lm-studio \
+              omarchy-remove-ai-grok-bot \
+              omarchy-remove-ai-perplexity \
+              omarchy-install-chromium-claude \
+              omarchy-install-chromium-copy-url \
+              omarchy-install-chromium-ytdlp \
+              omarchy-install-chromium-google-account \
+              omarchy-install-browser \
+              omarchy-remove-browser \
+              omarchy-install-dev-env \
+              omarchy-remove-dev-env \
+              omarchy-install-terminal \
+              omarchy-install-font \
+              omarchy-install-and-launch \
+              omarchy-install-app \
+              omarchy-install-openclaw-cli \
+              omarchy-install-docker-dbs \
+              omarchy-install-preinstalls \
+              omarchy-install-service-once \
+              omarchy-voxtype-install \
+              omarchy-tui-install \
+              omarchy-webapp-install \
+              omarchy-remove-preinstalls \
+              omarchy-voxtype-remove \
+              omarchy-tui-remove \
+              omarchy-tui-remove-all \
+              omarchy-webapp-remove \
+              omarchy-webapp-remove-all \
+              omarchy-remove-launcher-entry \
+              omarchy-install-hermes-cli \
+              omarchy-remove-ai-openclaw; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';
