@@ -230,7 +230,46 @@
               omarchy-monitor-state \
               omarchy-disk-speedtest \
               omarchy-reminder \
-              omarchy-display-text-size; do
+              omarchy-display-text-size \
+              omarchy-audio-output-volume \
+              omarchy-audio-output-switch \
+              omarchy-audio-input-mute \
+              omarchy-audio-output-sink \
+              omarchy-audio-sink-availability \
+              omarchy-audio-source-switch \
+              omarchy-audio-input-set-default \
+              omarchy-audio-output-set-default \
+              omarchy-audio-tuning \
+              omarchy-brightness-display \
+              omarchy-brightness-display-apple \
+              omarchy-brightness-display-ddc \
+              omarchy-brightness-keyboard \
+              omarchy-brightness-keyboard-mute \
+              omarchy-toggle \
+              omarchy-toggle-bar \
+              omarchy-toggle-crash-capture \
+              omarchy-toggle-enabled \
+              omarchy-toggle-fullscreen-desktop \
+              omarchy-toggle-hybrid-gpu \
+              omarchy-toggle-idle \
+              omarchy-toggle-input-device \
+              omarchy-toggle-nightlight \
+              omarchy-toggle-notification-silencing \
+              omarchy-toggle-screensaver \
+              omarchy-toggle-suspend \
+              omarchy-toggle-touchpad \
+              omarchy-toggle-touchscreen \
+              omarchy-bluetooth-device \
+              omarchy-bluetooth-power \
+              omarchy-bar \
+              omarchy-bar-text-color \
+              omarchy-ascii \
+              omarchy-font-current \
+              omarchy-font-list \
+              omarchy-font-set \
+              omarchy-weather-icon \
+              omarchy-weather-location \
+              omarchy-weather-status; do
               ln -s $out/bin/omarchy-cli $out/bin/$name
             done
           '';

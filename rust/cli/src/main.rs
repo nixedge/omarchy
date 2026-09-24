@@ -9,9 +9,10 @@ mod theme;
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use cli::{
-    Cli, Cmd, BatteryCmd, CmdCheckCmd, ConfigCmd, HwCmd, InstallCmd, NotificationCmd,
-    PkgCmd, PowerCmd, PowerprofilesCmd, RemoveCmd, RestartCmd, ServiceCmd,
-    SetupCmd, SudoCmd, TailscaleCmd, UpdateCmd,
+    AudioCmd, BluetoothCmd, BrightnessCmd, Cli, Cmd, BatteryCmd, CmdCheckCmd, ConfigCmd,
+    FontCmd, HwCmd, InstallCmd, NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
+    RemoveCmd, RestartCmd, ServiceCmd, SetupCmd, SudoCmd, TailscaleCmd, ToggleCmd, UpdateCmd,
+    WeatherCmd,
 };
 use std::process;
 
@@ -231,6 +232,53 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-disk-speedtest" => Some(&["disk-speedtest"]),
         "omarchy-reminder" => Some(&["reminder"]),
         "omarchy-display-text-size" => Some(&["display-text-size"]),
+        // audio
+        "omarchy-audio-output-volume" => Some(&["audio", "output-volume"]),
+        "omarchy-audio-output-switch" => Some(&["audio", "output-switch"]),
+        "omarchy-audio-input-mute" => Some(&["audio", "input-mute"]),
+        "omarchy-audio-output-sink" => Some(&["audio", "output-sink"]),
+        "omarchy-audio-sink-availability" => Some(&["audio", "sink-availability"]),
+        "omarchy-audio-source-switch" => Some(&["audio", "source-switch"]),
+        "omarchy-audio-input-set-default" => Some(&["audio", "input-set-default"]),
+        "omarchy-audio-output-set-default" => Some(&["audio", "output-set-default"]),
+        "omarchy-audio-tuning" => Some(&["audio", "tuning"]),
+        // brightness
+        "omarchy-brightness-display" => Some(&["brightness", "display"]),
+        "omarchy-brightness-display-apple" => Some(&["brightness", "display-apple"]),
+        "omarchy-brightness-display-ddc" => Some(&["brightness", "display-ddc"]),
+        "omarchy-brightness-keyboard" => Some(&["brightness", "keyboard"]),
+        "omarchy-brightness-keyboard-mute" => Some(&["brightness", "keyboard-mute"]),
+        // toggle
+        "omarchy-toggle" => Some(&["toggle", "flag"]),
+        "omarchy-toggle-bar" => Some(&["toggle", "bar"]),
+        "omarchy-toggle-crash-capture" => Some(&["toggle", "crash-capture"]),
+        "omarchy-toggle-enabled" => Some(&["toggle", "enabled"]),
+        "omarchy-toggle-fullscreen-desktop" => Some(&["toggle", "fullscreen-desktop"]),
+        "omarchy-toggle-hybrid-gpu" => Some(&["toggle", "hybrid-gpu"]),
+        "omarchy-toggle-idle" => Some(&["toggle", "idle"]),
+        "omarchy-toggle-input-device" => Some(&["toggle", "input-device"]),
+        "omarchy-toggle-nightlight" => Some(&["toggle", "nightlight"]),
+        "omarchy-toggle-notification-silencing" => Some(&["toggle", "notification-silencing"]),
+        "omarchy-toggle-screensaver" => Some(&["toggle", "screensaver"]),
+        "omarchy-toggle-suspend" => Some(&["toggle", "suspend"]),
+        "omarchy-toggle-touchpad" => Some(&["toggle", "touchpad"]),
+        "omarchy-toggle-touchscreen" => Some(&["toggle", "touchscreen"]),
+        // bluetooth
+        "omarchy-bluetooth-device" => Some(&["bluetooth", "device"]),
+        "omarchy-bluetooth-power" => Some(&["bluetooth", "power"]),
+        // bar
+        "omarchy-bar" => Some(&["bar"]),
+        "omarchy-bar-text-color" => Some(&["bar-text-color"]),
+        // ascii
+        "omarchy-ascii" => Some(&["ascii"]),
+        // font
+        "omarchy-font-current" => Some(&["font", "current"]),
+        "omarchy-font-list" => Some(&["font", "list"]),
+        "omarchy-font-set" => Some(&["font", "set"]),
+        // weather
+        "omarchy-weather-icon" => Some(&["weather", "icon"]),
+        "omarchy-weather-location" => Some(&["weather", "location"]),
+        "omarchy-weather-status" => Some(&["weather", "status"]),
         _ => None,
     }
 }
@@ -464,6 +512,79 @@ fn main() {
         Cmd::DiskSpeedtest { dir } => cmds::disk_speedtest::run(dir.as_deref()),
         Cmd::Reminder { args } => cmds::reminder::run(&args),
         Cmd::DisplayTextSize { size } => cmds::display_text_size::run(size.as_deref()),
+        Cmd::Audio { subcmd } => match subcmd {
+            AudioCmd::OutputVolume { action } => cmds::audio::output_volume(&action),
+            AudioCmd::OutputSwitch => cmds::audio::output_switch(),
+            AudioCmd::InputMute => cmds::audio::input_mute(),
+            AudioCmd::OutputSink { sink } => cmds::audio::output_sink(sink.as_deref()),
+            AudioCmd::SinkAvailability => cmds::audio::sink_availability(),
+            AudioCmd::SourceSwitch { direction } => cmds::audio::source_switch(direction.as_deref()),
+            AudioCmd::InputSetDefault { node_id, source_name } => {
+                cmds::audio::input_set_default(&node_id, &source_name)
+            }
+            AudioCmd::OutputSetDefault { node_id, sink_name } => {
+                cmds::audio::output_set_default(&node_id, &sink_name)
+            }
+            AudioCmd::Tuning { action, force } => cmds::audio::tuning(&action, force),
+        },
+        Cmd::Brightness { subcmd } => match subcmd {
+            BrightnessCmd::Display { no_osd, monitor, step } => {
+                cmds::brightness::display(no_osd, monitor.as_deref(), step.as_deref())
+            }
+            BrightnessCmd::DisplayApple { no_osd, step } => {
+                cmds::brightness::display_apple(no_osd, step.as_deref())
+            }
+            BrightnessCmd::DisplayDdc { monitor, step } => {
+                cmds::brightness::display_ddc(&monitor, step.as_deref())
+            }
+            BrightnessCmd::Keyboard { no_osd, direction } => {
+                cmds::brightness::keyboard(no_osd, &direction)
+            }
+            BrightnessCmd::KeyboardMute { state } => cmds::brightness::keyboard_mute(&state),
+        },
+        Cmd::Toggle { subcmd } => match subcmd {
+            ToggleCmd::Flag { flag_name, action } => cmds::toggle::flag(&flag_name, &action),
+            ToggleCmd::Bar { action } => cmds::toggle::bar(&action),
+            ToggleCmd::CrashCapture => cmds::toggle::crash_capture(),
+            ToggleCmd::Enabled { flag_name } => cmds::toggle::enabled(&flag_name),
+            ToggleCmd::FullscreenDesktop { action } => cmds::toggle::fullscreen_desktop(&action),
+            ToggleCmd::HybridGpu => cmds::toggle::hybrid_gpu(),
+            ToggleCmd::Idle { action } => cmds::toggle::idle(&action),
+            ToggleCmd::InputDevice { kind, action } => cmds::toggle::input_device(&kind, &action),
+            ToggleCmd::Nightlight { status } => cmds::toggle::nightlight(status),
+            ToggleCmd::NotificationSilencing => cmds::toggle::notification_silencing(),
+            ToggleCmd::Screensaver => cmds::toggle::screensaver(),
+            ToggleCmd::Suspend => cmds::toggle::suspend(),
+            ToggleCmd::Touchpad { action } => cmds::toggle::touchpad(&action),
+            ToggleCmd::Touchscreen { action } => cmds::toggle::touchscreen(&action),
+        },
+        Cmd::Bluetooth { subcmd } => match subcmd {
+            BluetoothCmd::Device { action, address } => cmds::bluetooth::device(&action, &address),
+            BluetoothCmd::Power { action } => cmds::bluetooth::power(&action),
+        },
+        Cmd::Bar { args } => cmds::bar::run(&args),
+        Cmd::BarTextColor { position, bar_size, text_color, background_color, background, screen } => {
+            cmds::bar::text_color(&position, &bar_size, &text_color, &background_color, background.as_deref(), screen.as_deref())
+        }
+        Cmd::Ascii { args } => cmds::ascii::run(&args),
+        Cmd::Font { subcmd } => match subcmd {
+            FontCmd::Current => cmds::font::current(),
+            FontCmd::List => cmds::font::list(),
+            FontCmd::Set { name } => cmds::font::set_font(&name),
+        },
+        Cmd::Weather { subcmd } => match subcmd {
+            WeatherCmd::Icon => cmds::weather::icon(),
+            WeatherCmd::Location { set, coords, clear } => {
+                if clear {
+                    cmds::weather::location(Some("--clear"), None, None)
+                } else if let Some(name) = set {
+                    cmds::weather::location(Some("--set"), Some(&name), coords.as_deref())
+                } else {
+                    cmds::weather::location(None, None, None)
+                }
+            }
+            WeatherCmd::Status => cmds::weather::status(),
+        },
         Cmd::Completions { shell } => {
             generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());
             0

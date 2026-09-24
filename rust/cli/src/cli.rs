@@ -174,8 +174,243 @@ pub enum Cmd {
         #[arg(help = "Size in px (9-20), 'reset', or omit to show current")]
         size: Option<String>,
     },
+    #[command(about = "Audio output/input control")]
+    Audio {
+        #[command(subcommand)]
+        subcmd: AudioCmd,
+    },
+    #[command(about = "Display and keyboard brightness")]
+    Brightness {
+        #[command(subcommand)]
+        subcmd: BrightnessCmd,
+    },
+    #[command(about = "Toggle Omarchy features")]
+    Toggle {
+        #[command(subcommand)]
+        subcmd: ToggleCmd,
+    },
+    #[command(about = "Bluetooth device management")]
+    Bluetooth {
+        #[command(subcommand)]
+        subcmd: BluetoothCmd,
+    },
+    #[command(about = "Bar configuration")]
+    Bar {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Print Omarchy ASCII art logo")]
+    Ascii {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Font management")]
+    Font {
+        #[command(subcommand)]
+        subcmd: FontCmd,
+    },
+    #[command(about = "Weather information")]
+    Weather {
+        #[command(subcommand)]
+        subcmd: WeatherCmd,
+    },
+    #[command(name = "bar-text-color", about = "Choose legible bar text color", hide = true)]
+    BarTextColor {
+        position: String,
+        bar_size: String,
+        text_color: String,
+        background_color: String,
+        #[arg(long, help = "Background image path")]
+        background: Option<String>,
+        #[arg(long, help = "Screen dimensions WxH")]
+        screen: Option<String>,
+    },
     #[command(hide = true, about = "Print shell completion script")]
     Completions { shell: Shell },
+}
+
+#[derive(Subcommand)]
+pub enum AudioCmd {
+    #[command(name = "output-volume", about = "Adjust output volume and show OSD")]
+    OutputVolume {
+        #[arg(help = "raise|lower|mute-toggle|+N|-N")]
+        action: String,
+    },
+    #[command(name = "output-switch", about = "Switch between audio outputs")]
+    OutputSwitch,
+    #[command(name = "input-mute", about = "Toggle microphone mute")]
+    InputMute,
+    #[command(name = "output-sink", about = "Print the sink that carries volume for an output")]
+    OutputSink {
+        #[arg(help = "Sink name (optional, defaults to current default)")]
+        sink: Option<String>,
+    },
+    #[command(name = "sink-availability", about = "Print PulseAudio sink availability")]
+    SinkAvailability,
+    #[command(name = "source-switch", about = "Cycle media source")]
+    SourceSwitch {
+        #[arg(help = "next|previous (default: next)")]
+        direction: Option<String>,
+    },
+    #[command(name = "input-set-default", about = "Set default audio input and move streams")]
+    InputSetDefault {
+        node_id: String,
+        source_name: String,
+    },
+    #[command(name = "output-set-default", about = "Set default audio output and move streams")]
+    OutputSetDefault {
+        node_id: String,
+        sink_name: String,
+    },
+    #[command(name = "tuning", about = "Manage speaker tuning")]
+    Tuning {
+        #[arg(help = "on|off|status|match|fronted-sink", default_value = "status")]
+        action: String,
+        #[arg(long, help = "Force reinstall even if already current")]
+        force: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum BrightnessCmd {
+    #[command(about = "Show or adjust display brightness")]
+    Display {
+        #[arg(long, help = "Skip OSD")]
+        no_osd: bool,
+        #[arg(long, help = "Monitor name")]
+        monitor: Option<String>,
+        #[arg(help = "+N%|N%-|N%|off|on")]
+        step: Option<String>,
+    },
+    #[command(name = "display-apple", about = "Apple Studio Display brightness")]
+    DisplayApple {
+        #[arg(long, help = "Skip OSD")]
+        no_osd: bool,
+        #[arg(help = "+N%|N%-|N%")]
+        step: Option<String>,
+    },
+    #[command(name = "display-ddc", about = "DDC/CI external monitor brightness")]
+    DisplayDdc {
+        monitor: String,
+        #[arg(help = "+N%|N%-|N%")]
+        step: Option<String>,
+    },
+    #[command(about = "Adjust keyboard backlight")]
+    Keyboard {
+        #[arg(long, help = "Skip OSD")]
+        no_osd: bool,
+        #[arg(help = "up|down|cycle|off|restore", default_value = "up")]
+        direction: String,
+    },
+    #[command(name = "keyboard-mute", about = "Set mic-mute indicator LED")]
+    KeyboardMute {
+        #[arg(help = "on|off")]
+        state: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum ToggleCmd {
+    #[command(name = "flag", about = "Toggle a named feature flag")]
+    Flag {
+        flag_name: String,
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(about = "Toggle bar visibility")]
+    Bar {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(name = "crash-capture", about = "Toggle crash capture")]
+    CrashCapture,
+    #[command(about = "Check if a toggle is enabled (exit 0 = enabled)")]
+    Enabled { flag_name: String },
+    #[command(name = "fullscreen-desktop", about = "Toggle fullscreen desktop mode")]
+    FullscreenDesktop {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(name = "hybrid-gpu", about = "Toggle dedicated vs integrated GPU")]
+    HybridGpu,
+    #[command(about = "Toggle idle/stay-awake behavior")]
+    Idle {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(name = "input-device", about = "Enable/disable/toggle a Hyprland input device")]
+    InputDevice {
+        kind: String,
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(about = "Toggle nightlight screen temperature")]
+    Nightlight {
+        #[arg(long, help = "Print status JSON instead of toggling")]
+        status: bool,
+    },
+    #[command(name = "notification-silencing", about = "Toggle notification do-not-disturb")]
+    NotificationSilencing,
+    #[command(about = "Toggle screensaver availability")]
+    Screensaver,
+    #[command(about = "Toggle suspend in system menu")]
+    Suspend,
+    #[command(about = "Enable/disable/toggle touchpad")]
+    Touchpad {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(about = "Enable/disable/toggle touchscreen")]
+    Touchscreen {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum BluetoothCmd {
+    #[command(about = "Control a Bluetooth device")]
+    Device {
+        #[arg(help = "pair|connect|disconnect|forget")]
+        action: String,
+        #[arg(help = "Device MAC address")]
+        address: String,
+    },
+    #[command(about = "Turn Bluetooth on or off")]
+    Power {
+        #[arg(help = "on|off|toggle|is-on")]
+        action: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum FontCmd {
+    #[command(about = "Show current monospace font")]
+    Current,
+    #[command(about = "List available monospace fonts")]
+    List,
+    #[command(about = "Set system monospace font")]
+    Set {
+        #[arg(help = "Font name")]
+        name: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum WeatherCmd {
+    #[command(about = "Return weather condition icon adjusted for sunrise/sunset")]
+    Icon,
+    #[command(about = "Show or set weather location")]
+    Location {
+        #[arg(long, help = "Location name")]
+        set: Option<String>,
+        #[arg(long, help = "Coordinates lat,lon (used with --set)")]
+        coords: Option<String>,
+        #[arg(long, help = "Return to IP auto-detect")]
+        clear: bool,
+    },
+    #[command(about = "Return formatted weather status string")]
+    Status,
 }
 
 #[derive(Subcommand)]
