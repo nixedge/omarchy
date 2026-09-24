@@ -3,6 +3,7 @@ pub const KNOWN: &[&str] = &[
     "dropbox",
     "fido2",
     "fingerprint",
+    "hermes",
     "hibernation",
     "hybrid-gpu",
     "nordvpn",

@@ -4,6 +4,7 @@
     ./dropbox.nix
     ./fido2.nix
     ./fingerprint.nix
+    ./hermes.nix
     ./hibernation.nix
     ./hybrid-gpu.nix
     ./nordvpn.nix
