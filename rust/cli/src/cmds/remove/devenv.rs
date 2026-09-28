@@ -68,7 +68,7 @@ fn remove_env(name: &str) -> i32 {
             }
             if name == "symfony" {
                 // symfony-cli is a nixpkg on NixOS
-                let _ = crate::cmds::drop::run("symfony-cli", true);
+                let _ = crate::cmds::drop::run("symfony-cli");
             }
             if name == "php" {
                 mise_uninstall("php");

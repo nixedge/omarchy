@@ -4,7 +4,7 @@ use std::process::Command;
 
 pub fn claude() -> i32 {
     println!("Installing Claude…");
-    let rc = add::run("claude-desktop", true);
+    let rc = add::run("claude-desktop");
     if rc != 0 {
         return rc;
     }
@@ -16,7 +16,7 @@ pub fn claude() -> i32 {
 
 pub fn t3code() -> i32 {
     println!("Installing T3 Code…");
-    let rc = add::run("t3code", true);
+    let rc = add::run("t3code");
     if rc != 0 {
         return rc;
     }
@@ -44,7 +44,7 @@ pub fn t3code() -> i32 {
 
 pub fn chatgpt() -> i32 {
     println!("Installing ChatGPT…");
-    let rc = add::run("openai-codex-desktop", true);
+    let rc = add::run("openai-codex-desktop");
     if rc != 0 {
         return rc;
     }
@@ -56,7 +56,7 @@ pub fn chatgpt() -> i32 {
 
 pub fn openclaw() -> i32 {
     println!("Installing OpenClaw…");
-    let rc = add::run("openclaw", true);
+    let rc = add::run("openclaw");
     if rc != 0 {
         return rc;
     }
@@ -121,7 +121,7 @@ pub fn hermes() -> i32 {
 
     // Fallback: pkg add hermes-desktop
     println!("Installing Hermes Desktop…");
-    let rc = add::run("hermes-desktop", true);
+    let rc = add::run("hermes-desktop");
     if rc != 0 {
         return rc;
     }

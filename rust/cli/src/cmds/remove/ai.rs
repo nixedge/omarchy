@@ -5,7 +5,7 @@ use std::process::Command;
 
 pub fn claude() -> i32 {
     let _ = Command::new("pkill").args(["-x", "claude-desktop"]).status();
-    let rc = drop::run("claude-desktop", true);
+    let rc = drop::run("claude-desktop");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/Claude",
@@ -16,7 +16,7 @@ pub fn claude() -> i32 {
 }
 
 pub fn t3code() -> i32 {
-    let rc = drop::run("t3code", true);
+    let rc = drop::run("t3code");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/t3code",
@@ -34,7 +34,7 @@ pub fn ollama() -> i32 {
         .status();
 
     // Try to drop whichever variant is installed (best-effort)
-    let _ = drop::run("ollama", true);
+    let _ = drop::run("ollama");
 
     let _ = Command::new("sudo").args(["rm", "-rf", "/var/lib/ollama"]).status();
     rm_rf(&["$HOME/.ollama"]);
@@ -43,7 +43,7 @@ pub fn ollama() -> i32 {
 }
 
 pub fn chatgpt() -> i32 {
-    let rc = drop::run("openai-codex-desktop", true);
+    let rc = drop::run("openai-codex-desktop");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/Codex",
@@ -62,7 +62,7 @@ pub fn lm_studio() -> i32 {
         .map(|s| s.trim().to_owned())
         .unwrap_or_default();
 
-    let rc = drop::run("lmstudio", true);
+    let rc = drop::run("lmstudio");
     if rc != 0 { return rc; }
 
     rm_rf(&[
@@ -87,7 +87,7 @@ pub fn lm_studio() -> i32 {
 }
 
 pub fn grok_bot() -> i32 {
-    let rc = drop::run("grok-bot", true);
+    let rc = drop::run("grok-bot");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/Grok Bot",
@@ -98,7 +98,7 @@ pub fn grok_bot() -> i32 {
 }
 
 pub fn perplexity() -> i32 {
-    let rc = drop::run("perplexity", true);
+    let rc = drop::run("perplexity");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.cache/Perplexity",
@@ -165,7 +165,7 @@ pub fn openclaw() -> i32 {
             .status();
     }
 
-    let rc = drop::run("openclaw", true);
+    let rc = drop::run("openclaw");
     if rc != 0 { return rc; }
 
     let _ = std::fs::remove_file(format!("{home}/.local/share/applications/OpenClaw.desktop"));
@@ -224,7 +224,7 @@ pub fn hermes() -> i32 {
     }
 
     // Fallback: just drop the package
-    let rc = drop::run("hermes-desktop", true);
+    let rc = drop::run("hermes-desktop");
     if rc != 0 { return rc; }
     println!("\nHermes Desktop has been removed.");
     0

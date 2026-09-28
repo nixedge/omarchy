@@ -109,7 +109,7 @@ pub fn run(desktop_id: &str, entry_name: Option<&str>) -> i32 {
     if path_str.contains("/nix/store/") || path_str.contains("/run/current-system/") {
         eprintln!(
             "'{display_name}' is a system package desktop entry managed by NixOS.\n\
-             To remove it, use:\n  omarchy-cli pkg drop <package-name>"
+             To remove it, use:\n  omarchy pkg drop <package-name>"
         );
         return 1;
     }

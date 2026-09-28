@@ -5,7 +5,7 @@ use std::process::Command;
 
 pub fn steam() -> i32 {
     println!("Installing Steam…");
-    let rc = add::run("steam", true);
+    let rc = add::run("steam");
     if rc != 0 {
         return rc;
     }
@@ -17,7 +17,7 @@ pub fn steam() -> i32 {
 
 pub fn heroic() -> i32 {
     println!("Installing Heroic Games Launcher…");
-    let rc = add::run("heroic", true);
+    let rc = add::run("heroic");
     if rc != 0 {
         return rc;
     }
@@ -40,7 +40,7 @@ pub fn lutris() -> i32 {
 
 pub fn retroarch() -> i32 {
     println!("Installing RetroArch…");
-    let rc = add::run("retroarch-full", true);
+    let rc = add::run("retroarch-full");
     if rc != 0 {
         return rc;
     }
@@ -102,7 +102,7 @@ fn set_retroarch_cfg(path: &std::path::Path, entries: &[(&str, &str)]) {
 
 pub fn xbox_controllers() -> i32 {
     println!("Installing Xbox controller Bluetooth support…");
-    let rc = add::run("xpadneo-dkms", true);
+    let rc = add::run("xpadneo-dkms");
     if rc != 0 {
         return rc;
     }
@@ -139,7 +139,7 @@ pub fn battlenet() -> i32 {
 
     println!("Installing Battle.net…");
 
-    let rc = add::run("umu-launcher", true);
+    let rc = add::run("umu-launcher");
     if rc != 0 {
         return rc;
     }
@@ -189,7 +189,7 @@ pub fn battlenet() -> i32 {
 
 pub fn geforce_now() -> i32 {
     println!("Installing GeForce NOW…");
-    let rc = add::run("flatpak", true);
+    let rc = add::run("flatpak");
     if rc != 0 {
         return rc;
     }

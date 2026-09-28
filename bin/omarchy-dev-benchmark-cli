@@ -7,7 +7,8 @@
 set -euo pipefail
 
 OMARCHY_BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-CLI="$OMARCHY_BIN_DIR/omarchy"
+# Allow callers to override the binary under test (e.g. OMARCHY_CLI=/path/to/rust-omarchy).
+CLI="${OMARCHY_CLI:-$OMARCHY_BIN_DIR/omarchy}"
 REPEAT=5
 
 show_help() {

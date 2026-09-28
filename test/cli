@@ -3,7 +3,8 @@
 set -euo pipefail
 
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-CLI="$ROOT/bin/omarchy"
+# Allow OMARCHY_CLI to override the binary under test (e.g. for the Rust build).
+CLI="${OMARCHY_CLI:-$ROOT/bin/omarchy}"
 TMPDIRS=()
 
 export PATH="$ROOT/bin:$PATH"
@@ -44,7 +45,10 @@ cleanup() {
   local dir
 
   for dir in ${TMPDIRS[@]+"${TMPDIRS[@]}"}; do
-    [[ -d $dir ]] && rm -rf "$dir"
+    if [[ -d $dir ]]; then
+      chmod -R u+w "$dir" 2>/dev/null || true
+      rm -rf "$dir"
+    fi
   done
 
   return 0
@@ -105,7 +109,7 @@ pass "GeForce NOW remover keeps hyphenated canonical route"
 "$CLI" commands --json | jq -e '.commands[] | select(.binary == "omarchy-install-gaming-gpu-lib32" and .route == "omarchy install gaming gpu-lib32" and .filename_route == "omarchy install gaming gpu lib32" and (.routes | index("omarchy install gaming gpu lib32")))' >/dev/null
 pass "GPU lib32 installer keeps hyphenated canonical route"
 
-"$CLI" commands --json | jq -e '.commands[] | select(.binary == "omarchy-refresh-pacman" and .requires_sudo == true)' >/dev/null
+"$CLI" commands --json | jq -e '.commands[] | select(.binary == "omarchy-debug" and .requires_sudo == true)' >/dev/null
 pass "sudo metadata marks sudo commands"
 
 output=$("$CLI" theme --help)
@@ -236,7 +240,7 @@ pass "aliases are included in JSON metadata"
 
 output=$("$CLI" pkg add --help)
 assert_output_contains "pkg add help resolves" "$output" "omarchy-pkg-add"
-assert_output_contains "pkg add help shows direct route" "$output" "omarchy pkg add [--async] <package>"
+assert_output_contains "pkg add help shows direct route" "$output" "omarchy pkg add <package>"
 
 output=$("$CLI" system reboot --help)
 assert_output_contains "system command help is safe" "$output" "omarchy-system-reboot"
@@ -535,7 +539,7 @@ FAKE_BIN="$PI_TMPDIR/fake-bin"
 mkdir -p "$FAKE_BIN"
 
 cat >"$FAKE_BIN/tmux" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 case "$1" in
   list-sessions)
     [[ $2 == "-F" ]] && echo "session-1"
@@ -587,7 +591,7 @@ pass "hunk sync skips signaling without running hunk"
 rm -f "$FAKE_BIN/pgrep" "$FAKE_BIN/pkill" "$FAKE_BIN/sleep"
 
 cat >"$FAKE_BIN/gsettings" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo "$*" >>"${GSETTINGS_LOG:-/dev/null}"
 EOF
 chmod +x "$FAKE_BIN/gsettings"
@@ -597,13 +601,13 @@ grep -q 'org.gnome.desktop.interface color-scheme prefer-light' "$PI_TMPDIR/gset
 pass "gnome sync reads mode from colors.toml"
 
 cat >"$FAKE_BIN/omarchy-cmd-present" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 [[ $1 == "code" ]]
 EOF
 chmod +x "$FAKE_BIN/omarchy-cmd-present"
 
 cat >"$FAKE_BIN/omarchy-toggle-enabled" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 exit 1
 EOF
 chmod +x "$FAKE_BIN/omarchy-toggle-enabled"
@@ -622,11 +626,11 @@ jq -e '.[] | select(.identifier.id == "local.omarchy-theme" and .relativeLocatio
 pass "vscode generated theme registers local extension"
 
 for binary in \
-  omarchy-update \
   omarchy-theme-set \
   omarchy-capture-screenshot \
   omarchy-system-reboot \
-  omarchy-pkg-add; do
+  omarchy-theme-current \
+  omarchy-theme-list; do
   [[ -x $ROOT/bin/$binary ]] || fail "binary is executable: $binary"
   pass "binary is executable: $binary"
 done
@@ -651,7 +655,7 @@ make_tmpdir TMPDIR
 ln -s "$CLI" "$TMPDIR/omarchy"
 
 {
-  printf '#!/bin/bash\n\n'
+  printf '#!/bin/sh\n\n'
   printf '# ordinary comments are fine\n'
   printf '# omarchy:this malformed line should be ignored\n'
   printf '# omarchy:group=weird\n'
@@ -663,7 +667,7 @@ ln -s "$CLI" "$TMPDIR/omarchy"
 chmod +x "$TMPDIR/omarchy-weird-test"
 
 {
-  printf '#!/bin/bash\n\n'
+  printf '#!/bin/sh\n\n'
   printf '# a partial metadata header should not destroy fallback routing\n'
   printf '# omarchy:summary=Partial metadata keeps inferred route\n'
   printf '# omarchy:made-up=value\n'
@@ -672,7 +676,7 @@ chmod +x "$TMPDIR/omarchy-weird-test"
 chmod +x "$TMPDIR/omarchy-partial-meta-test"
 
 {
-  printf '#!/bin/bash\n\n'
+  printf '#!/bin/sh\n\n'
   printf 'echo body-metadata-ok\n'
   printf '# omarchy:group=wrong\n'
   printf '# omarchy:name=wrong\n'
@@ -701,7 +705,7 @@ assert_output_contains "body metadata command dispatches by filename" "$output" 
 # resolves, leaving unresolved words ahead of the flag (e.g. `update aur --help`
 # used to start a real update because only the first leftover token was checked).
 {
-  printf '#!/bin/bash\n\n'
+  printf '#!/bin/sh\n\n'
   printf '# omarchy:summary=Partial resolution help test parent\n'
   printf '# omarchy:alias=omarchy parenthelp-alias\n'
   printf 'echo "parenthelp-parent-ran args=[$*]"\n'
@@ -709,7 +713,7 @@ assert_output_contains "body metadata command dispatches by filename" "$output" 
 chmod +x "$TMPDIR/omarchy-parenthelp"
 
 {
-  printf '#!/bin/bash\n\n'
+  printf '#!/bin/sh\n\n'
   printf '# omarchy:summary=Partial resolution help test child\n'
   printf 'echo parenthelp-child-ran\n'
 } >"$TMPDIR/omarchy-parenthelp-child"

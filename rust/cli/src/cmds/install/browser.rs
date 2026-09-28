@@ -8,7 +8,7 @@ pub fn install(name: BrowserName) -> i32 {
     match name {
         BrowserName::Chromium => {
             println!("Installing Chromium…");
-            let rc = add::run("chromium", true);
+            let rc = add::run("chromium");
             if rc != 0 { return rc; }
             setup_chromium_policy("/etc/chromium/policies/managed", &omarchy_path);
             copy_chromium_flags("chromium-flags.conf", &omarchy_path);
@@ -18,7 +18,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::Chrome => {
             println!("Installing Chrome…");
-            let rc = add::run("google-chrome", true);
+            let rc = add::run("google-chrome");
             if rc != 0 { return rc; }
             setup_chromium_policy("/etc/opt/chrome/policies/managed", &omarchy_path);
             copy_chromium_flags("chrome-flags.conf", &omarchy_path);
@@ -28,7 +28,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::Edge => {
             println!("Installing Edge…");
-            let rc = add::run("microsoft-edge", true);
+            let rc = add::run("microsoft-edge");
             if rc != 0 { return rc; }
             setup_chromium_policy("/etc/opt/edge/policies/managed", &omarchy_path);
             copy_chromium_flags("microsoft-edge-stable-flags.conf", &omarchy_path);
@@ -38,7 +38,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::Brave => {
             println!("Installing Brave…");
-            let rc = add::run("brave", true);
+            let rc = add::run("brave");
             if rc != 0 { return rc; }
             setup_chromium_policy("/etc/brave/policies/managed", &omarchy_path);
             copy_chromium_flags("brave-flags.conf", &omarchy_path);
@@ -48,7 +48,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::BraveOrigin => {
             println!("Installing Brave Origin…");
-            let rc = add::run("brave", true);
+            let rc = add::run("brave");
             if rc != 0 { return rc; }
             setup_chromium_policy("/etc/brave/policies/managed", &omarchy_path);
             copy_chromium_flags("brave-origin-flags.conf", &omarchy_path);
@@ -58,7 +58,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::Firefox => {
             println!("Installing Firefox…");
-            let rc = add::run("firefox", true);
+            let rc = add::run("firefox");
             if rc != 0 { return rc; }
             setup_firefox_wayland();
             announce("Firefox");
@@ -66,7 +66,7 @@ pub fn install(name: BrowserName) -> i32 {
         }
         BrowserName::Zen => {
             println!("Installing Zen…");
-            let rc = add::run("zen-browser", true);
+            let rc = add::run("zen-browser");
             if rc != 0 { return rc; }
             setup_firefox_wayland();
             announce("Zen");

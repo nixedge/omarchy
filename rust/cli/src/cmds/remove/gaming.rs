@@ -3,7 +3,7 @@ use crate::cmds::{drop, install};
 use std::process::Command;
 
 pub fn steam() -> i32 {
-    let rc = drop::run("steam", true);
+    let rc = drop::run("steam");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.steam",
@@ -16,7 +16,7 @@ pub fn steam() -> i32 {
 }
 
 pub fn heroic() -> i32 {
-    let rc = drop::run("heroic", true);
+    let rc = drop::run("heroic");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/heroic",
@@ -46,7 +46,7 @@ pub fn lutris() -> i32 {
 }
 
 pub fn retroarch() -> i32 {
-    let rc = drop::run("retroarch-full", true);
+    let rc = drop::run("retroarch-full");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.config/retroarch",
@@ -59,7 +59,7 @@ pub fn retroarch() -> i32 {
 }
 
 pub fn minecraft() -> i32 {
-    let rc = drop::run("minecraft-launchers", true);
+    let rc = drop::run("minecraft-launchers");
     if rc != 0 { return rc; }
     rm_rf(&[
         "$HOME/.minecraft",
@@ -72,7 +72,7 @@ pub fn minecraft() -> i32 {
 }
 
 pub fn xbox_controllers() -> i32 {
-    let rc = drop::run("xpadneo-dkms", true);
+    let rc = drop::run("xpadneo-dkms");
     if rc != 0 { return rc; }
     // On NixOS these files would be in a declarative config, but clean up
     // any manually created ones

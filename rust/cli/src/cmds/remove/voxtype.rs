@@ -25,7 +25,7 @@ pub fn run() -> i32 {
         .args(["--user", "daemon-reload"])
         .status();
 
-    let rc = drop::run("voxtype-bin", true);
+    let rc = drop::run("voxtype-bin");
 
     let home = std::env::var("HOME").unwrap_or_default();
     let _ = std::fs::remove_dir_all(format!("{home}/.config/voxtype"));

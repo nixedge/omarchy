@@ -33,16 +33,12 @@
             install -d $out/share/bash-completion/completions \
                        $out/share/zsh/site-functions \
                        $out/share/fish/vendor_completions.d
-            # clap_complete splits hyphenated binary names differently in the
-            # state-machine loop vs the opts handler section, producing mismatched
-            # state names. Normalize by replacing the broken opts-section prefix.
-            $out/bin/omarchy-cli completions bash \
-              | sed 's/omarchy__subcmd__cli/omarchy__cli/g' \
-              > $out/share/bash-completion/completions/omarchy-cli
-            $out/bin/omarchy-cli completions zsh \
-              > $out/share/zsh/site-functions/_omarchy-cli
-            $out/bin/omarchy-cli completions fish \
-              > $out/share/fish/vendor_completions.d/omarchy-cli.fish
+            $out/bin/omarchy completions bash \
+              > $out/share/bash-completion/completions/omarchy
+            $out/bin/omarchy completions zsh \
+              > $out/share/zsh/site-functions/_omarchy
+            $out/bin/omarchy completions fish \
+              > $out/share/fish/vendor_completions.d/omarchy.fish
 
             # Backward-compatible symlinks — argv[0] dispatch routes each name
             # to the right subcommand without wrapper scripts.
@@ -370,8 +366,105 @@
               omarchy-network-password \
               omarchy-network-qr \
               omarchy-network-speedtest \
-              omarchy-network-status; do
-              ln -s $out/bin/omarchy-cli $out/bin/$name
+              omarchy-network-status \
+              omarchy-dev-add-migration \
+              omarchy-dev-benchmark-cli \
+              omarchy-dev-benchmark-theme-switcher \
+              omarchy-dev-font \
+              omarchy-dev-theme-preview \
+              omarchy-dev-ui-preview \
+              omarchy-drive-info \
+              omarchy-drive-password \
+              omarchy-drive-select \
+              omarchy-file-select \
+              omarchy-menu \
+              omarchy-menu-clipboard \
+              omarchy-menu-emoji \
+              omarchy-menu-emoji-insert \
+              omarchy-menu-file \
+              omarchy-menu-herdr-keybindings \
+              omarchy-menu-images \
+              omarchy-menu-input \
+              omarchy-menu-keybindings \
+              omarchy-menu-plugin \
+              omarchy-menu-select \
+              omarchy-menu-share \
+              omarchy-menu-timezone \
+              omarchy-menu-tmux-keybindings \
+              omarchy-openclaw-onboard \
+              omarchy-plugin-add \
+              omarchy-plugin-catalog \
+              omarchy-plugin-clone \
+              omarchy-plugin-disable \
+              omarchy-plugin-enable \
+              omarchy-plugin-list \
+              omarchy-plugin-remove \
+              omarchy-plugin-update \
+              omarchy-plugin-validate \
+              omarchy-channel-current \
+              omarchy-channel-set \
+              omarchy-hibernation-available \
+              omarchy-hibernation-remove \
+              omarchy-hibernation-setup \
+              omarchy-plymouth-current \
+              omarchy-plymouth-list \
+              omarchy-plymouth-preview \
+              omarchy-plymouth-reset \
+              omarchy-plymouth-set \
+              omarchy-plymouth-set-by-theme \
+              omarchy-plymouth-switcher \
+              omarchy-refresh-applications \
+              omarchy-refresh-chromium \
+              omarchy-refresh-config \
+              omarchy-refresh-herdr \
+              omarchy-refresh-hyprland \
+              omarchy-refresh-hyprsunset \
+              omarchy-refresh-plymouth \
+              omarchy-refresh-sddm \
+              omarchy-refresh-shell \
+              omarchy-refresh-tmux \
+              omarchy-theme-bg-cache \
+              omarchy-theme-bg-current \
+              omarchy-theme-bg-install \
+              omarchy-theme-bg-next \
+              omarchy-theme-bg-set \
+              omarchy-theme-bg-switcher \
+              omarchy-theme-color \
+              omarchy-theme-colors-from-alacritty \
+              omarchy-theme-current \
+              omarchy-theme-dir \
+              omarchy-theme-extras \
+              omarchy-theme-install \
+              omarchy-theme-list \
+              omarchy-theme-osc \
+              omarchy-theme-refresh \
+              omarchy-theme-remove \
+              omarchy-theme-set \
+              omarchy-theme-set-browser \
+              omarchy-theme-set-browser-policy \
+              omarchy-theme-set-claude \
+              omarchy-theme-set-foot \
+              omarchy-theme-set-gnome \
+              omarchy-theme-set-hermes \
+              omarchy-theme-set-keyboard \
+              omarchy-theme-set-keyboard-asus-rog \
+              omarchy-theme-set-keyboard-f16 \
+              omarchy-theme-set-obsidian \
+              omarchy-theme-set-pi \
+              omarchy-theme-set-t3code \
+              omarchy-theme-set-templates \
+              omarchy-theme-set-tmux \
+              omarchy-theme-set-vscode \
+              omarchy-theme-switcher \
+              omarchy-theme-update \
+              omarchy-transcode \
+              omarchy-transcode-ascii \
+              omarchy-voxtype-config \
+              omarchy-voxtype-model \
+              omarchy-voxtype-status \
+              omarchy-webapp-handler-hey \
+              omarchy-webapp-handler-zoom; do
+              ln -s $out/bin/omarchy $out/bin/$name
             done
           '';
         });
@@ -445,22 +538,9 @@
               omarchy-apply-hardware \
               omarchy-apply-system \
               omarchy-apply-lock \
-              omarchy-channel-current \
-              omarchy-channel-set \
-              omarchy-hibernation-available \
-              omarchy-hibernation-remove \
-              omarchy-hibernation-setup \
-              omarchy-plymouth-current \
-              omarchy-plymouth-list \
-              omarchy-plymouth-preview \
-              omarchy-plymouth-reset \
-              omarchy-plymouth-set \
-              omarchy-plymouth-set-by-theme \
-              omarchy-plymouth-switcher \
               omarchy-provision-first-run \
               omarchy-provision-owner \
-              omarchy-provision-user \
-              omarchy-refresh-plymouth; do
+              omarchy-provision-user; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 

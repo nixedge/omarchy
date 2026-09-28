@@ -12,7 +12,7 @@ pub fn install(name: TerminalName) -> i32 {
     };
 
     println!("Installing {pkg}…");
-    let rc = add::run(pkg, true);
+    let rc = add::run(pkg);
     if rc != 0 {
         return rc;
     }

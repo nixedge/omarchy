@@ -5,7 +5,7 @@ use std::process::Command;
 
 pub fn helix() -> i32 {
     println!("Installing Helix…");
-    let rc = add::run("helix", true);
+    let rc = add::run("helix");
     if rc != 0 {
         return rc;
     }
@@ -35,7 +35,7 @@ pub fn helix() -> i32 {
 
 pub fn vscode() -> i32 {
     println!("Installing VS Code…");
-    let rc = add::run("vscode", true);
+    let rc = add::run("vscode");
     if rc != 0 {
         return rc;
     }
@@ -65,7 +65,7 @@ pub fn emacs() -> i32 {
     println!("Installing Emacs…");
     // On NixOS, use the emacs package from nixpkgs
     // The omarchy-emacs AUR package is Arch-specific; use emacs directly
-    let rc = add::run("emacs", true);
+    let rc = add::run("emacs");
     if rc != 0 {
         return rc;
     }
@@ -75,7 +75,7 @@ pub fn emacs() -> i32 {
 
 pub fn zed() -> i32 {
     println!("Installing Zed Editor…");
-    let rc = add::run("zed-editor", true);
+    let rc = add::run("zed-editor");
     if rc != 0 {
         return rc;
     }

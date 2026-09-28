@@ -9,12 +9,13 @@ mod theme;
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use cli::{
-    AgentCmd, AudioCmd, BluetoothCmd, BrandingCmd, BrightnessCmd, CaptureCmd, Cli, Cmd,
-    BatteryCmd, ClipboardCmd, CmdCheckCmd, ConfigCmd, CrashCmd, DebugCmd, DefaultCmd,
-    FontCmd, HookCmd, HwCmd, HyprlandCmd, InstallCmd, LaunchCmd, MigrateCmd, NetworkCmd,
-    NotificationCmd, PkgCmd, PowerCmd, PowerprofilesCmd,
-    RemoveCmd, RestartCmd, ServiceCmd, SetupCmd, SudoCmd, SystemCmd, TailscaleCmd, ToggleCmd,
-    UpdateCmd, WeatherCmd,
+    AgentCmd, ApplyCmd, AudioCmd, BluetoothCmd, BrandingCmd, BrightnessCmd, CaptureCmd,
+    ChannelCmd, Cli, Cmd, BatteryCmd, ClipboardCmd, CmdCheckCmd, ConfigCmd, CrashCmd, DebugCmd,
+    DefaultCmd, DevCmd, DriveCmd, FontCmd, HibernationCmd, HookCmd, HwCmd, HyprlandCmd,
+    InstallCmd, LaunchCmd, MenuCmd, MigrateCmd, NetworkCmd, NotificationCmd, PkgCmd, PluginCmd,
+    PlymouthCmd, PowerCmd, PowerprofilesCmd, RefreshCmd, RemoveCmd, RestartCmd, ServiceCmd,
+    SetupCmd, SudoCmd, SystemCmd, TailscaleCmd, ThemeCmd, ToggleCmd, TranscodeCmd, UpdateCmd,
+    VersionCmd, VoxtypeCmd, WeatherCmd, WebappHandlerCmd,
 };
 use std::process;
 
@@ -196,7 +197,7 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-show-logo" => Some(&["show-logo"]),
         // version
         "omarchy-version" => Some(&["version"]),
-        "omarchy-version-branch" => Some(&["version-branch"]),
+        "omarchy-version-branch" => Some(&["version", "branch"]),
         // powerprofiles
         "omarchy-powerprofiles-init" => Some(&["powerprofiles", "init"]),
         "omarchy-powerprofiles-list" => Some(&["powerprofiles", "list"]),
@@ -397,7 +398,662 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-network-qr" => Some(&["network", "qr"]),
         "omarchy-network-speedtest" => Some(&["network", "speedtest"]),
         "omarchy-network-status" => Some(&["network", "status"]),
+        // dev
+        "omarchy-dev-add-migration" => Some(&["dev", "add-migration"]),
+        "omarchy-dev-benchmark-cli" => Some(&["dev", "benchmark-cli"]),
+        "omarchy-dev-benchmark-theme-switcher" => Some(&["dev", "benchmark-theme-switcher"]),
+        "omarchy-dev-font" => Some(&["dev", "font"]),
+        "omarchy-dev-theme-preview" => Some(&["dev", "theme-preview"]),
+        "omarchy-dev-ui-preview" => Some(&["dev", "ui-preview"]),
+        // drive
+        "omarchy-drive-info" => Some(&["drive", "info"]),
+        "omarchy-drive-password" => Some(&["drive", "password"]),
+        "omarchy-drive-select" => Some(&["drive", "select"]),
+        // file-select
+        "omarchy-file-select" => Some(&["file-select"]),
+        // menu
+        "omarchy-menu" => Some(&["menu", "main"]),
+        "omarchy-menu-clipboard" => Some(&["menu", "clipboard"]),
+        "omarchy-menu-emoji" => Some(&["menu", "emoji"]),
+        "omarchy-menu-emoji-insert" => Some(&["menu", "emoji-insert"]),
+        "omarchy-menu-file" => Some(&["menu", "file"]),
+        "omarchy-menu-herdr-keybindings" => Some(&["menu", "herdr-keybindings"]),
+        "omarchy-menu-images" => Some(&["menu", "images"]),
+        "omarchy-menu-input" => Some(&["menu", "input"]),
+        "omarchy-menu-keybindings" => Some(&["menu", "keybindings"]),
+        "omarchy-menu-plugin" => Some(&["menu", "plugin"]),
+        "omarchy-menu-select" => Some(&["menu", "select"]),
+        "omarchy-menu-share" => Some(&["menu", "share"]),
+        "omarchy-menu-timezone" => Some(&["menu", "timezone"]),
+        "omarchy-menu-tmux-keybindings" => Some(&["menu", "tmux-keybindings"]),
+        // openclaw-onboard
+        "omarchy-openclaw-onboard" => Some(&["openclaw-onboard"]),
+        // plugin
+        "omarchy-plugin-add" => Some(&["plugin", "add"]),
+        "omarchy-plugin-catalog" => Some(&["plugin", "catalog"]),
+        "omarchy-plugin-clone" => Some(&["plugin", "clone"]),
+        "omarchy-plugin-disable" => Some(&["plugin", "disable"]),
+        "omarchy-plugin-enable" => Some(&["plugin", "enable"]),
+        "omarchy-plugin-list" => Some(&["plugin", "list"]),
+        "omarchy-plugin-remove" => Some(&["plugin", "remove"]),
+        "omarchy-plugin-update" => Some(&["plugin", "update"]),
+        "omarchy-plugin-validate" => Some(&["plugin", "validate"]),
+        // channel
+        "omarchy-channel-current" => Some(&["channel", "current"]),
+        "omarchy-channel-set" => Some(&["channel", "set"]),
+        // hibernation
+        "omarchy-hibernation-available" => Some(&["hibernation", "available"]),
+        "omarchy-hibernation-remove" => Some(&["hibernation", "remove"]),
+        "omarchy-hibernation-setup" => Some(&["hibernation", "setup"]),
+        // plymouth
+        "omarchy-plymouth-current" => Some(&["plymouth", "current"]),
+        "omarchy-plymouth-list" => Some(&["plymouth", "list"]),
+        "omarchy-plymouth-preview" => Some(&["plymouth", "preview"]),
+        "omarchy-plymouth-reset" => Some(&["plymouth", "reset"]),
+        "omarchy-plymouth-set" => Some(&["plymouth", "set"]),
+        "omarchy-plymouth-set-by-theme" => Some(&["plymouth", "set-by-theme"]),
+        "omarchy-plymouth-switcher" => Some(&["plymouth", "switcher"]),
+        // refresh
+        "omarchy-refresh-applications" => Some(&["refresh", "applications"]),
+        "omarchy-refresh-chromium" => Some(&["refresh", "chromium"]),
+        "omarchy-refresh-config" => Some(&["refresh", "config"]),
+        "omarchy-refresh-herdr" => Some(&["refresh", "herdr"]),
+        "omarchy-refresh-hyprland" => Some(&["refresh", "hyprland"]),
+        "omarchy-refresh-hyprsunset" => Some(&["refresh", "hyprsunset"]),
+        "omarchy-refresh-shell" => Some(&["refresh", "shell"]),
+        "omarchy-refresh-tmux" => Some(&["refresh", "tmux"]),
+        "omarchy-refresh-plymouth" => Some(&["refresh", "plymouth"]),
+        "omarchy-refresh-sddm" => Some(&["refresh", "sddm"]),
+        // theme
+        "omarchy-theme-bg-cache" => Some(&["theme", "bg-cache"]),
+        "omarchy-theme-bg-current" => Some(&["theme", "bg-current"]),
+        "omarchy-theme-bg-install" => Some(&["theme", "bg-install"]),
+        "omarchy-theme-bg-next" => Some(&["theme", "bg-next"]),
+        "omarchy-theme-bg-set" => Some(&["theme", "bg-set"]),
+        "omarchy-theme-bg-switcher" => Some(&["theme", "bg-switcher"]),
+        "omarchy-theme-color" => Some(&["theme", "color"]),
+        "omarchy-theme-colors-from-alacritty" => Some(&["theme", "colors-from-alacritty"]),
+        "omarchy-theme-current" => Some(&["theme", "current"]),
+        "omarchy-theme-dir" => Some(&["theme", "dir"]),
+        "omarchy-theme-extras" => Some(&["theme", "extras"]),
+        "omarchy-theme-install" => Some(&["theme", "install"]),
+        "omarchy-theme-list" => Some(&["theme", "list"]),
+        "omarchy-theme-osc" => Some(&["theme", "osc"]),
+        "omarchy-theme-refresh" => Some(&["theme", "refresh"]),
+        "omarchy-theme-remove" => Some(&["theme", "remove"]),
+        "omarchy-theme-set" => Some(&["theme", "set"]),
+        "omarchy-theme-set-browser" => Some(&["theme", "set-browser"]),
+        "omarchy-theme-set-browser-policy" => Some(&["theme", "set-browser-policy"]),
+        "omarchy-theme-set-claude" => Some(&["theme", "set-claude"]),
+        "omarchy-theme-set-foot" => Some(&["theme", "set-foot"]),
+        "omarchy-theme-set-gnome" => Some(&["theme", "set-gnome"]),
+        "omarchy-theme-set-hermes" => Some(&["theme", "set-hermes"]),
+        "omarchy-theme-set-keyboard" => Some(&["theme", "set-keyboard"]),
+        "omarchy-theme-set-keyboard-asus-rog" => Some(&["theme", "set-keyboard-asus-rog"]),
+        "omarchy-theme-set-keyboard-f16" => Some(&["theme", "set-keyboard-f16"]),
+        "omarchy-theme-set-obsidian" => Some(&["theme", "set-obsidian"]),
+        "omarchy-theme-set-pi" => Some(&["theme", "set-pi"]),
+        "omarchy-theme-set-t3code" => Some(&["theme", "set-t3code"]),
+        "omarchy-theme-set-templates" => Some(&["theme", "set-templates"]),
+        "omarchy-theme-set-tmux" => Some(&["theme", "set-tmux"]),
+        "omarchy-theme-set-vscode" => Some(&["theme", "set-vscode"]),
+        "omarchy-theme-switcher" => Some(&["theme", "switcher"]),
+        "omarchy-theme-update" => Some(&["theme", "update"]),
+        // transcode
+        "omarchy-transcode" => Some(&["transcode", "convert"]),
+        "omarchy-transcode-ascii" => Some(&["transcode", "ascii"]),
+        // voxtype
+        "omarchy-voxtype-config" => Some(&["voxtype", "config"]),
+        "omarchy-voxtype-model" => Some(&["voxtype", "model"]),
+        "omarchy-voxtype-status" => Some(&["voxtype", "status"]),
+        // webapp-handler
+        "omarchy-webapp-handler-hey" => Some(&["webapp-handler", "hey"]),
+        "omarchy-webapp-handler-zoom" => Some(&["webapp-handler", "zoom"]),
+        // screenshot root alias
+        "omarchy-screenshot" => Some(&["screenshot"]),
+        // share root alias
+        "omarchy-share" => Some(&["share"]),
+        // apply (install-time plumbing)
+        "omarchy-apply-hardware" => Some(&["apply", "hardware"]),
+        "omarchy-apply-system" => Some(&["apply", "system"]),
+        "omarchy-apply-lock" => Some(&["apply", "lock"]),
         _ => None,
+    }
+}
+
+fn exec_hw(name: &str, args: &[String]) -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-hw-{}", omarchy_path, name);
+    let err = std::process::Command::new(&script).args(args).exec();
+    eprintln!("exec failed: {}", err);
+    1
+}
+
+fn exec_bin(binary: &str, args: &[String]) -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/{}", omarchy_path, binary);
+    let err = std::process::Command::new(&script).args(args).exec();
+    eprintln!("exec failed: {}", err);
+    1
+}
+
+/// Recursively collect leaf command routes from a Clap subcommand tree.
+/// Each entry is (binary_name, summary).
+fn collect_leaf_routes(cmd: &clap::Command, stem: &str, out: &mut Vec<(String, String)>) {
+    let subs: Vec<_> = cmd.get_subcommands()
+        .filter(|c| !matches!(c.get_name(), "help"))
+        .collect();
+
+    if subs.is_empty() {
+        // Leaf command
+        let about = cmd.get_about().map(|s| s.to_string()).unwrap_or_default();
+        out.push((format!("omarchy-{}", stem), about));
+    } else {
+        for sub in subs {
+            let sub_stem = format!("{}-{}", stem, sub.get_name());
+            collect_leaf_routes(sub, &sub_stem, out);
+        }
+    }
+}
+
+/// Print the help for a named subcommand to stdout and return 0.
+/// Used when a group command is invoked with no subcommand — mirrors the bash
+/// router behaviour of showing group help to stdout rather than erroring.
+fn print_group_help(group: &str) -> i32 {
+    let mut cmd = Cli::command();
+    if let Some(sub) = cmd.find_subcommand_mut(group) {
+        let _ = sub.print_long_help();
+    }
+    0
+}
+
+fn handle_partial_prefix(args: &[String]) -> Option<i32> {
+    // Need at least: [binary, group, partial-or-flag]
+    if args.len() < 2 {
+        return None;
+    }
+
+    let group = &args[1];
+
+    // Skip pure flags at position 1 (e.g. `omarchy --help` should let Clap handle it)
+    if group.starts_with('-') {
+        return None;
+    }
+
+    // Get all subcommand names for the group from the Clap tree
+    let root = Cli::command();
+
+    if let Some(group_cmd) = root.get_subcommands().find(|c| c.get_name() == group.as_str()) {
+        // Known Clap group — partial subcommand prefix matching
+        if args.len() < 3 {
+            return None;
+        }
+        let prefix = args[2..].iter()
+            .filter(|a| !a.starts_with('-'))
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("-");
+        if prefix.is_empty() {
+            return None;
+        }
+
+        let matches: Vec<_> = group_cmd
+            .get_subcommands()
+            .filter(|c| c.get_name().starts_with(prefix.as_str()))
+            .collect();
+
+        if matches.is_empty() {
+            return None;
+        }
+
+        // Print matching routes
+        for sub in &matches {
+            let sub_name = sub.get_name();
+            // Convert "asus-rog" → "asus rog" for display
+            let sub_words = sub_name.replace('-', " ");
+            let route = format!("omarchy {} {}", group, sub_words);
+            let about = sub.get_about().map(|s| s.to_string()).unwrap_or_default();
+            if about.is_empty() {
+                println!("{}", route);
+            } else {
+                println!("{}  {}", route, about);
+            }
+        }
+
+        return Some(0);
+    }
+
+    // Shell-script-only group: scan $OMARCHY_PATH/bin and the argv[0] directory
+    // for omarchy-<group>-* scripts and the parent omarchy-<group> binary.
+    // Also checks alias metadata to handle e.g. `parenthelp-alias` → `omarchy-parenthelp`.
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+
+    // Directories to scan (deduplicated).
+    let mut scan_dirs: Vec<std::path::PathBuf> = Vec::new();
+    if !omarchy_path.is_empty() {
+        scan_dirs.push(std::path::Path::new(&omarchy_path).join("bin"));
+    }
+    // Also scan the directory of argv[0] for extension scripts (used in tests).
+    if let Some(argv0) = std::env::args().next() {
+        if let Some(parent) = std::path::Path::new(&argv0).parent() {
+            let parent_buf = parent.to_path_buf();
+            if !parent_buf.as_os_str().is_empty() && !scan_dirs.contains(&parent_buf) {
+                scan_dirs.push(parent_buf);
+            }
+        }
+    }
+
+    if scan_dirs.is_empty() {
+        return None;
+    }
+
+    /// Read the summary, aliases, and alias routes from a script's metadata header.
+    fn read_script_meta(path: &std::path::Path) -> (String, Vec<String>) {
+        let content = match std::fs::read_to_string(path) {
+            Ok(c) => c,
+            Err(_) => return (String::new(), Vec::new()),
+        };
+        let mut summary = String::new();
+        let mut aliases: Vec<String> = Vec::new();
+        let mut seen_non_meta = false;
+        for (i, line) in content.lines().enumerate() {
+            if i == 0 && line.starts_with("#!") { continue; }
+            if line.trim().is_empty() { continue; }
+            if !line.starts_with('#') { seen_non_meta = true; break; }
+            if let Some(v) = line.strip_prefix("# omarchy:summary=") {
+                summary = v.trim().to_string();
+            } else if let Some(v) = line.strip_prefix("# omarchy:alias=") {
+                aliases.push(v.trim().to_string());
+            } else if let Some(v) = line.strip_prefix("# omarchy:aliases=") {
+                aliases.push(v.trim().to_string());
+            }
+            let _ = seen_non_meta;
+        }
+        (summary, aliases)
+    }
+
+    let child_prefix = format!("omarchy-{}-", group);
+    let parent_name = format!("omarchy-{}", group);
+
+    // (binary_name, summary, full_path)
+    let mut scripts: Vec<(String, String, std::path::PathBuf)> = Vec::new();
+    // Parent binary path (if found)
+    let mut parent_script: Option<(String, std::path::PathBuf)> = None; // (summary, path)
+    // Alias resolution: if `group` is an alias for some other binary, record it.
+    let mut alias_parent: Option<(String, String, std::path::PathBuf)> = None; // (real_name, summary, path)
+
+    let alias_needle = format!("omarchy {}", group);
+
+    for dir in &scan_dirs {
+        let dir_entries: Vec<_> = match std::fs::read_dir(dir) {
+            Ok(e) => e.flatten().collect(),
+            Err(_) => continue,
+        };
+        for entry in dir_entries {
+            let fname = match entry.file_name().into_string() {
+                Ok(s) => s,
+                Err(_) => continue,
+            };
+            let path = entry.path();
+            if fname == parent_name {
+                let (summary, _) = read_script_meta(&path);
+                parent_script = Some((summary, path.clone()));
+            } else if fname.starts_with(&child_prefix) {
+                let (summary, _) = read_script_meta(&path);
+                scripts.push((fname, summary, path));
+            } else if alias_parent.is_none() {
+                // Check if this script has an alias matching our group name
+                let (summary, aliases) = read_script_meta(&path);
+                if aliases.iter().any(|a| a == &alias_needle) {
+                    alias_parent = Some((fname, summary, path));
+                }
+            }
+        }
+    }
+
+    // Also scan root-level Rust Clap commands matching <group>-* or <group>
+    let group_prefix = format!("{}-", group);
+    let mut clap_routes: Vec<(String, String)> = Vec::new();
+    for sub in root.get_subcommands() {
+        let sub_name = sub.get_name();
+        if sub_name.starts_with(group_prefix.as_str()) || sub_name == group.as_str() {
+            collect_leaf_routes(sub, sub_name, &mut clap_routes);
+        }
+    }
+    for (binary, summary) in clap_routes {
+        if !scripts.iter().any(|(b, _, _)| b == &binary) {
+            scripts.push((binary, summary, std::path::PathBuf::new()));
+        }
+    }
+
+    // Resolve the canonical parent: direct parent > alias parent > nothing
+    let resolved_parent: Option<(String, String, std::path::PathBuf)> = if let Some((summary, path)) = parent_script {
+        Some((parent_name.clone(), summary, path))
+    } else if let Some((name, summary, path)) = alias_parent.clone() {
+        Some((name, summary, path))
+    } else {
+        None
+    };
+
+    // If no children AND no parent, there's nothing to do for this group.
+    if scripts.is_empty() && resolved_parent.is_none() {
+        return None;
+    }
+
+    // Helper: check if `--help` or `-h` appears before any `--` in the given slice.
+    fn has_help_flag(tokens: &[String]) -> bool {
+        for t in tokens {
+            if t == "--" { break; }
+            if t == "--help" || t == "-h" { return true; }
+        }
+        false
+    }
+
+    // Helper: check if `--json` appears before any `--` in the given slice.
+    fn has_json_flag(tokens: &[String]) -> bool {
+        for t in tokens {
+            if t == "--" { break; }
+            if t == "--json" { return true; }
+        }
+        false
+    }
+
+    /// Print the group listing for the current group.
+    fn print_group_listing(group: &str, scripts: &[(String, String, std::path::PathBuf)], parent: Option<&(String, String, std::path::PathBuf)>) {
+        let cap = format!("{}{}", &group[..1].to_uppercase(), &group[1..]);
+        println!("{} commands", cap);
+        println!();
+        let mut display: Vec<(String, String)> = Vec::new();
+        if let Some((name, summary, _)) = parent {
+            display.push((name.clone(), summary.clone()));
+        }
+        for (b, s, _) in scripts {
+            display.push((b.clone(), s.clone()));
+        }
+        display.sort_by(|a, b| a.0.cmp(&b.0));
+        display.dedup_by(|a, b| a.0 == b.0);
+        for (binary, summary) in &display {
+            let stem = binary.strip_prefix("omarchy-").unwrap_or(binary);
+            let route = format!("omarchy {}", stem.replace('-', " "));
+            if summary.is_empty() {
+                println!("  {}", route);
+            } else {
+                println!("  {}  {}", route, summary);
+            }
+        }
+    }
+
+    // Bare group invocation (args.len() < 3) or explicit --help at position 2
+    let pos2_is_help = args.len() >= 3 && (args[2] == "--help" || args[2] == "-h");
+    if args.len() < 3 || pos2_is_help {
+        print_group_listing(group, &scripts, resolved_parent.as_ref());
+        return Some(0);
+    }
+
+    // From here, args[2..] contains the subcommand words + flags.
+    let remaining = &args[2..];
+
+    // Try to match a specific child command from the remaining args.
+    // Non-flag tokens are joined with hyphens to form the child suffix.
+    // We stop accumulating words when we find an exact child match.
+    let mut child_match: Option<(String, String, std::path::PathBuf, Vec<String>)> = None; // (name, summary, path, leftover_args)
+
+    let word_tokens: Vec<String> = remaining.iter()
+        .take_while(|t| t.as_str() != "--")
+        .filter(|t| !t.starts_with('-'))
+        .cloned()
+        .collect();
+
+    for word_count in (1..=word_tokens.len()).rev() {
+        let joined = word_tokens[..word_count].join("-");
+        let candidate = format!("omarchy-{}-{}", group, joined);
+        if let Some((_, s, p)) = scripts.iter().find(|(b, _, _)| b == &candidate) {
+            // Compute the leftover args: everything in remaining that isn't the matched words
+            // (preserving flags and post-`--` tokens).
+            let mut leftover: Vec<String> = Vec::new();
+            let mut words_consumed = 0usize;
+            let mut past_dashdash = false;
+            for tok in remaining {
+                if tok == "--" {
+                    past_dashdash = true;
+                    leftover.push(tok.clone());
+                    continue;
+                }
+                if !past_dashdash && !tok.starts_with('-') && words_consumed < word_count {
+                    words_consumed += 1;
+                    continue; // consumed as part of the child name
+                }
+                leftover.push(tok.clone());
+            }
+            child_match = Some((candidate, s.clone(), p.clone(), leftover));
+            break;
+        }
+    }
+
+    if let Some((child_name, child_summary, child_path, leftover)) = child_match {
+        // Check for --help flag in leftover (before --)
+        if has_help_flag(&leftover) {
+            let stem = child_name.strip_prefix("omarchy-").unwrap_or(&child_name);
+            let route = format!("omarchy {}", stem.replace('-', " "));
+            if has_json_flag(&leftover) {
+                // JSON help mode
+                let json = serde_json::json!({
+                    "ok": true,
+                    "route": route,
+                    "binary": child_name,
+                    "summary": child_summary,
+                });
+                println!("{}", serde_json::to_string_pretty(&json).unwrap_or_default());
+            } else {
+                println!("{}", route);
+                if !child_summary.is_empty() {
+                    println!();
+                    println!("{}", child_summary);
+                }
+                if !child_path.as_os_str().is_empty() {
+                    println!();
+                    println!("Binary: {}", child_name);
+                }
+            }
+            return Some(0);
+        }
+
+        if !child_path.as_os_str().is_empty() {
+            use std::os::unix::process::CommandExt;
+            let err = std::process::Command::new(&child_path).args(&leftover).exec();
+            eprintln!("exec failed: {}", err);
+            return Some(1);
+        }
+        // Rust Clap child (no path): fall through to print
+        let stem = child_name.strip_prefix("omarchy-").unwrap_or(&child_name);
+        let route = format!("omarchy {}", stem.replace('-', " "));
+        if child_summary.is_empty() {
+            println!("{}", route);
+        } else {
+            println!("{}  {}", route, child_summary);
+        }
+        return Some(0);
+    }
+
+    // No child matched.  Check if --help is in remaining (before --).
+    // When a parent binary exists, show command help (binary name + related commands).
+    // Otherwise fall back to the group listing.
+    if has_help_flag(remaining) {
+        if has_json_flag(remaining) {
+            // JSON help: show the parent command's JSON (or a group listing in JSON).
+            if let Some((parent_name, parent_summary, _)) = &resolved_parent {
+                let stem = parent_name.strip_prefix("omarchy-").unwrap_or(parent_name);
+                let route = format!("omarchy {}", stem.replace('-', " "));
+                let json = serde_json::json!({
+                    "ok": true,
+                    "route": route,
+                    "binary": parent_name,
+                    "summary": parent_summary,
+                });
+                println!("{}", serde_json::to_string_pretty(&json).unwrap_or_default());
+            } else {
+                let json = serde_json::json!({"ok": false, "group": group});
+                println!("{}", serde_json::to_string_pretty(&json).unwrap_or_default());
+            }
+            return Some(0);
+        }
+        if let Some((parent_name, parent_summary, _)) = &resolved_parent {
+            // Show single-command help: summary + binary name + related commands
+            let stem = parent_name.strip_prefix("omarchy-").unwrap_or(parent_name);
+            let route = format!("omarchy {}", stem.replace('-', " "));
+            println!("Usage:");
+            println!("  {}", route);
+            println!();
+            println!("{}", parent_summary);
+            println!();
+            println!("Binary:");
+            println!("  {}", parent_name);
+            if !scripts.is_empty() {
+                println!();
+                println!("Related commands:");
+                let mut related: Vec<_> = scripts.iter()
+                    .map(|(b, s, _)| (b.clone(), s.clone()))
+                    .collect();
+                related.sort_by(|a, b| a.0.cmp(&b.0));
+                for (binary, summary) in &related {
+                    let child_stem = binary.strip_prefix("omarchy-").unwrap_or(binary);
+                    let child_route = format!("omarchy {}", child_stem.replace('-', " "));
+                    if summary.is_empty() {
+                        println!("  {}", child_route);
+                    } else {
+                        println!("  {}  {}", child_route, summary);
+                    }
+                }
+            }
+        } else {
+            // No parent binary — show full group listing
+            print_group_listing(group, &scripts, None);
+        }
+        return Some(0);
+    }
+
+    // No child match, no help flag.  If there is a parent binary, exec it with all remaining args.
+    if let Some((_, _, parent_path)) = &resolved_parent {
+        if !parent_path.as_os_str().is_empty() {
+            use std::os::unix::process::CommandExt;
+            let err = std::process::Command::new(parent_path).args(remaining).exec();
+            eprintln!("exec failed: {}", err);
+            return Some(1);
+        }
+    }
+
+    // Partial subcommand matching — show all children that start with the prefix.
+    let sub_prefix = word_tokens.join("-");
+    if !sub_prefix.is_empty() {
+        let match_prefix = format!("omarchy-{}-{}", group, sub_prefix);
+        let matching: Vec<_> = scripts.iter()
+            .filter(|(b, _, _)| b.starts_with(&match_prefix))
+            .collect();
+        if !matching.is_empty() {
+            for (binary, summary, _) in &matching {
+                let stem = binary.strip_prefix("omarchy-").unwrap_or(binary);
+                let route = format!("omarchy {}", stem.replace('-', " "));
+                if summary.is_empty() {
+                    println!("{}", route);
+                } else {
+                    println!("{}  {}", route, summary);
+                }
+            }
+            return Some(0);
+        }
+    }
+
+    None
+}
+
+/// Attempt to normalise multi-word subcommand invocations into the hyphenated
+/// names Clap expects.  For example:
+///
+///   ["omarchy", "dev", "benchmark", "cli", "--repeat=1"]
+///   → ["omarchy", "dev", "benchmark-cli", "--repeat=1"]
+///
+/// The function:
+/// 1. Finds the group subcommand (args[1]).
+/// 2. Greedily joins non-flag tokens from args[2..] with hyphens while at
+///    least one subcommand of that group starts with the accumulated prefix.
+/// 3. When the accumulated prefix exactly matches exactly one subcommand name,
+///    it splices the normalised name in place of the consumed word tokens.
+///
+/// Returns the original slice unchanged when no normalisation is needed.
+fn normalize_multiword_subcmd(args: Vec<String>) -> Vec<String> {
+    // Need at least [binary, group, word, ...]
+    if args.len() < 3 {
+        return args;
+    }
+    let group = &args[1];
+    if group.starts_with('-') {
+        return args;
+    }
+    let root = Cli::command();
+    let group_cmd = match root.get_subcommands().find(|c| c.get_name() == group.as_str()) {
+        Some(c) => c,
+        None => return args, // shell-script-only group, nothing to normalise
+    };
+
+    // Walk forward through args[2..], accumulating non-flag tokens into a
+    // hyphenated prefix.  Stop when no subcommand starts with the prefix.
+    let mut prefix = String::new();
+    let mut word_count = 0usize;
+    let mut exact_match: Option<String> = None;
+
+    for tok in &args[2..] {
+        if tok.starts_with('-') {
+            // Flag — stop accumulating subcommand words.
+            break;
+        }
+        let candidate = if prefix.is_empty() {
+            tok.clone()
+        } else {
+            format!("{}-{}", prefix, tok)
+        };
+
+        // Check if any subcommand name still starts with this candidate.
+        let still_viable = group_cmd
+            .get_subcommands()
+            .any(|c| c.get_name().starts_with(candidate.as_str()));
+        if !still_viable {
+            break;
+        }
+        prefix = candidate;
+        word_count += 1;
+
+        // Check for an exact match at this point.
+        let n_exact = group_cmd
+            .get_subcommands()
+            .filter(|c| c.get_name() == prefix.as_str())
+            .count();
+        if n_exact == 1 {
+            exact_match = Some(prefix.clone());
+        }
+        // If we've consumed more words than the longest subcommand name could
+        // have, stop.
+        let max_depth = group_cmd
+            .get_subcommands()
+            .map(|c| c.get_name().chars().filter(|&ch| ch == '-').count() + 1)
+            .max()
+            .unwrap_or(1);
+        if word_count >= max_depth {
+            break;
+        }
+    }
+
+    // Only rewrite when we have an exact match and consumed more than 1 word
+    // (single-word subcommands parse fine on their own).
+    match exact_match {
+        Some(name) if word_count > 1 => {
+            let mut new_args = vec![args[0].clone(), args[1].clone(), name];
+            // Remaining args: skip the word_count tokens from args[2..]
+            new_args.extend_from_slice(&args[2 + word_count..]);
+            new_args
+        }
+        _ => args,
     }
 }
 
@@ -416,11 +1072,36 @@ fn main() {
         })
         .unwrap_or(raw);
 
-    let cli = Cli::parse_from(&args);
+    // Normalise multi-word subcommand calls (e.g. "dev benchmark cli") into
+    // the hyphenated form Clap expects ("dev benchmark-cli").
+    let args = normalize_multiword_subcmd(args);
+
+    let cli = match Cli::try_parse_from(&args) {
+        Ok(c) => c,
+        Err(err) => {
+            // DisplayHelp / DisplayVersion are intentional — let Clap handle them
+            // directly so that e.g. `omarchy theme set --help` shows the command's
+            // long_about rather than falling through to handle_partial_prefix.
+            if matches!(err.kind(), clap::error::ErrorKind::DisplayHelp | clap::error::ErrorKind::DisplayVersion) {
+                err.exit();
+            }
+            // When invoked with no subcommand, Clap would show help on stderr and
+            // exit 2.  Mirror the bash router behaviour: print help to stdout and
+            // exit 0 so callers can safely capture the output.
+            if matches!(err.kind(), clap::error::ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand) {
+                let _ = Cli::command().print_long_help();
+                process::exit(0);
+            }
+            if let Some(code) = handle_partial_prefix(&args) {
+                process::exit(code);
+            }
+            err.exit();
+        }
+    };
     let code = match cli.cmd {
         Cmd::Pkg { subcmd } => match subcmd {
-            PkgCmd::Add { name, sync } => cmds::add::run(&name, sync),
-            PkgCmd::Drop { name, sync } => cmds::drop::run(&name, sync),
+            PkgCmd::Add { name } => cmds::add::run(&name),
+            PkgCmd::Drop { name } => cmds::drop::run(&name),
             PkgCmd::List => cmds::list::run(),
             PkgCmd::Search { query } => cmds::search::run(&query),
             PkgCmd::Sync => cmds::sync::run(),
@@ -440,46 +1121,47 @@ fn main() {
             ServiceCmd::Active { name } => cmds::service::active::run(&name),
         },
         Cmd::Install { subcmd } => match subcmd {
-            InstallCmd::GamingSteam => cmds::install::gaming::steam(),
-            InstallCmd::GamingHeroic => cmds::install::gaming::heroic(),
-            InstallCmd::GamingLutris => cmds::install::gaming::lutris(),
-            InstallCmd::GamingRetroarch => cmds::install::gaming::retroarch(),
-            InstallCmd::GamingXboxControllers => cmds::install::gaming::xbox_controllers(),
-            InstallCmd::GamingXboxCloud => cmds::install::gaming::xbox_cloud(),
-            InstallCmd::GamingBattlenet => cmds::install::gaming::battlenet(),
-            InstallCmd::GamingGeforceNow => cmds::install::gaming::geforce_now(),
-            InstallCmd::GamingGpuLib32 => { cmds::install::gaming::gpu_lib32(); 0 },
-            InstallCmd::EditorHelix => cmds::install::editor::helix(),
-            InstallCmd::EditorVscode => cmds::install::editor::vscode(),
-            InstallCmd::EditorEmacs => cmds::install::editor::emacs(),
-            InstallCmd::EditorZed => cmds::install::editor::zed(),
-            InstallCmd::AiClaude => cmds::install::ai::claude(),
-            InstallCmd::AiHermes => cmds::install::ai::hermes(),
-            InstallCmd::AiT3code => cmds::install::ai::t3code(),
-            InstallCmd::AiChatgpt => cmds::install::ai::chatgpt(),
-            InstallCmd::Browser { name } => cmds::install::browser::install(name),
-            InstallCmd::DevEnv { name } => cmds::install::devenv::install(name),
-            InstallCmd::Terminal { name } => cmds::install::terminal::install(name),
-            InstallCmd::ChromiumClaude => cmds::install::chromium::claude(),
-            InstallCmd::ChromiumCopyUrl => cmds::install::chromium::copy_url(),
-            InstallCmd::ChromiumYtdlp => cmds::install::chromium::ytdlp(),
-            InstallCmd::ChromiumGoogleAccount => cmds::install::chromium::google_account(),
-            InstallCmd::Font { name, package, family } => cmds::install::font::install(&name, &package, &family),
-            InstallCmd::AndLaunch { name, packages, desktop_id } => cmds::install::and_launch::run(&name, &packages, &desktop_id),
-            InstallCmd::App { name, packages } => cmds::install::app::run(&name, &packages),
-            InstallCmd::OpenclawCli { check, .. } => cmds::install::openclaw_cli::run(check),
-            InstallCmd::DockerDbs { dbs } => cmds::install::docker_dbs::run(&dbs),
-            InstallCmd::Preinstalls => cmds::install::preinstalls::run(),
-            InstallCmd::ServiceOnce => cmds::install::service_once::run(),
-            InstallCmd::Voxtype => cmds::install::voxtype::run(),
-            InstallCmd::Tui { name, command, window_style, icon } => {
+            None => print_group_help("install"),
+            Some(InstallCmd::GamingSteam) => cmds::install::gaming::steam(),
+            Some(InstallCmd::GamingHeroic) => cmds::install::gaming::heroic(),
+            Some(InstallCmd::GamingLutris) => cmds::install::gaming::lutris(),
+            Some(InstallCmd::GamingRetroarch) => cmds::install::gaming::retroarch(),
+            Some(InstallCmd::GamingXboxControllers) => cmds::install::gaming::xbox_controllers(),
+            Some(InstallCmd::GamingXboxCloud) => cmds::install::gaming::xbox_cloud(),
+            Some(InstallCmd::GamingBattlenet) => cmds::install::gaming::battlenet(),
+            Some(InstallCmd::GamingGeforceNow) => cmds::install::gaming::geforce_now(),
+            Some(InstallCmd::GamingGpuLib32) => { cmds::install::gaming::gpu_lib32(); 0 },
+            Some(InstallCmd::EditorHelix) => cmds::install::editor::helix(),
+            Some(InstallCmd::EditorVscode) => cmds::install::editor::vscode(),
+            Some(InstallCmd::EditorEmacs) => cmds::install::editor::emacs(),
+            Some(InstallCmd::EditorZed) => cmds::install::editor::zed(),
+            Some(InstallCmd::AiClaude) => cmds::install::ai::claude(),
+            Some(InstallCmd::AiHermes) => cmds::install::ai::hermes(),
+            Some(InstallCmd::AiT3code) => cmds::install::ai::t3code(),
+            Some(InstallCmd::AiChatgpt) => cmds::install::ai::chatgpt(),
+            Some(InstallCmd::Browser { name }) => cmds::install::browser::install(name),
+            Some(InstallCmd::DevEnv { name }) => cmds::install::devenv::install(name),
+            Some(InstallCmd::Terminal { name }) => cmds::install::terminal::install(name),
+            Some(InstallCmd::ChromiumClaude) => cmds::install::chromium::claude(),
+            Some(InstallCmd::ChromiumCopyUrl) => cmds::install::chromium::copy_url(),
+            Some(InstallCmd::ChromiumYtdlp) => cmds::install::chromium::ytdlp(),
+            Some(InstallCmd::ChromiumGoogleAccount) => cmds::install::chromium::google_account(),
+            Some(InstallCmd::Font { name, package, family }) => cmds::install::font::install(&name, &package, &family),
+            Some(InstallCmd::AndLaunch { name, packages, desktop_id }) => cmds::install::and_launch::run(&name, &packages, &desktop_id),
+            Some(InstallCmd::App { name, packages }) => cmds::install::app::run(&name, &packages),
+            Some(InstallCmd::OpenclawCli { check, .. }) => cmds::install::openclaw_cli::run(check),
+            Some(InstallCmd::DockerDbs { dbs }) => cmds::install::docker_dbs::run(&dbs),
+            Some(InstallCmd::Preinstalls) => cmds::install::preinstalls::run(),
+            Some(InstallCmd::ServiceOnce) => cmds::install::service_once::run(),
+            Some(InstallCmd::Voxtype) => cmds::install::voxtype::run(),
+            Some(InstallCmd::Tui { name, command, window_style, icon }) => {
                 cmds::install::tui::run(name.as_deref(), command.as_deref(), window_style.as_deref(), icon.as_deref())
             }
-            InstallCmd::Webapp { name, url, icon, custom_exec, mime_types } => {
+            Some(InstallCmd::Webapp { name, url, icon, custom_exec, mime_types }) => {
                 cmds::install::webapp::run(name.as_deref(), url.as_deref(), icon.as_deref(), custom_exec.as_deref(), mime_types.as_deref())
             }
-            InstallCmd::AiOpenclaw => cmds::install::ai::openclaw(),
-            InstallCmd::HermesCli { check, owns, remove } => cmds::install::hermes_cli::run(check, owns, remove),
+            Some(InstallCmd::AiOpenclaw) => cmds::install::ai::openclaw(),
+            Some(InstallCmd::HermesCli { check, owns, remove }) => cmds::install::hermes_cli::run(check, owns, remove),
         },
         Cmd::Remove { subcmd } => match subcmd {
             RemoveCmd::GamingSteam => cmds::remove::gaming::steam(),
@@ -540,6 +1222,33 @@ fn main() {
                 }
                 0
             }
+            HwCmd::AsusRog => exec_hw("asus-rog", &[]),
+            HwCmd::AsusExpertbookB9406 => exec_hw("asus-expertbook-b9406", &[]),
+            HwCmd::AsusZenbookUx5406aa => exec_hw("asus-zenbook-ux5406aa", &[]),
+            HwCmd::Clamshell => exec_hw("clamshell", &[]),
+            HwCmd::DellXps13SidecarAmps => exec_hw("dell-xps13-sidecar-amps", &[]),
+            HwCmd::DellXpsHapticTouchpad => exec_hw("dell-xps-haptic-touchpad", &[]),
+            HwCmd::DellXpsOled => exec_hw("dell-xps-oled", &[]),
+            HwCmd::Display => exec_hw("display", &[]),
+            HwCmd::ElegatoCamlink4k => exec_hw("elgato-camlink-4k", &[]),
+            HwCmd::ExternalMonitors => exec_hw("external-monitors", &[]),
+            HwCmd::Fingerprint => exec_hw("fingerprint", &[]),
+            HwCmd::Framework16 => exec_hw("framework16", &[]),
+            HwCmd::HybridGpu => exec_hw("hybrid-gpu", &[]),
+            HwCmd::Intel => exec_hw("intel", &[]),
+            HwCmd::IntelPtl => exec_hw("intel-ptl", &[]),
+            HwCmd::IntelSof => exec_hw("intel-sof", &[]),
+            HwCmd::Laptop => exec_hw("laptop", &[]),
+            HwCmd::LaptopClosed => exec_hw("laptop-closed", &[]),
+            HwCmd::Match { args } => exec_hw("match", &args),
+            HwCmd::Nvidia => exec_hw("nvidia", &[]),
+            HwCmd::NvidiaGsp => exec_hw("nvidia-gsp", &[]),
+            HwCmd::NvidiaWithoutGsp => exec_hw("nvidia-without-gsp", &[]),
+            HwCmd::Surface => exec_hw("surface", &[]),
+            HwCmd::Touchpad => exec_hw("touchpad", &[]),
+            HwCmd::Touchscreen => exec_hw("touchscreen", &[]),
+            HwCmd::Vulkan => exec_hw("vulkan", &[]),
+            HwCmd::Webcam => exec_hw("webcam", &[]),
         },
         Cmd::Restart { subcmd } => match subcmd {
             RestartCmd::App { name, args } => cmds::restart::app(&name, &args),
@@ -584,8 +1293,10 @@ fn main() {
         Cmd::Done { action, name } => cmds::done_cmd::done(&action, &name),
         Cmd::ShowDone { exit_code } => cmds::done_cmd::show_done(exit_code),
         Cmd::ShowLogo => cmds::done_cmd::show_logo(),
-        Cmd::Version => cmds::version_cmd::version(),
-        Cmd::VersionBranch => cmds::version_cmd::branch(),
+        Cmd::Version { subcmd } => match subcmd {
+            None | Some(VersionCmd::Show) => cmds::version_cmd::version(),
+            Some(VersionCmd::Branch) => cmds::version_cmd::branch(),
+        },
         Cmd::Powerprofiles { subcmd } => match subcmd {
             PowerprofilesCmd::Init => cmds::powerprofiles::init(),
             PowerprofilesCmd::List { active_state } => cmds::powerprofiles::list(active_state),
@@ -661,20 +1372,21 @@ fn main() {
             BrightnessCmd::KeyboardMute { state } => cmds::brightness::keyboard_mute(&state),
         },
         Cmd::Toggle { subcmd } => match subcmd {
-            ToggleCmd::Flag { flag_name, action } => cmds::toggle::flag(&flag_name, &action),
-            ToggleCmd::Bar { action } => cmds::toggle::bar(&action),
-            ToggleCmd::CrashCapture => cmds::toggle::crash_capture(),
-            ToggleCmd::Enabled { flag_name } => cmds::toggle::enabled(&flag_name),
-            ToggleCmd::FullscreenDesktop { action } => cmds::toggle::fullscreen_desktop(&action),
-            ToggleCmd::HybridGpu => cmds::toggle::hybrid_gpu(),
-            ToggleCmd::Idle { action } => cmds::toggle::idle(&action),
-            ToggleCmd::InputDevice { kind, action } => cmds::toggle::input_device(&kind, &action),
-            ToggleCmd::Nightlight { status } => cmds::toggle::nightlight(status),
-            ToggleCmd::NotificationSilencing => cmds::toggle::notification_silencing(),
-            ToggleCmd::Screensaver => cmds::toggle::screensaver(),
-            ToggleCmd::Suspend => cmds::toggle::suspend(),
-            ToggleCmd::Touchpad { action } => cmds::toggle::touchpad(&action),
-            ToggleCmd::Touchscreen { action } => cmds::toggle::touchscreen(&action),
+            None => print_group_help("toggle"),
+            Some(ToggleCmd::Flag { flag_name, action }) => cmds::toggle::flag(&flag_name, &action),
+            Some(ToggleCmd::Bar { action }) => cmds::toggle::bar(&action),
+            Some(ToggleCmd::CrashCapture) => cmds::toggle::crash_capture(),
+            Some(ToggleCmd::Enabled { flag_name }) => cmds::toggle::enabled(&flag_name),
+            Some(ToggleCmd::FullscreenDesktop { action }) => cmds::toggle::fullscreen_desktop(&action),
+            Some(ToggleCmd::HybridGpu) => cmds::toggle::hybrid_gpu(),
+            Some(ToggleCmd::Idle { action }) => cmds::toggle::idle(&action),
+            Some(ToggleCmd::InputDevice { kind, action }) => cmds::toggle::input_device(&kind, &action),
+            Some(ToggleCmd::Nightlight { status }) => cmds::toggle::nightlight(status),
+            Some(ToggleCmd::NotificationSilencing) => cmds::toggle::notification_silencing(),
+            Some(ToggleCmd::Screensaver) => cmds::toggle::screensaver(),
+            Some(ToggleCmd::Suspend) => cmds::toggle::suspend(),
+            Some(ToggleCmd::Touchpad { action }) => cmds::toggle::touchpad(&action),
+            Some(ToggleCmd::Touchscreen { action }) => cmds::toggle::touchscreen(&action),
         },
         Cmd::Bluetooth { subcmd } => match subcmd {
             BluetoothCmd::Device { action, address } => cmds::bluetooth::device(&action, &address),
@@ -776,7 +1488,7 @@ fn main() {
             HookCmd::Install { hook_type, file } => cmds::hook::install(&hook_type, &file),
         },
         Cmd::Completions { shell } => {
-            generate(shell, &mut Cli::command(), "omarchy-cli", &mut std::io::stdout());
+            generate(shell, &mut Cli::command(), "omarchy", &mut std::io::stdout());
             0
         }
         // ── Batch 3 ──────────────────────────────────────────────────────────
@@ -876,6 +1588,157 @@ fn main() {
             NetworkCmd::Qr { args } => cmds::network::qr(&args),
             NetworkCmd::Speedtest { args } => cmds::network::speedtest(&args),
             NetworkCmd::Status { args } => cmds::network::status(&args),
+        },
+        // ── Batch 4 ──────────────────────────────────────────────────────────
+        Cmd::Dev { subcmd } => match subcmd {
+            DevCmd::AddMigration { args } => cmds::dev::add_migration(&args),
+            DevCmd::BenchmarkCli { args } => cmds::dev::benchmark_cli(&args),
+            DevCmd::BenchmarkThemeSwitcher { args } => cmds::dev::benchmark_theme_switcher(&args),
+            DevCmd::Font { args } => cmds::dev::font(&args),
+            DevCmd::ThemePreview { args } => cmds::dev::theme_preview(&args),
+            DevCmd::UiPreview { args } => cmds::dev::ui_preview(&args),
+        },
+        Cmd::Drive { subcmd } => match subcmd {
+            DriveCmd::Info { args } => cmds::drive::info(&args),
+            DriveCmd::Password { args } => cmds::drive::password(&args),
+            DriveCmd::Select { args } => cmds::drive::select(&args),
+        },
+        Cmd::FileSelect { args } => cmds::file_select::run(&args),
+        Cmd::Menu { subcmd } => match subcmd {
+            MenuCmd::Main { args } => cmds::menu::main_menu(&args),
+            MenuCmd::Clipboard { args } => cmds::menu::clipboard(&args),
+            MenuCmd::Emoji { args } => cmds::menu::emoji(&args),
+            MenuCmd::EmojiInsert { args } => cmds::menu::emoji_insert(&args),
+            MenuCmd::File { args } => cmds::menu::file(&args),
+            MenuCmd::HerdrKeybindings { args } => cmds::menu::herdr_keybindings(&args),
+            MenuCmd::Images { args } => cmds::menu::images(&args),
+            MenuCmd::Input { args } => cmds::menu::input(&args),
+            MenuCmd::Keybindings { args } => cmds::menu::keybindings(&args),
+            MenuCmd::Plugin { args } => cmds::menu::plugin(&args),
+            MenuCmd::Select { args } => cmds::menu::select(&args),
+            MenuCmd::Share { args } => cmds::menu::share(&args),
+            MenuCmd::Timezone { args } => cmds::menu::timezone(&args),
+            MenuCmd::TmuxKeybindings { args } => cmds::menu::tmux_keybindings(&args),
+        },
+        Cmd::OpenclawOnboard { args } => cmds::openclaw_onboard::run(&args),
+        Cmd::Plugin { subcmd } => match subcmd {
+            PluginCmd::Add { args } => cmds::plugin::add(&args),
+            PluginCmd::Catalog { args } => cmds::plugin::catalog(&args),
+            PluginCmd::Clone { args } => cmds::plugin::clone(&args),
+            PluginCmd::Disable { args } => cmds::plugin::disable(&args),
+            PluginCmd::Enable { args } => cmds::plugin::enable(&args),
+            PluginCmd::List { args } => cmds::plugin::list(&args),
+            PluginCmd::Remove { args } => cmds::plugin::remove(&args),
+            PluginCmd::Update { args } => cmds::plugin::update(&args),
+            PluginCmd::Validate { args } => cmds::plugin::validate(&args),
+        },
+        Cmd::Refresh { subcmd } => match subcmd {
+            RefreshCmd::Applications { args } => cmds::refresh::applications(&args),
+            RefreshCmd::Chromium { args } => cmds::refresh::chromium(&args),
+            RefreshCmd::Config { args } => cmds::refresh::config(&args),
+            RefreshCmd::Herdr { args } => cmds::refresh::herdr(&args),
+            RefreshCmd::Hyprland { args } => cmds::refresh::hyprland(&args),
+            RefreshCmd::Hyprsunset { args } => cmds::refresh::hyprsunset(&args),
+            RefreshCmd::Shell { args } => cmds::refresh::shell(&args),
+            RefreshCmd::Tmux { args } => cmds::refresh::tmux(&args),
+            RefreshCmd::Plymouth { args } => exec_bin("omarchy-refresh-plymouth", &args),
+            RefreshCmd::Sddm { args } => exec_bin("omarchy-refresh-sddm", &args),
+        },
+        Cmd::Channel { subcmd } => match subcmd {
+            ChannelCmd::Current { args } => exec_bin("omarchy-channel-current", &args),
+            ChannelCmd::Set { args } => exec_bin("omarchy-channel-set", &args),
+        },
+        Cmd::Hibernation { subcmd } => match subcmd {
+            HibernationCmd::Available => exec_bin("omarchy-hibernation-available", &[]),
+            HibernationCmd::Remove { args } => exec_bin("omarchy-hibernation-remove", &args),
+            HibernationCmd::Setup { args } => exec_bin("omarchy-hibernation-setup", &args),
+        },
+        Cmd::Plymouth { subcmd } => match subcmd {
+            PlymouthCmd::Current => exec_bin("omarchy-plymouth-current", &[]),
+            PlymouthCmd::List => exec_bin("omarchy-plymouth-list", &[]),
+            PlymouthCmd::Preview { args } => exec_bin("omarchy-plymouth-preview", &args),
+            PlymouthCmd::Reset { args } => exec_bin("omarchy-plymouth-reset", &args),
+            PlymouthCmd::Set { args } => exec_bin("omarchy-plymouth-set", &args),
+            PlymouthCmd::SetByTheme { args } => exec_bin("omarchy-plymouth-set-by-theme", &args),
+            PlymouthCmd::Switcher { args } => exec_bin("omarchy-plymouth-switcher", &args),
+        },
+        Cmd::Theme { subcmd } => match subcmd {
+            ThemeCmd::BgCache { args } => cmds::theme::bg_cache(&args),
+            ThemeCmd::BgCurrent { args } => cmds::theme::bg_current(&args),
+            ThemeCmd::BgInstall { args } => cmds::theme::bg_install(&args),
+            ThemeCmd::BgNext { args } => cmds::theme::bg_next(&args),
+            ThemeCmd::BgSet { args } => cmds::theme::bg_set(&args),
+            ThemeCmd::BgSwitcher { args } => cmds::theme::bg_switcher(&args),
+            ThemeCmd::Color { args } => cmds::theme::color(&args),
+            ThemeCmd::ColorsFromAlacritty { args } => cmds::theme::colors_from_alacritty(&args),
+            ThemeCmd::Current { args } => cmds::theme::current(&args),
+            ThemeCmd::Dir { args } => cmds::theme::dir(&args),
+            ThemeCmd::Extras { args } => cmds::theme::extras(&args),
+            ThemeCmd::Install { args } => cmds::theme::install(&args),
+            ThemeCmd::List { args } => cmds::theme::list(&args),
+            ThemeCmd::Osc { args } => cmds::theme::osc(&args),
+            ThemeCmd::Refresh { args } => cmds::theme::refresh(&args),
+            ThemeCmd::Remove { args } => cmds::theme::remove(&args),
+            ThemeCmd::Set { args } => cmds::theme::set(&args),
+            ThemeCmd::SetBrowser { args } => cmds::theme::set_browser(&args),
+            ThemeCmd::SetBrowserPolicy { args } => cmds::theme::set_browser_policy(&args),
+            ThemeCmd::SetClaude { args } => cmds::theme::set_claude(&args),
+            ThemeCmd::SetFoot { args } => cmds::theme::set_foot(&args),
+            ThemeCmd::SetGnome { args } => cmds::theme::set_gnome(&args),
+            ThemeCmd::SetHermes { args } => cmds::theme::set_hermes(&args),
+            ThemeCmd::SetKeyboard { args } => cmds::theme::set_keyboard(&args),
+            ThemeCmd::SetKeyboardAsusRog { args } => cmds::theme::set_keyboard_asus_rog(&args),
+            ThemeCmd::SetKeyboardF16 { args } => cmds::theme::set_keyboard_f16(&args),
+            ThemeCmd::SetObsidian { args } => cmds::theme::set_obsidian(&args),
+            ThemeCmd::SetPi { args } => cmds::theme::set_pi(&args),
+            ThemeCmd::SetT3code { args } => cmds::theme::set_t3code(&args),
+            ThemeCmd::SetTemplates { args } => cmds::theme::set_templates(&args),
+            ThemeCmd::SetTmux { args } => cmds::theme::set_tmux(&args),
+            ThemeCmd::SetVscode { args } => cmds::theme::set_vscode(&args),
+            ThemeCmd::Switcher { args } => cmds::theme::switcher(&args),
+            ThemeCmd::Update { args } => cmds::theme::update(&args),
+        },
+        Cmd::Transcode { subcmd } => match subcmd {
+            TranscodeCmd::Convert { args } => cmds::transcode::convert(&args),
+            TranscodeCmd::Ascii { args } => cmds::transcode::ascii(&args),
+        },
+        Cmd::Voxtype { subcmd } => match subcmd {
+            VoxtypeCmd::Config { args } => cmds::voxtype::config(&args),
+            VoxtypeCmd::Model { args } => cmds::voxtype::model(&args),
+            VoxtypeCmd::Status { args } => cmds::voxtype::status(&args),
+        },
+        Cmd::WebappHandler { subcmd } => match subcmd {
+            WebappHandlerCmd::Hey { args } => cmds::webapp_handler::hey(&args),
+            WebappHandlerCmd::Zoom { args } => cmds::webapp_handler::zoom(&args),
+        },
+        Cmd::Commands { all, json, check } => cmds::commands::run(all, json, check),
+        Cmd::Screenshot { args } => cmds::capture::screenshot(&args),
+        Cmd::Share { args } => cmds::menu::share(&args),
+        Cmd::Apply { subcmd } => match subcmd {
+            ApplyCmd::Hardware { args } => {
+                use std::os::unix::process::CommandExt;
+                let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+                let script = format!("{}/bin/omarchy-apply-hardware", omarchy_path);
+                let err = std::process::Command::new(&script).args(&args).exec();
+                eprintln!("exec failed: {}", err);
+                1
+            }
+            ApplyCmd::System { args } => {
+                use std::os::unix::process::CommandExt;
+                let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+                let script = format!("{}/bin/omarchy-apply-system", omarchy_path);
+                let err = std::process::Command::new(&script).args(&args).exec();
+                eprintln!("exec failed: {}", err);
+                1
+            }
+            ApplyCmd::Lock { args } => {
+                use std::os::unix::process::CommandExt;
+                let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+                let script = format!("{}/bin/omarchy-apply-lock", omarchy_path);
+                let err = std::process::Command::new(&script).args(&args).exec();
+                eprintln!("exec failed: {}", err);
+                1
+            }
         },
     };
     process::exit(code);
