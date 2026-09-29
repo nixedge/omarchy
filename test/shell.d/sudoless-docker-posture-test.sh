@@ -12,7 +12,7 @@ trap 'rm -rf "$TMPDIR"' EXIT
 
 # First-boot provisioning must not replay old privileged defaults.
 mkdir -p "$TMPDIR/bin"
-printf '#!/bin/bash\nexit 0\n' >"$TMPDIR/bin/getent" # every group "exists"
+printf '#!/bin/sh\nexit 0\n' >"$TMPDIR/bin/getent" # every group "exists"
 cat >"$TMPDIR/bin/pacman" <<'STUB'
 #!/bin/bash
 [[ $1 == "-Qq" ]] || exit 2

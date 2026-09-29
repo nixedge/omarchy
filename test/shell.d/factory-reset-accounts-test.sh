@@ -77,7 +77,7 @@ make_fixture() {
   touch "$top/@/old-system" "$factory/home/seller/private-file" \
     "$factory/usr/share/omarchy/install/provisioning/omarchy-provision-owner.service" \
     "$factory/var/lib/omarchy/provisioning/packages/node-v0.tar.gz"
-  printf '#!/bin/bash\n' >"$factory/usr/bin/omarchy-provision-owner"
+  printf '#!/bin/sh\n' >"$factory/usr/bin/omarchy-provision-owner"
   chmod +x "$factory/usr/bin/omarchy-provision-owner"
   printf 'true\n' >"$factory/read-only"
   cat >"$factory/etc/passwd" <<'EOF'

@@ -20,7 +20,7 @@ source, scratch = map(Path, sys.argv[1:])
 PY
 
 cat >"$mock_bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >>"$OMARCHY_TEST_DROP_LOG"
 SH
 

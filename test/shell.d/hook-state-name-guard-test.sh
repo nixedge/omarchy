@@ -71,7 +71,7 @@ pass "omarchy hook refuses a hook name with a slash"
 
 source_hook="$work_dir/source-hook"
 cat >"$source_hook" <<'SH'
-#!/bin/bash
+#!/bin/sh
 true
 SH
 

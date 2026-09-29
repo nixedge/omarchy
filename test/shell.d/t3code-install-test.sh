@@ -34,7 +34,7 @@ echo "T3 selected Omarchy"
 SH
 
 cat >"$mock_bin/setsid" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 chmod +x "$mock_bin"/*

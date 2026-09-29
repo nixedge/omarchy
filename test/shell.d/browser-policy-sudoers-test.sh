@@ -60,7 +60,7 @@ stub_bin="$test_tmp/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/pkexec" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'pkexec %s\n' "$*" >"$ELEVATION_LOG"
 SH
 chmod +x "$stub_bin/pkexec"
@@ -141,13 +141,13 @@ mkdir -p "$policy_tmp/a"
 printf '{"BrowserThemeColor": "#ff0000", "BrowserColorScheme": "device"}\n' > "$policy_tmp/a/color.json"
 
 cat >"$setter_bin/omarchy-theme-set-browser-policy" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$COLOR_LOG"
 SH
 chmod +x "$setter_bin/omarchy-theme-set-browser-policy"
 
 cat >"$setter_bin/omarchy-cmd-present" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 chmod +x "$setter_bin/omarchy-cmd-present"

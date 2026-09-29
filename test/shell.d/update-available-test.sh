@@ -12,7 +12,7 @@ git_log="$test_tmp/git.log"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/checkupdates" <<'SH'
-#!/bin/bash
+#!/bin/sh
 case "${TEST_CHECKUPDATES:-updates}" in
   updates)
     printf 'linux 6.1-1 -> 6.1-2\nomarchy 4.0.0-1 -> 4.0.1-1\nomarchy-settings 4.0.0-1 -> 4.0.1-1\nomarchy-dev 4.1.0-1 -> 4.1.1-1\nomarchy-settings-dev 4.1.0-1 -> 4.1.1-1\n'

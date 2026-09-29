@@ -13,7 +13,7 @@ stub_bin="$test_tmp/bin"
 mkdir -p "$test_root/migrations" "$test_home" "$stub_bin"
 
 cat >"$stub_bin/omarchy-notification-dismiss" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$1" >>"$TEST_DISMISSALS"
 SH
 chmod +x "$stub_bin/omarchy-notification-dismiss"

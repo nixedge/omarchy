@@ -33,7 +33,7 @@ SH
 
 for command in omarchy-plugin-enable omarchy-notification-send fake-editor; do
   cat >"$TMPDIR/bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s %s\n' "${0##*/}" "$*" >>"$FAKE_CALLS"
 SH
 done

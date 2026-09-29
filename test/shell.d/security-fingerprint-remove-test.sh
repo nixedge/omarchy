@@ -32,7 +32,7 @@ case "$1" in
 esac
 SH
 cat >"$test_tmp/bin/id" <<'SH'
-#!/bin/bash
+#!/bin/sh
 : >"$TEST_FPRINT/../untrusted-id-called"
 printf 'bob\n'
 SH

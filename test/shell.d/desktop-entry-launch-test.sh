@@ -12,30 +12,30 @@ test_home="$test_tmp/home"
 mkdir -p "$mock_bin" "$test_home"
 
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'pkg:%s\n' "$*" >>"$OMARCHY_TEST_LOG"
 exit "${OMARCHY_TEST_PKG_STATUS:-0}"
 SH
 
 cat >"$mock_bin/omarchy-font-set" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'font:%s\n' "$*" >>"$OMARCHY_TEST_LOG"
 SH
 
 for command in omarchy-pkg-aur-add omarchy-install-emacs omazed omarchy-theme-set-vscode omarchy-install-gaming-gpu-lib32; do
   cat >"$mock_bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 done
 
 cat >"$mock_bin/setsid" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'launch:%s\n' "$*" >>"$OMARCHY_TEST_LOG"
 SH
 
 cat >"$mock_bin/omarchy-launch-floating-terminal-with-presentation" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$1" >"$OMARCHY_TEST_PRESENTATION"
 SH
 

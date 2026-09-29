@@ -14,7 +14,7 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'sudo %s\n' "$*" >>"$TEST_LOG"
 exec "$@"
 STUB

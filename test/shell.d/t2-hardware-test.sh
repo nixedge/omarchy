@@ -45,7 +45,7 @@ done
 SH
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'sudo' >>"$TEST_LOG"
 printf '\t%s' "$@" >>"$TEST_LOG"
@@ -54,7 +54,7 @@ printf '\n' >>"$TEST_LOG"
 SH
 
 cat >"$stub_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'systemctl' >>"$TEST_LOG"
 printf '\t%s' "$@" >>"$TEST_LOG"
@@ -68,7 +68,7 @@ cat >"$stub_bin/omarchy-pkg-present" <<'SH'
 SH
 
 cat >"$stub_bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'omarchy-pkg-drop' >>"$TEST_LOG"
 printf '\t%s' "$@" >>"$TEST_LOG"
@@ -76,7 +76,7 @@ printf '\n' >>"$TEST_LOG"
 SH
 
 cat >"$stub_bin/limine-mkinitcpio" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 echo 'limine-mkinitcpio' >>"$TEST_LOG"
 SH

@@ -25,7 +25,7 @@ SH
 # that fails there proves the installer would have installed without running
 # the rest of the setup, which hermes-desktop-install-test.sh covers.
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$OMARCHY_TEST_PKG_LOG"
 exit 1
 SH
@@ -164,7 +164,7 @@ mkdir -p "$runtime" "$native"
 touch "$runtime/.hermes-bootstrap-complete"
 OMARCHY_TEST_DESKTOP_INSTALLED=1 run_installer --check && fail "--check calls an app whose packaged build is not seeded installed"
 touch "$native/app.asar" "$native/install-stamp.json"
-printf '#!/bin/bash\nexit 0\n' >"$native/../Hermes"
+printf '#!/bin/sh\nexit 0\n' >"$native/../Hermes"
 chmod +x "$native/../Hermes"
 OMARCHY_TEST_DESKTOP_INSTALLED=1 run_installer --check || fail "--check follows a finished install"
 pass "--check says no while --now still has work to do behind the app"

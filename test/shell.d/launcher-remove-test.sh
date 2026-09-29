@@ -14,7 +14,7 @@ write_fake_command() {
   local prefix="$2"
 
   cat >"$tmp_dir/bin/$name" <<SCRIPT
-#!/bin/bash
+#!/bin/sh
 printf '%s:%s:%s\\n' '$prefix' "\${OMARCHY_REMOVE_NOTIFY:-}" "\$*" >>"\$TEST_LOG"
 SCRIPT
   chmod +x "$tmp_dir/bin/$name"
@@ -25,13 +25,13 @@ write_fake_command omarchy-tui-remove tui
 write_fake_command omarchy-launch-floating-terminal-with-presentation terminal
 
 cat >"$tmp_dir/bin/omarchy-notification-send" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'notify::%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/bin/omarchy-notification-send"
 
 cat >"$tmp_dir/bin/update-desktop-database" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 :
 SCRIPT
 chmod +x "$tmp_dir/bin/update-desktop-database"

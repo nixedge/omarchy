@@ -16,7 +16,7 @@ fi
 STUB
 
 cat >"$stub_dir/ufw-docker" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 set -euo pipefail
 PATH="/bin:/usr/bin:/sbin:/usr/sbin:/snap/bin/"
 printf 'ufw-docker %s\n' "$*" >>"$TEST_LOG"
@@ -36,7 +36,7 @@ exit 0
 STUB
 
 cat >"$stub_dir/systemctl" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl %s\n' "$*" >>"$TEST_LOG"
 STUB
 

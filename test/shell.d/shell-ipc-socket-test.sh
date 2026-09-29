@@ -26,7 +26,7 @@ socket=$(XDG_RUNTIME_DIR="$run_dir" WAYLAND_DISPLAY="$display" shell_ipc_socket 
 
 # qs is the fallback: it records that it ran and answers.
 cat >"$stub_bin/qs" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'qs\n' >>"$QS_CALLS"
 printf 'from-qs\n'
 SH
@@ -35,7 +35,7 @@ chmod +x "$stub_bin/qs"
 # The fake shell replies as the mode file says, and logs each request with
 # its separators made visible.
 cat >"$test_tmp/responder" <<'SH'
-#!/bin/bash
+#!/bin/sh
 IFS= read -r -d $'\x1e' request
 printf '%s\n' "${request//$'\x1f'/|}" >>"$REQUESTS"
 case $(<"$MODE") in

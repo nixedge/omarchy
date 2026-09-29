@@ -14,14 +14,14 @@ mkdir -p "$TMP_BIN"
 # No browser is running unless a case says so, so the policy cases never
 # refresh a real browser on the host.
 cat > "$TMP_BIN/ps" <<'FAKE'
-#!/bin/bash
+#!/bin/sh
 exit 0
 FAKE
 chmod +x "$TMP_BIN/ps"
 
 # Stub the privileged writer so we can observe whether the setter calls it.
 cat > "$TMP_BIN/omarchy-theme-set-browser-policy" <<'FAKE'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >> "${CALL_LOG:?}"
 exit 0
 FAKE
@@ -38,7 +38,7 @@ printf '{"BrowserThemeColor": "#1c2027", "BrowserColorScheme": "device"}\n' > "$
 stat_bin="$TMPDIR/stat-bin"
 mkdir -p "$stat_bin"
 cat >"$stat_bin/stat" <<'FAKE'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${STAT_OWNER:?}"
 FAKE
 chmod +x "$stat_bin/stat"
@@ -93,7 +93,7 @@ pass "setter invokes the privileged writer when no managed dirs exist"
 browser_bin="$TMPDIR/browser-bin"
 mkdir -p "$browser_bin"
 cat >"$browser_bin/ps" <<'FAKE'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' \
   'chromium /usr/lib/chromium/chromium --type=renderer' \
   'chrome /opt/google/chrome/chrome' \
@@ -101,7 +101,7 @@ printf '%s\n' \
   'bash bash -c pgrep -f brave'
 FAKE
 for command in chromium google-chrome microsoft-edge-stable brave brave-origin; do
-  printf '#!/bin/bash\nprintf "%%s\\n" "%s" >>"$REFRESH_LOG"\n' "$command" >"$browser_bin/$command"
+  printf '#!/bin/sh\nprintf "%%s\\n" "%s" >>"$REFRESH_LOG"\n' "$command" >"$browser_bin/$command"
 done
 # Only the stubs count as installed, so a real browser on the host, such as
 # google-chrome-stable, is neither preferred nor launched.

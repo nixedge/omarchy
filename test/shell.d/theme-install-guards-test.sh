@@ -23,12 +23,12 @@ exit 0
 SH
 
 cat >"$mock_bin/gum" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 
 for command in omarchy-theme-set omarchy-notification-send omarchy-menu-select; do
-  printf '#!/bin/bash\nprintf "%%s\\n" "$*" >>"$OMARCHY_TEST_THEME_CALLS"\nexit 0\n' >"$mock_bin/$command"
+  printf '#!/bin/sh\nprintf "%%s\\n" "$*" >>"$OMARCHY_TEST_THEME_CALLS"\nexit 0\n' >"$mock_bin/$command"
 done
 
 chmod +x "$mock_bin"/*
@@ -76,7 +76,7 @@ pass "a URL naming a transport git does not implement never reaches git"
 # command-not-found instead of thinning the PATH.
 missing_checker_bin="$test_tmp/missing-checker-bin"
 mkdir -p "$missing_checker_bin"
-printf '#!/bin/bash\nexit 127\n' >"$missing_checker_bin/omarchy-git-url-check"
+printf '#!/bin/sh\nexit 127\n' >"$missing_checker_bin/omarchy-git-url-check"
 chmod +x "$missing_checker_bin/omarchy-git-url-check"
 
 if install_theme "https://github.com/example/omarchy-cool-theme.git" "$missing_checker_bin:$mock_bin:$ROOT/bin:$PATH"; then

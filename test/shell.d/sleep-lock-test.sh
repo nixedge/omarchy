@@ -28,7 +28,7 @@ setup_scenario() {
   # Capture the desktop warning instead of firing a real one at whoever is
   # running the suite.
   cat >"$mock_bin/omarchy-notification-send" <<SH
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "\$*" >>"$notify_log"
 SH
@@ -37,7 +37,7 @@ SH
 
 mock_logind_window() {
   cat >"$mock_bin/busctl" <<SH
-#!/bin/bash
+#!/bin/sh
 
 printf 't %s\n' $1
 SH
@@ -46,7 +46,7 @@ SH
 
 mock_clamshell() {
   cat >"$mock_bin/omarchy-hyprland-monitor-clamshell" <<SH
-#!/bin/bash
+#!/bin/sh
 
 echo clamshell >>"\$CALL_LOG"
 sleep ${1:-0}
@@ -300,7 +300,7 @@ pass "sleep lock derives its budget from logind's window"
 # so fall back to the budget that was safe before the drop-in existed.
 setup_scenario unreadable_window
 cat >"$mock_bin/busctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 chmod +x "$mock_bin/busctl"

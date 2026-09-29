@@ -18,7 +18,7 @@ mkdir -p "$stub_dir" "$flag_dir"
 make_stub() {
   local name=$1
   local body=$2
-  printf '#!/bin/bash\n%s\n' "$body" >"$stub_dir/$name"
+  printf '#!/bin/sh\n%s\n' "$body" >"$stub_dir/$name"
   chmod +x "$stub_dir/$name"
 }
 

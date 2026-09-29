@@ -44,7 +44,7 @@ done
 SH
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'sudo' >>"$TEST_LOG"
 printf '\t%s' "$@" >>"$TEST_LOG"
@@ -54,7 +54,7 @@ SH
 
 # Stubbed rather than run: the real one would write the running user's state.
 cat >"$stub_bin/omarchy-state" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'omarchy-state' >>"$TEST_LOG"
 printf '\t%s' "$@" >>"$TEST_LOG"

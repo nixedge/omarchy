@@ -11,7 +11,7 @@ stub_bin="$test_tmp/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$SUDO_CALL_LOG"
 STUB
 chmod +x "$stub_bin/sudo"

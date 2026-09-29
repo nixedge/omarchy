@@ -33,7 +33,7 @@ mkdir -p "$stub_dir"
 asd_log="$TMPDIR/asdcontrol.log"
 
 cat >"$stub_dir/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 chmod +x "$stub_dir/sudo"
@@ -55,7 +55,7 @@ STUB
 chmod +x "$stub_dir/asdcontrol"
 
 cat >"$stub_dir/omarchy-osd" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 0
 STUB
 chmod +x "$stub_dir/omarchy-osd"

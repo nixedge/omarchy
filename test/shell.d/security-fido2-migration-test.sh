@@ -205,7 +205,7 @@ chmod +x "$stub_bin/stat"
 # states it cannot repair have to reach the user somewhere that outlives the
 # update terminal's scrollback.
 cat >"$stub_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'notify' >>"$TEST_NOTIFICATIONS"
 printf '\t%s' "$@" >>"$TEST_NOTIFICATIONS"

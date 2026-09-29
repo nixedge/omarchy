@@ -101,12 +101,12 @@ reset_marker="$test_tmp/reset-ran"
 # What a name that got reparsed would reach. It is a command rather than a
 # `touch` so that no quoting of the test's own paths is involved.
 cat >"$stub_dir/omarchy-test-canary" <<STUB
-#!/bin/bash
+#!/bin/sh
 printf 'ran\n' >"$canary"
 STUB
 
 cat >"$stub_dir/omarchy-plymouth-switcher" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$OMARCHY_TEST_UNLOCK_NAME"
 STUB
 
@@ -116,7 +116,7 @@ STUB
 ln -s "$ROOT/bin/omarchy-launch-floating-terminal-with-presentation" "$stub_dir/omarchy-launch-floating-terminal-with-presentation"
 
 cat >"$stub_dir/omarchy-restart-gum" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 :
 STUB
 
@@ -134,17 +134,17 @@ STUB
 # Records what actually arrived, so a name that survived as data is told apart
 # from one that arrived split or partly eaten.
 cat >"$stub_dir/omarchy-plymouth-set-by-theme" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$#" "$@" >"$OMARCHY_TEST_SET_ARGS"
 STUB
 
 cat >"$stub_dir/omarchy-plymouth-reset" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'ran\n' >"$OMARCHY_TEST_RESET_MARKER"
 STUB
 
 for command in omarchy-show-logo omarchy-show-done; do
-  printf '#!/bin/bash\nexit 0\n' >"$stub_dir/$command"
+  printf '#!/bin/sh\nexit 0\n' >"$stub_dir/$command"
 done
 
 chmod +x "$stub_dir"/*
@@ -298,7 +298,7 @@ destination=${@: -1}
 SH
 
 cat >"$fake_bin/omarchy-cmd-present" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 

@@ -37,17 +37,17 @@ fi
 SH
 
 cat >"$stub_bin/omarchy-hyprland-monitor-internal" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
 cat >"$stub_bin/omarchy-hyprland-monitor-internal-mirror" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
 cat >"$stub_bin/omarchy-hyprland-monitor-laptop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo eDP-1
 SH
 

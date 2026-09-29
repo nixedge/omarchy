@@ -308,14 +308,14 @@ Item {
 QML
 
 cat >"$stub_bin/omarchy-update-available" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "Omarchy update available (test)"
 exit 0
 SH
 chmod +x "$stub_bin/omarchy-update-available"
 
 cat >"$stub_bin/curl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 case "${*: -1}" in
   *'?format=j1')

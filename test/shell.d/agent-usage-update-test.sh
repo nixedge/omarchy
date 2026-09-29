@@ -11,23 +11,23 @@ trap 'rm -rf "$TEST_HOME" "$FAKE_OMARCHY"' EXIT
 mkdir -p "$FAKE_OMARCHY/bin"
 
 cat >"$FAKE_OMARCHY/bin/omarchy-agent-usage-good" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo '{"schemaVersion":1,"id":"good","name":"Good Agent","totalPrompts":3}'
 EOF
 
 cat >"$FAKE_OMARCHY/bin/omarchy-agent-usage-noisy" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo "this is not json"
 EOF
 
 cat >"$FAKE_OMARCHY/bin/omarchy-agent-usage-skipped" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo '{"id":"skipped"}'
 EOF
 
 # The updater itself lives in the same namespace as the collectors it globs.
 cat >"$FAKE_OMARCHY/bin/omarchy-agent-usage-update" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo '{"id":"update"}'
 EOF
 

@@ -33,7 +33,7 @@ SH
 # The hook runs the hermes the probe vets, ~/.local/bin/hermes, not one on PATH;
 # reset_home installs this stub there and a decoy on PATH that must never run.
 cat >"$mock_bin/hermes" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "PATH hermes ran: $*" >>"$OMARCHY_TEST_HERMES_CALLS"
 exit 1
 SH
@@ -52,7 +52,7 @@ SH
 
 # A refresh re-stages the current theme, which is where the skin gets rendered.
 cat >"$mock_bin/omarchy-theme-refresh" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "refresh" >>"$OMARCHY_TEST_HERMES_CALLS"
 printf 'name: omarchy\ndescription: Omarchy system theme\ncolors:\n  background: "#1a1b26"\n' \
   >"$HOME/.local/state/omarchy/current/theme/hermes.yaml"

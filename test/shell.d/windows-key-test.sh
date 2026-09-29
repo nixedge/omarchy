@@ -41,7 +41,7 @@ pass "windows key helper prints the firmware key"
 
 mkdir -p "$tmp/bin"
 cat >"$tmp/bin/strings" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 exit 0
 EOF
 chmod +x "$tmp/bin/strings"

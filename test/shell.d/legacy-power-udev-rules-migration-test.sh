@@ -41,28 +41,28 @@ fi
 STUB
 
 cat >"$test_dir/bin/install" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "migration resolved install through PATH" >&2
 exit 97
 STUB
 
 cat >"$test_dir/bin/rm" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "migration resolved rm through PATH" >&2
 exit 98
 STUB
 
 cat >"$test_dir/bin/mv" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "migration resolved mv through PATH" >&2
 exit 99
 STUB
 
 cat >"$test_dir/bin/omarchy-restart-xcompose" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "omarchy-restart-xcompose" >>"$CALLS"
 STUB
@@ -71,7 +71,7 @@ chmod +x "$test_dir/bin/"*
 
 mkdir -p "$test_dir/failing-bin"
 cat >"$test_dir/failing-bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "sudo: a terminal is required to read the password" >&2
 exit 1

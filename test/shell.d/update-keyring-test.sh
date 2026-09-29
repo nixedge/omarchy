@@ -52,14 +52,14 @@ SH
 chmod +x "$stub_bin/sudo"
 
 cat >"$stub_bin/omarchy-pkg-missing" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 exit "${KEYRING_TEST_PKG_MISSING:-1}"
 SH
 chmod +x "$stub_bin/omarchy-pkg-missing"
 
 cat >"$stub_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'pkg-add\t%s\n' "$1" >>"$KEYRING_TEST_LOG"
 exit 0

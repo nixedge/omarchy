@@ -22,7 +22,7 @@ cat >"$mock_bin/omarchy-pkg-present" <<'SH'
 SH
 
 cat >"$mock_bin/omarchy-default-agent" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${OMARCHY_TEST_DEFAULT_AGENT:-}"
 SH
 
@@ -232,7 +232,7 @@ grep -q 'omarchy default agent hermes' "$test_tmp/output" || fail "a default age
 app_runtime="$test_home/.hermes/hermes-agent"
 mkdir -p "$app_runtime/apps/desktop/release/linux-unpacked/resources"
 touch "$app_runtime/.hermes-bootstrap-complete" "$app_runtime/apps/desktop/release/linux-unpacked/resources/app.asar" "$app_runtime/apps/desktop/release/linux-unpacked/resources/install-stamp.json"
-printf '#!/bin/bash\nexit 0\n' >"$app_runtime/apps/desktop/release/linux-unpacked/Hermes"
+printf '#!/bin/sh\nexit 0\n' >"$app_runtime/apps/desktop/release/linux-unpacked/Hermes"
 chmod +x "$app_runtime/apps/desktop/release/linux-unpacked/Hermes"
 cat >"$hermes" <<SH
 #!/bin/bash

@@ -13,19 +13,19 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 chmod +x "$fake_bin/sudo"
 
 cat >"$fake_bin/omarchy-cmd-missing" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 1
 STUB
 chmod +x "$fake_bin/omarchy-cmd-missing"
 
 cat >"$fake_bin/omarchy-version" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo 4.0.0
 STUB
 chmod +x "$fake_bin/omarchy-version"
@@ -79,7 +79,7 @@ pass "snapshot create snapshots every configured Snapper config"
 # Snapper being deliberately absent is the one skip that stays quiet, and the
 # update has to keep treating it as such.
 cat >"$fake_bin/omarchy-cmd-missing" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 0
 STUB
 chmod +x "$fake_bin/omarchy-cmd-missing"

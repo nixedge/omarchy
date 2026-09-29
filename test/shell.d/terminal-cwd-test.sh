@@ -47,7 +47,7 @@ pass "with no focused terminal the new one opens in HOME, quietly"
 # The Super+Return binding hands over the focused window's pid, so Hyprland is
 # not asked again; a hyprctl that fails the test proves it goes unasked.
 cat >"$stub_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "hyprctl was asked for the active window" >&2
 exit 1
 SH

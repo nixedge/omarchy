@@ -92,7 +92,7 @@ exec "$@"
 SH
 
 cat >"$stub_bin/omarchy-toggle-idle" <<'SH'
-#!/bin/bash
+#!/bin/sh
 state_file="$HOME/.local/state/omarchy/indicators/stay-awake"
 case "$1" in
   stay-awake)

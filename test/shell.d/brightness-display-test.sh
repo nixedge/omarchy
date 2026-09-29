@@ -13,17 +13,17 @@ runtime_dir="$test_tmp/runtime"
 mkdir -p "$mock_bin" "$runtime_dir"
 
 cat >"$mock_bin/omarchy-hyprland-monitor-focused-apple" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 
 cat >"$mock_bin/omarchy-hyprland-monitor-focused" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${FOCUSED_MONITOR:-eDP-1}"
 SH
 
 cat >"$mock_bin/omarchy-hw-display" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'mock_backlight\n'
 SH
 
@@ -130,7 +130,7 @@ grep -F 'ddcutil --bus 7 --skip-ddc-checks --noverify setvcp 10 5' "$call_log" >
 pass "external low brightness uses a one-percent step"
 
 cat >"$mock_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' '[
   {"name":"DP-1","focused":true,"make":"HPN","model":"OMEN X 25f"},
   {"name":"DP-2","focused":false,"make":"Apple Computer Inc","model":"StudioDisplay"}

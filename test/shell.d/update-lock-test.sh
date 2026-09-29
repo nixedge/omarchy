@@ -194,7 +194,7 @@ SH
   # sudo -b branch, then signal only that helper before the held child publishes.
   delayed_terminal_driver="$test_tmp/delayed-terminal-stay-awake"
   cat >"$delayed_terminal_driver" <<'SH'
-#!/bin/bash
+#!/bin/sh
 set +e
 omarchy-update-stay-awake start </dev/tty &
 helper_pid=$!
@@ -223,7 +223,7 @@ SH
   delayed_graphical_helper_pid_file="$test_tmp/delayed-graphical-helper-pid"
   delayed_graphical_driver="$test_tmp/delayed-graphical-stay-awake"
   cat >"$delayed_graphical_driver" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "$$" >"$DELAYED_HELPER_PID_FILE"
 exec omarchy-update-stay-awake start </dev/null
 SH

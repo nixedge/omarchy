@@ -26,13 +26,13 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/snapper" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'snapper %s\n' "$*" >>"$TEST_LOG"
 STUB
 chmod +x "$fake_bin/snapper"
 
 cat >"$fake_bin/systemctl" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl %s\n' "$*" >>"$TEST_LOG"
 STUB
 chmod +x "$fake_bin/systemctl"

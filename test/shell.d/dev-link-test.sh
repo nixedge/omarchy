@@ -14,7 +14,7 @@ sudoers_file="$test_tmp/omarchy-dev-path"
 mkdir -p "$stub_bin" "$test_tmp/home"
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'sudo' >>"$OMARCHY_DEV_LINK_TEST_LOG"
 for arg in "$@"; do
@@ -35,7 +35,7 @@ SH
 chmod +x "$stub_bin/sudo"
 
 cat >"$stub_bin/gum" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'gum' >>"$OMARCHY_DEV_LINK_TEST_LOG"
 for arg in "$@"; do
@@ -46,7 +46,7 @@ SH
 chmod +x "$stub_bin/gum"
 
 cat >"$stub_bin/omarchy-system-reboot" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'reboot\n' >>"$OMARCHY_DEV_LINK_TEST_LOG"
 SH

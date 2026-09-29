@@ -214,7 +214,7 @@ failed_cache="$test_tmp/failed-cache"
 mkdir -p "$failed_backgrounds" "$failed_cache"
 printf 'broken video\n' >"$failed_backgrounds/broken.mp4"
 cat >"$test_tmp/bin/ffmpegthumbnailer" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 
@@ -231,7 +231,7 @@ failed_marker=$(find "$failed_cache/omarchy/image-selector" -maxdepth 1 -type f 
 
 thumbnailer_calls="$test_tmp/thumbnailer-calls"
 cat >"$test_tmp/bin/ffmpegthumbnailer" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$THUMBNAILER_CALLS"
 exit 1
 SH
@@ -264,7 +264,7 @@ timeout_cache="$test_tmp/timeout-cache"
 mkdir -p "$timeout_backgrounds"
 printf 'slow video\n' >"$timeout_backgrounds/slow.mp4"
 cat >"$test_tmp/bin/ffmpegthumbnailer" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 124
 SH
 timeout_rows=$(PATH="$test_tmp/bin:$PATH" XDG_CACHE_HOME="$timeout_cache" \

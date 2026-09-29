@@ -23,12 +23,12 @@ cat >"$mock_bin/omarchy-cmd-missing" <<'SH'
 SH
 
 cat >"$mock_bin/omarchy-launch-floating-terminal-with-presentation" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >"$OMARCHY_TEST_TERMINAL_LOG"
 SH
 
 cat >"$mock_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >>"$OMARCHY_TEST_NOTIFICATION_LOG"
 SH
 

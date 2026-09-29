@@ -11,12 +11,12 @@ mkdir -p "$TMPDIR/bin"
 SYSTEMCTL_LOG="$TMPDIR/systemctl-log"
 
 cat >"$TMPDIR/bin/systemctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$SYSTEMCTL_LOG"
 SH
 
 cat >"$TMPDIR/bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
@@ -67,22 +67,22 @@ JOURNAL_ENTRIES="$TMPDIR/journal-entries"
 mkdir -p "$watch_bin" "$watch_home"
 
 cat >"$watch_bin/journalctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 cat "$JOURNAL_ENTRIES"
 SH
 
 cat >"$watch_bin/omarchy-default-agent" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo claude
 SH
 
 cat >"$watch_bin/omarchy-notification-wait" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
 cat >"$watch_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$NOTIFY_LOG"
 SH
 
@@ -359,7 +359,7 @@ rmdir "$(mute_flag notactuallymuted)"
 failing_bin="$TMPDIR/failing-bin"
 mkdir -p "$failing_bin"
 cat >"$failing_bin/omarchy-toggle" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 chmod +x "$failing_bin/omarchy-toggle"

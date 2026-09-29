@@ -46,7 +46,7 @@ sed -e "s|^authdir=/etc/fido2$|authdir=$authdir|" \
 # mktemp is therefore a test failure; only the sudo stub below may invoke the
 # real command, and it does so with an absolute scratch template.
 cat >"$stub_bin/mktemp" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'mktemp' >>"$TEST_BARE_MKTEMP"
 printf '\t%s' "$@" >>"$TEST_BARE_MKTEMP"
@@ -204,13 +204,13 @@ esac
 SH
 
 cat >"$stub_bin/fido2-token" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 echo '/dev/hidraw0: vendor=0x1050, product=0x0407 (Yubico YubiKey)'
 SH
 
 cat >"$stub_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 SH
 
 # Record what pamu2fcfg's stdout actually targets. The fixed implementation

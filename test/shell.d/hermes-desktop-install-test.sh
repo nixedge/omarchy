@@ -45,7 +45,7 @@ origin_commit=$(git -C "$test_tmp/seed" rev-parse HEAD)
 export OMARCHY_TEST_RELEASE_COMMIT="$release_commit"
 printf '{"branch":"main","commit":"%s"}\n' "$release_commit" >"$test_tmp/package/resources/install-stamp.json"
 printf 'packaged app\n' >"$test_tmp/package/resources/app.asar"
-printf '#!/bin/bash\nexit 0\n' >"$test_tmp/package/Hermes"
+printf '#!/bin/sh\nexit 0\n' >"$test_tmp/package/Hermes"
 touch "$test_tmp/package/chrome-sandbox"
 chmod 755 "$test_tmp/package/Hermes"
 chmod 4755 "$test_tmp/package/chrome-sandbox"
@@ -77,7 +77,7 @@ write_commands() {
     rm -f "$HOME/.local/bin/$command"
     printf 'native runtime shim\n' >"$HOME/.local/bin/$command"
   done
-  printf '#!/bin/bash\nexec "%s/venv/bin/hermes" "$@"\n' "$runtime" >"$HOME/.local/bin/hermes"
+  printf '#!/bin/sh\nexec "%s/venv/bin/hermes" "$@"\n' "$runtime" >"$HOME/.local/bin/hermes"
   chmod +x "$HOME/.local/bin/hermes"
 }
 # The path stage writes the commands alone, without touching the checkout.
@@ -111,7 +111,7 @@ else
 fi
 SH
 chmod +x "$runtime/venv/bin/hermes"
-printf '#!/bin/bash\nexec /usr/bin/python3 "$@"\n' >"$runtime/venv/bin/python"
+printf '#!/bin/sh\nexec /usr/bin/python3 "$@"\n' >"$runtime/venv/bin/python"
 chmod +x "$runtime/venv/bin/python"
 [[ ${OMARCHY_TEST_NO_MARKER:-0} == 1 ]] || touch "$runtime/.hermes-bootstrap-complete"
 write_commands
@@ -133,7 +133,7 @@ if [[ ${OMARCHY_TEST_FETCH_FAIL:-0} == 1 && " $* " == *" --unshallow "* ]]; then
 exec /usr/bin/git "$@"
 MOCK
 cat >"$test_tmp/bin/setsid" <<'MOCK'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 MOCK
 cat >"$test_tmp/bin/cp" <<'MOCK'
@@ -168,11 +168,11 @@ else
 fi
 MOCK
 cat >"$test_tmp/bin/systemctl" <<'MOCK'
-#!/bin/bash
+#!/bin/sh
 printf 'theme-stop\n' >>"$OMARCHY_TEST_ROOT/events"
 MOCK
 cat >"$test_tmp/bin/systemd-run" <<'MOCK'
-#!/bin/bash
+#!/bin/sh
 printf 'theme-start\n' >>"$OMARCHY_TEST_ROOT/events"
 MOCK
 # The only thing the installer asks mise is to remove what the retired wrapper

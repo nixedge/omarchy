@@ -131,7 +131,7 @@ esac
 exit 0
 STUB
 chmod +x "$stub_dir/pacman"
-printf '#!/bin/bash\nexit 0\n' >"$stub_dir/gvim"
+printf '#!/bin/sh\nexit 0\n' >"$stub_dir/gvim"
 chmod +x "$stub_dir/gvim"
 
 guard_prelude=$(prelude)
@@ -214,7 +214,7 @@ themes_guard=$(node -e '
 ')
 
 cat >"$stub_dir/git" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 : "${GIT_CALLS:=/dev/null}"
 { printf '<%s>' "$@"; printf '\n'; } >>"$GIT_CALLS"
 STUB

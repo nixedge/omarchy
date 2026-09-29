@@ -69,7 +69,7 @@ source = source.replace('  id: root', `  id: root
   property alias testBarButton: button`)
 fs.writeFileSync(`${stage}/network/Panel.qml`, source)
 JS
-printf '#!/bin/bash\nexit 0\n' > "$stage/bin/noop"
+printf '#!/bin/sh\nexit 0\n' > "$stage/bin/noop"
 chmod +x "$stage/bin/noop"
 for command in omarchy-dns omarchy-network-band; do
   ln -s noop "$stage/bin/$command"
@@ -78,7 +78,7 @@ done
 # Normal assertions keep the details empty to exercise missing-route handling.
 printf '#!/bin/bash\nif [[ -n ${NETWORK_TEST_PREVIEW:-} ]]; then\n  printf "type\\twifi\\niface\\ttest-wifi\\nssid\\tGuest Wi-Fi\\nip\\t192.0.2.10\\ngateway\\t192.0.2.1\\n"\nfi\n' > "$stage/bin/omarchy-network-status"
 chmod +x "$stage/bin/omarchy-network-status"
-printf '#!/bin/bash\nprintf "%%s\\n" "$@" >> "$NETWORK_TEST_BROWSER_LOG"\n' > "$stage/bin/omarchy-launch-browser"
+printf '#!/bin/sh\nprintf "%%s\\n" "$@" >> "$NETWORK_TEST_BROWSER_LOG"\n' > "$stage/bin/omarchy-launch-browser"
 chmod +x "$stage/bin/omarchy-launch-browser"
 
 # All networking and external actions are mocked; the real connection and

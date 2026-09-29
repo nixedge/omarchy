@@ -10,18 +10,18 @@ CURRENT_THEME="$TEST_HOME/.local/state/omarchy/current/theme"
 mkdir -p "$FAKE_BIN" "$CURRENT_THEME"
 
 cat >"$FAKE_BIN/omarchy-cmd-present" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$1" >>"$EDITOR_PROBE_LOG"
 exit 1
 EOF
 
 cat >"$FAKE_BIN/omarchy-toggle-enabled" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 exit 1
 EOF
 
 cat >"$FAKE_BIN/cursor" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 touch "$CURSOR_SHIM_CALLED"
 exit 1
 EOF

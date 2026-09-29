@@ -32,7 +32,7 @@ exit "${TEST_MODPROBE_STATUS:-0}"
 SH
 
 cat >"$test_tmp/bin/lsmod" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' 'Module                  Size  Used by'
 printf '%s\n' "${TEST_LOADED_MODULES:-}"

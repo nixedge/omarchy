@@ -15,23 +15,23 @@ export OMARCHY_PROVISIONING_DIR="$TMPDIR/provisioning"
 
 mkdir -p "$TMPDIR/bin"
 cat >"$TMPDIR/bin/usermod" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo "\$@" >>"$TMPDIR/usermod.calls"
 STUB
 cat >"$TMPDIR/bin/groupadd" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo "\$@" >>"$TMPDIR/groupadd.calls"
 STUB
 cat >"$TMPDIR/bin/install" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo "\$@" >>"$TMPDIR/install.calls"
 STUB
 cat >"$TMPDIR/bin/find" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo "\$@" >>"$TMPDIR/find.calls"
 STUB
 cat >"$TMPDIR/bin/sudo" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo "\$@" >>"$TMPDIR/sudo.calls"
 exec "\$@"
 STUB

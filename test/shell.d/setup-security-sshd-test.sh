@@ -11,15 +11,15 @@ stub_bin="$test_dir/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/omarchy-pkg-add" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'pkg %s\n' "$*" >>"${CALL_LOG:?}"
 STUB
 cat >"$stub_bin/omarchy-cmd-missing" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 0
 STUB
 cat >"$stub_bin/systemctl" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl %s\n' "$*" >>"${CALL_LOG:?}"
 STUB
 cat >"$stub_bin/sshd" <<'STUB'
@@ -44,7 +44,7 @@ case $1 in
 esac
 STUB
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 case $1 in
 install)
   destination="${TEST_ROOT:?}${4:?}"

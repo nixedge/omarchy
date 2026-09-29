@@ -63,7 +63,7 @@ if (( EUID == 0 )) || unshare --user --map-root-user true 2>/dev/null; then
   poison_ran="$poison_dir/ran"
   for helper in tr awk dirname install tee; do
     cat >"$poison_dir/$helper" <<SH
-#!/bin/bash
+#!/bin/sh
 printf 'x' >"$poison_ran"
 exec "/usr/bin/$helper" "\$@"
 SH
@@ -100,7 +100,7 @@ mkdir -p "$stub_bin"
 # pkexec stands in for the exec at the end of require_root, so the DNS writes
 # below it never run and real pkexec is never reached.
 cat >"$stub_bin/pkexec" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'pkexec %s\n' "$*" >"$ELEVATION_LOG"
 SH
 chmod +x "$stub_bin/pkexec"

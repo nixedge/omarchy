@@ -70,7 +70,7 @@ printf '[]\n'
 SH
 
 cat >"$fake_bin/logger" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 shift 2
 printf '%s\n' "$*" >>"$OMARCHY_TEST_LOGGER_LOG"

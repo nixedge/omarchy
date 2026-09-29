@@ -19,7 +19,7 @@ dead_signature="dead-signature"
 mkdir -p "$runtime_dir/hypr/$signature" "$runtime_dir/hypr/$dead_signature"
 
 cat >"$fake_hyprctl" <<'BASH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\t%s\n' "$XDG_RUNTIME_DIR" "$*" >>"$FAKE_HYPRCTL_LOG"
 

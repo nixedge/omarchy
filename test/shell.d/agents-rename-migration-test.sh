@@ -13,7 +13,7 @@ trap 'rm -rf "$test_dir"' EXIT
 mkdir -p "$test_dir/bin"
 
 cat >"$test_dir/bin/omarchy-agent-usage-update" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo run >>"$USAGE_UPDATES"
 STUB

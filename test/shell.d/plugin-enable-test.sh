@@ -10,7 +10,7 @@ mkdir -p "$TMPDIR/home" "$TMPDIR/bin"
 calls="$TMPDIR/calls"
 
 cat >"$TMPDIR/bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$OMARCHY_TEST_CALLS"
 printf 'ok\n'
 SH

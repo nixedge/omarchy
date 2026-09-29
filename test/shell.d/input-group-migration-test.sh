@@ -12,7 +12,7 @@ stub_bin="$test_dir/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/id" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${STUB_GROUPS:-wheel}"
 STUB
 cat >"$stub_bin/pacman" <<'STUB'
@@ -21,15 +21,15 @@ cat >"$stub_bin/pacman" <<'STUB'
 [[ " ${STUB_PACKAGES:-} " == *" $2 "* ]]
 STUB
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 cat >"$stub_bin/gpasswd" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"${GPASSWD_CALLS:?}"
 STUB
 cat >"$stub_bin/omarchy-state" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"${STATE_CALLS:?}"
 STUB
 chmod +x "$stub_bin"/*

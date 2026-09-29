@@ -96,11 +96,11 @@ rm "$kitty_config"
 
 # Exercise the real font commands without changing the running desktop.
 for command in pkill omarchy-restart-shell omarchy-hook omarchy-notification-send; do
-  printf '#!/bin/bash\nexit 0\n' >"$test_dir/bin/$command"
+  printf '#!/bin/sh\nexit 0\n' >"$test_dir/bin/$command"
 done
-printf '#!/bin/bash\nexit 1\n' >"$test_dir/bin/pgrep"
-printf '#!/bin/bash\nprintf "Test Font\\n"\n' >"$test_dir/bin/fc-list"
-printf '#!/bin/bash\nexit 0\n' >"$test_dir/bin/kitty"
+printf '#!/bin/sh\nexit 1\n' >"$test_dir/bin/pgrep"
+printf '#!/bin/sh\nprintf "Test Font\\n"\n' >"$test_dir/bin/fc-list"
+printf '#!/bin/sh\nexit 0\n' >"$test_dir/bin/kitty"
 cat >"$test_dir/bin/gsettings" <<'SH'
 #!/bin/bash
 if [[ $1 == "get" ]]; then

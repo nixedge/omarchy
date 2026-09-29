@@ -15,7 +15,7 @@ mkdir -p "$test_dir/bin"
 # sudo runs the real command, so the removals act on the redirected directories
 # below and the elevated calls land in the log beside it.
 cat >"$test_dir/bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 printf 'sudo %s\n' "$*" >>"$CALLS"
 exec "$@"
@@ -37,7 +37,7 @@ chmod +x "$test_dir/bin/"*
 # no terminal to read a password from.
 mkdir -p "$test_dir/failing-bin"
 cat >"$test_dir/failing-bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo "sudo: a terminal is required to read the password" >&2
 exit 1

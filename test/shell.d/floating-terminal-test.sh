@@ -8,7 +8,7 @@ tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
 cat >"$tmp_dir/setsid" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/setsid"

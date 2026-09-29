@@ -14,7 +14,7 @@ pkg_log="$test_tmp/packages"
 mkdir -p "$mock_bin" "$test_home/.local/state/omarchy"
 
 for command in omarchy-webapp-remove-all omarchy-tui-remove-all omarchy-refresh-applications hyprctl; do
-  printf '#!/bin/bash\nexit 0\n' >"$mock_bin/$command"
+  printf '#!/bin/sh\nexit 0\n' >"$mock_bin/$command"
 done
 
 cat >"$mock_bin/gum" <<'SH'
@@ -24,13 +24,13 @@ exit 0
 SH
 
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$@" >"$OMARCHY_TEST_PKG_LOG"
 exit "${OMARCHY_TEST_PKG_ADD_STATUS:-0}"
 SH
 
 cat >"$mock_bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$@" >"$OMARCHY_TEST_PKG_LOG"
 SH
 

@@ -20,14 +20,14 @@ export BROWSER=omarchy-launch-browser
 export OMARCHY_TEST_XDG_SETTINGS_LOG="$test_tmp/xdg-settings"
 
 cat >"$mock_bin/xdg-settings" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${BROWSER:-unset}" >"$OMARCHY_TEST_XDG_SETTINGS_LOG"
 echo fallback.desktop
 SH
 export PATH="$mock_bin:$ROOT/bin:$PATH"
 
 for browser in chromium firefox brave; do
-  printf '#!/bin/bash\n' >"$mock_bin/$browser"
+  printf '#!/bin/sh\n' >"$mock_bin/$browser"
 done
 chmod +x "$mock_bin"/*
 

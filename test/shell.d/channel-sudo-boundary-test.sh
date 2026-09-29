@@ -112,7 +112,7 @@ pass "an older packaged destination stops the switch cold with instructions inst
 # sudo in the package bin catches any such call instead of reaching the host.
 rm "$SUDO_TEST_ROOT/bin/sudo"
 cat >"$SUDO_TEST_ROOT/bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'unwrapped-sudo %s\n' "$*" >>"$SUDO_TEST_LOG"
 exit 97
 STUB
@@ -143,7 +143,7 @@ ln -s ../mock/sudo "$SUDO_TEST_ROOT/bin/sudo"
 
 mkdir "$boundary_tmp/user tools"
 cat >"$boundary_tmp/user tools/channel-user-tool" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'user-tool:%s\n' "$*" >>"$SUDO_TEST_LOG"
 STUB
 chmod +x "$boundary_tmp/user tools/channel-user-tool"
@@ -184,7 +184,7 @@ done
 for signal in HUP INT TERM; do
   reset_boundary
   cat >"$SUDO_TEST_ROOT/bin/omarchy-dev-unlink" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 sudo /usr/bin/true || exit 1
 kill -s "$SUDO_TEST_CHANNEL_SIGNAL" "$PPID"
 STUB

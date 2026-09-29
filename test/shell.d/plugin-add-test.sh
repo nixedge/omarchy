@@ -34,7 +34,7 @@ JSON
 stub_dir="$TMPDIR/stubs"
 mkdir -p "$stub_dir"
 cat >"$stub_dir/omarchy-shell" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 0
 STUB
 chmod +x "$stub_dir/omarchy-shell"
@@ -68,7 +68,7 @@ pass "plugin add refuses an installed manifest id regardless of directory name"
 guard_stubs="$TMPDIR/guard-stubs"
 mkdir -p "$guard_stubs"
 cat >"$guard_stubs/omarchy-shell" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 0
 STUB
 chmod +x "$guard_stubs/omarchy-shell"

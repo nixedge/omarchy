@@ -248,7 +248,7 @@ process_alive() {
 mkdir -p "$TMPDIR/bin" "$TMPDIR/home/.local/state/omarchy"
 
 cat >"$TMPDIR/bin/wl-copy" <<'SH'
-#!/bin/bash
+#!/bin/sh
 cat >"$WL_COPY_OUT"
 SH
 
@@ -262,23 +262,23 @@ fi
 SH
 
 cat >"$TMPDIR/bin/wtype" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$WTYPE_OUT"
 SH
 
 cat >"$TMPDIR/bin/omarchy-launch-browser" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$BROWSER_OUT"
 SH
 
 cat >"$TMPDIR/bin/omarchy-launch-editor" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$1" >"$EDITOR_PATH_OUT"
 cat "$1" >"$EDITOR_TEXT_OUT"
 SH
 
 cat >"$TMPDIR/bin/omasnap" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$OMASNAP_OUT"
 SH
 
@@ -439,7 +439,7 @@ pass "clipboard reaper pattern matches running watchers"
 watch_owner="$clipboard_lifecycle_dir/watch-owner.sh"
 watch_pid_file="$clipboard_lifecycle_dir/watch.pid"
 cat >"$watch_owner" <<SH
-#!/bin/bash
+#!/bin/sh
 PATH="$TMPDIR/bin:\$PATH" setpriv --pdeathsig TERM wl-paste --type text --watch "$current_script" text &
 printf '%s\n' "\$!" >"$watch_pid_file"
 wait

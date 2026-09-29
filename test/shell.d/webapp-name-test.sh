@@ -9,7 +9,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 mkdir -p "$tmp_dir/bin" "$tmp_dir/home"
 
 for stub in gtk-update-icon-cache update-desktop-database omarchy-notification-send; do
-  printf '#!/bin/bash\n:\n' >"$tmp_dir/bin/$stub"
+  printf '#!/bin/sh\n:\n' >"$tmp_dir/bin/$stub"
   chmod +x "$tmp_dir/bin/$stub"
 done
 

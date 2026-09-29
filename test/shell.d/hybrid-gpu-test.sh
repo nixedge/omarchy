@@ -9,17 +9,17 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/omarchy-cmd-missing" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 1
 STUB
 
 cat >"$fake_bin/sleep" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 :
 STUB
 
 cat >"$fake_bin/gum" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 1
 STUB
 
@@ -63,7 +63,7 @@ grep -qF 'supergfxd is not responding' <<<"$error" ||
 pass "hybrid GPU mode query fails clearly instead of hanging"
 
 cat >"$fake_bin/supergfxctl" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 trap '' TERM
 /usr/bin/sleep 30
 STUB

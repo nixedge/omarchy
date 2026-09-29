@@ -14,7 +14,7 @@ mkdir -p "$home" "$stub_bin"
 # Stands in for the real mise so a generated wrapper can be run and asked what
 # arguments it passed on.
 cat >"$stub_bin/mise" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf 'mise' >>"$OMARCHY_MISE_TEST_LOG"
 for arg in "$@"; do

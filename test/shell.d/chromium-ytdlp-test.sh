@@ -194,12 +194,12 @@ exit 0
 EOF
 
 cat >"$fake_root/bin/omarchy-notification-send" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$NOTIFY_ARGV_LOG"
 EOF
 
 for stub in omarchy-osd omarchy-shell ffmpeg; do
-  printf '#!/bin/bash\nexit 0\n' >"$fake_root/bin/$stub"
+  printf '#!/bin/sh\nexit 0\n' >"$fake_root/bin/$stub"
 done
 chmod +x "$fake_root/bin/"*
 

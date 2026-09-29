@@ -26,7 +26,7 @@ EOF
 chmod +x "$stub_dir/hyprctl"
 
 cat >"$stub_dir/omarchy-notification-send" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 :
 EOF
 chmod +x "$stub_dir/omarchy-notification-send"

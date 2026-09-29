@@ -64,12 +64,12 @@ cat >"$target"
 SH
 
 cat >"$TMPDIR/bin/wtype" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$WTYPE_OUT"
 SH
 
 cat >"$TMPDIR/bin/sleep" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 

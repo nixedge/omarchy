@@ -114,7 +114,7 @@ pass "a wizard that exits cleanly is waited for"
 : >"$TEST_LOG"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard)
@@ -155,7 +155,7 @@ pass "an already-running OpenClaw is left alone"
 : >"$TEST_LOG"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard)
@@ -181,7 +181,7 @@ pass "a gateway that never comes up ends the wait with a failure"
 : >"$TEST_LOG"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard) trap 'echo terminated >>"$TEST_LOG"; exit 143' TERM; while :; do sleep 0.2; done ;;
@@ -207,7 +207,7 @@ pass "stopping the wrapper stops the wizard"
 mkdir -p "$HOME/.openclaw" && touch "$HOME/.openclaw/openclaw.json"
 sleep 1
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard) trap 'echo terminated >>"$TEST_LOG"; exit 143' TERM; sleep 4; echo finished >>"$TEST_LOG"; exit 0 ;;
@@ -225,7 +225,7 @@ pass "a stale config does not start the gateway deadline"
 # ...while the same stale config being rewritten by this run does arm it.
 : >"$TEST_LOG"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard) touch "$HOME/.openclaw/openclaw.json"; trap 'echo terminated >>"$TEST_LOG"; exit 143' TERM; while :; do sleep 0.2; done ;;
@@ -246,7 +246,7 @@ pass "a config rewritten by this run arms the gateway deadline"
 : >"$TEST_LOG"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard) trap 'echo terminated >>"$TEST_LOG"; exit 143' TERM; sleep 4; echo finished >>"$TEST_LOG"; exit 0 ;;

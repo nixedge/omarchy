@@ -17,7 +17,7 @@ mkdir -p "$local_home/.local/state/omarchy/current" "$stub_bin" "$remote_bin" "$
 
 # herdr lists one unreachable machine first, this machine, and a disabled one.
 cat >"$stub_bin/herdr" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\t%s\t%s\t%s\t%s\n' \
   1 down down default enabled \
   2 alpha alpha default enabled \
@@ -28,7 +28,7 @@ printf '%s\t%s\t%s\t%s\t%s\n' \
 EOF
 
 cat >"$stub_bin/hostname" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo local-box
 EOF
 
@@ -49,12 +49,12 @@ HOME="$remote" PATH="$SYNC_TEST/remote-bin:/usr/bin:/bin" bash -s
 EOF
 
 cat >"$remote_bin/omarchy" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo "$* from=$OMARCHY_THEME_SYNC_FROM session=$WAYLAND_DISPLAY" >>"$HOME/set.log"
 EOF
 
 cat >"$remote_bin/hyprctl" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo '[{"instance":"old","time":1,"wl_socket":"wayland-0"},{"instance":"live","time":2,"wl_socket":"wayland-1"}]'
 EOF
 
@@ -163,6 +163,6 @@ pass "a theme name reaches the remote verbatim without running commands"
 rm "$local_toggle"
 run_sync --available || fail "an enabled herdr machine makes theme sync available"
 pass "an enabled herdr machine makes theme sync available while it is off"
-printf '#!/bin/bash\nprintf "1\\tretired\\tretired\\tdefault\\tdisabled\\n"\n' >"$stub_bin/herdr"
+printf '#!/bin/sh\nprintf "1\\tretired\\tretired\\tdefault\\tdisabled\\n"\n' >"$stub_bin/herdr"
 ! run_sync --available || fail "only disabled herdr machines make theme sync unavailable"
 pass "only disabled herdr machines make theme sync unavailable"

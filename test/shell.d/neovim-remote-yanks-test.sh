@@ -65,7 +65,7 @@ mv "$test_home/package.saved" "$test_home/package.lua"
 # A write that fails after producing partial output must never damage the live
 # provider. Exercise the real install destination with a failing replacement.
 cat >"$test_home/bin/install" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s' '-- truncated replacement' >"${@: -1}"
 exit 1
 STUB
@@ -80,7 +80,7 @@ pass "failed write preserves original and retry succeeds"
 
 # Also fail the final rename, after successful staging.
 cp "$SHELL_TEST_DIR/fixtures/neovim-clipboard/july.lua" "$provider"
-printf '#!/bin/bash\nexit 1\n' >"$test_home/bin/mv"
+printf '#!/bin/sh\nexit 1\n' >"$test_home/bin/mv"
 chmod +x "$test_home/bin/mv"
 if run_migration; then fail "failed rename leaves migration pending"; fi
 cmp "$provider" "$SHELL_TEST_DIR/fixtures/neovim-clipboard/july.lua" || fail "failed rename preserves original"

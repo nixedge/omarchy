@@ -59,7 +59,7 @@ pass "a command line is handed to the running browser over its singleton socket"
 ! "$ROOT/bin/omarchy-cmd-browser-handoff" chromium --user-data-dir=/elsewhere https://example.test ||
   fail "another data directory is left to a browser of its own"
 mkdir -p "$test_tmp/wrapper"
-printf '#!/bin/bash\nexec /usr/bin/chromium --profile-directory=Work "$@"\n' >"$test_tmp/wrapper/chromium"
+printf '#!/bin/sh\nexec /usr/bin/chromium --profile-directory=Work "$@"\n' >"$test_tmp/wrapper/chromium"
 chmod +x "$test_tmp/wrapper/chromium"
 ! PATH="$test_tmp/wrapper:$PATH" "$ROOT/bin/omarchy-cmd-browser-handoff" chromium https://example.test ||
   fail "a wrapper standing in for the browser is left to run"

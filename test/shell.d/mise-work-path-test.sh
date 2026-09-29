@@ -83,7 +83,7 @@ install_home="$test_dir/install-home"
 install_log="$test_dir/install-mise.log"
 mkdir -p "$install_home" "$test_dir/bin"
 cat >"$test_dir/bin/mise" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$MISE_TEST_LOG"
 SH
 chmod +x "$test_dir/bin/mise"

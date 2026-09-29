@@ -10,7 +10,7 @@ for step in omarchy-state omarchy-restart-sshd omarchy-restart-shell omarchy-sys
   ln -s test-step "$SUDO_TEST_ROOT/bin/$step"
 done
 cat >"$SUDO_TEST_ROOT/bin/gum" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'prompt:%s\n' "$*" >>"$SUDO_TEST_LOG"
 exit 1
 STUB

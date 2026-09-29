@@ -14,14 +14,14 @@ export HOME="$tmp_dir/home"
 
 for stub in omarchy-launch-webapp omarchy-launch-floating-terminal-with-presentation omarchy-openclaw-onboard; do
   cat >"$tmp_dir/bin/$stub" <<SCRIPT
-#!/bin/bash
+#!/bin/sh
 printf '$stub:%s\n' "\$*" >>"\$TEST_LOG"
 SCRIPT
   chmod +x "$tmp_dir/bin/$stub"
 done
 
 # The retry loop sleeps between polls; a no-op keeps the suite fast.
-printf '#!/bin/bash\n' >"$tmp_dir/bin/sleep"
+printf '#!/bin/sh\n' >"$tmp_dir/bin/sleep"
 chmod +x "$tmp_dir/bin/sleep"
 
 # The launcher asks systemd whether the gateway unit is enabled; a flag file
@@ -111,7 +111,7 @@ rm -f "$tmp_dir/gateway-enabled"
 # A dashboard probe that hangs is cut off, so the launch still fails cleanly
 # instead of sitting forever behind an app-grid icon with no terminal.
 cat >"$tmp_dir/bin/timeout" <<SCRIPT
-#!/bin/bash
+#!/bin/sh
 printf 'timeout:%s\\n' "\$1" >>"\$TEST_LOG"
 exit 124
 SCRIPT
@@ -147,7 +147,7 @@ pass "OpenClaw launch fails cleanly when the gateway never comes up"
 # gateway's state-directory lock would refuse.
 rm -f "$HOME/.openclaw/openclaw.json"
 cat >"$tmp_dir/bin/omarchy-openclaw-onboard" <<SCRIPT
-#!/bin/bash
+#!/bin/sh
 printf 'omarchy-openclaw-onboard:%s\n' "\$*" >>"\$TEST_LOG"
 mkdir -p "\$HOME/.openclaw" && touch "\$HOME/.openclaw/openclaw.json"
 SCRIPT

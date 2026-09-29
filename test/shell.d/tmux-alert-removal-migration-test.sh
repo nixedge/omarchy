@@ -13,7 +13,7 @@ mkdir -p "$test_dir/bin"
 # Everything the migration reaches for is stubbed: a real tmux here would talk
 # to the developer's own server.
 cat >"$test_dir/bin/tmux" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$*" >>"$TMUX_CALLS"
 
@@ -34,20 +34,20 @@ esac
 STUB
 
 cat >"$test_dir/bin/omarchy-restart-tmux" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo restart >>"$TMUX_RESTARTS"
 STUB
 
 cat >"$test_dir/bin/omarchy-restart-shell" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 echo restart >>"$SHELL_RESTARTS"
 exit "${SHELL_RESTART_STATUS:-0}"
 STUB
 
 cat >"$test_dir/bin/omarchy-state" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$*" >>"$STATE_CALLS"
 STUB

@@ -36,14 +36,14 @@ case "$*" in
 esac
 SH
 cat >"$tmpdir/bin/socat" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$$" >"$TEST_DIR/socat.pid"
 exec cat "$TEST_DIR/events"
 SH
-printf '#!/bin/bash\nexit 1\n' >"$tmpdir/bin/pgrep"
-printf '#!/bin/bash\nexit 1\n' >"$tmpdir/bin/omarchy-toggle-enabled"
-printf '#!/bin/bash\necho DP-1\n' >"$tmpdir/bin/omarchy-hyprland-monitor-focused"
-printf '#!/bin/bash\necho foot.desktop\n' >"$tmpdir/bin/xdg-terminal-exec"
+printf '#!/bin/sh\nexit 1\n' >"$tmpdir/bin/pgrep"
+printf '#!/bin/sh\nexit 1\n' >"$tmpdir/bin/omarchy-toggle-enabled"
+printf '#!/bin/sh\necho DP-1\n' >"$tmpdir/bin/omarchy-hyprland-monitor-focused"
+printf '#!/bin/sh\necho foot.desktop\n' >"$tmpdir/bin/xdg-terminal-exec"
 chmod +x "$tmpdir/bin/"*
 
 : >"$tmpdir/calls"

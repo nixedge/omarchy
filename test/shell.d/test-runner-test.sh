@@ -76,7 +76,7 @@ run_suite
   fail "failures preserve skip reporting, diagnostics, errexit, and later tests" "$output"
 pass "failures remain fatal while skips and later test results stay visible"
 
-printf '#!/bin/bash\necho "CLI fixture passed"\n' >"$test_dir/test/cli"
+printf '#!/bin/sh\necho "CLI fixture passed"\n' >"$test_dir/test/cli"
 chmod +x "$test_dir/test/cli"
 run_suite all
 (( status == 1 )) && [[ $output == *"CLI fixture passed"* && $output == *"Skipped checks in 3 of 5 test files:"* && $output == *$'1 of 2 suites failed:\n  test/shell'* ]] ||

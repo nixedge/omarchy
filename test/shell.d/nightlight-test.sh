@@ -38,12 +38,12 @@ exit 1
 SH
 
 cat >"$TMPDIR/bin/pgrep" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
 cat >"$TMPDIR/bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$OMARCHY_SHELL_LOG"
 SH
 

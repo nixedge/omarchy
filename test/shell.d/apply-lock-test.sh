@@ -81,7 +81,7 @@ export TEST_TRUSTED_ARGS="$trusted_args"
 export TEST_TRUSTED_UID="$trusted_uid"
 
 cat >"$trusted_fprintd" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$EUID" >"$TEST_TRUSTED_UID"
 printf '%s\n' "$*" >"$TEST_TRUSTED_ARGS"
@@ -89,7 +89,7 @@ echo "Fingerprints are enrolled"
 EOF
 
 cat >"$poison_bin/fprintd-list" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$EUID" >"$TEST_ATTACK_MARKER"
 printf '%s\n' "$*" >"$TEST_ATTACK_ARGS"

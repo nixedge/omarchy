@@ -11,7 +11,7 @@ mkdir -p "$test_dir/bin" "$test_dir/home"
 export CALL_LOG="$test_dir/calls"
 
 cat >"$test_dir/bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'drop %s\n' "$*" >>"$CALL_LOG"
 exit "${PACKAGE_STATUS:-0}"
 SH
@@ -32,7 +32,7 @@ fi
 printf '%s\n' "${TEST_PUT_RESULT:-ok}"
 SH
 cat >"$test_dir/bin/omarchy-restart-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo 'migration must leave the restart to omarchy update' >&2
 exit 1
 SH

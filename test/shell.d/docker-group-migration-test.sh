@@ -28,15 +28,15 @@ printf 'OLD-LAUNCHER\n' >"$home/.local/share/applications/Docker.desktop"
 # id reports a controllable group set; sudo just drops the prefix; gpasswd
 # records its call instead of touching the real system.
 cat >"$stub_bin/id" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${STUB_GROUPS:-wheel input}"
 STUB
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 cat >"$stub_bin/gpasswd" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo "$@" >>"${GPASSWD_CALLS:?}"
 STUB
 # gum confirm always says yes, and reboot records that it fired: the migration
@@ -48,7 +48,7 @@ cat >"$stub_bin/gum" <<'STUB'
 exit 0
 STUB
 cat >"$stub_bin/omarchy-system-reboot" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 touch "${REBOOT_CALLED:?}"
 STUB
 chmod +x "$stub_bin/id" "$stub_bin/sudo" "$stub_bin/gpasswd" "$stub_bin/gum" "$stub_bin/omarchy-system-reboot"

@@ -56,20 +56,20 @@ esac
 SH
 
 cat >"$stub_bin/omarchy-menu-select" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$@" >"$OMARCHY_TEST_MENU_ARGS"
 printf '%s\n' "$3"
 SH
 
 cat >"$stub_bin/omarchy-capture-screenrecording" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$@" >"$OMARCHY_TEST_RECORDER_ARGS"
 SH
 
 cat >"$stub_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$@" >"$OMARCHY_TEST_NOTIFICATION_ARGS"
 SH
@@ -168,7 +168,7 @@ grep -F 'WEBCAM_DEVICE=$(omarchy-capture-webcam-list' "$ROOT/bin/omarchy-capture
 pass "screenrecording auto-detection uses the first capture-capable webcam"
 
 cat >"$stub_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 case $1 in
 clients)
@@ -308,12 +308,12 @@ recording_dir="$tmp_dir/recordings"
 mkdir -p "$recording_dir"
 
 cat >"$stub_bin/pgrep" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 
 cat >"$stub_bin/omarchy-hyprland-monitor-focused" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'DP-1\n'
 SH
 
@@ -327,7 +327,7 @@ sleep 5
 SH
 
 cat >"$stub_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 

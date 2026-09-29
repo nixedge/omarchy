@@ -21,7 +21,7 @@ fi
 EOF
 
 cat >"$mock_path/sudo" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$TEST_TMP/pkg-drop-command"
 exit "${TEST_REMOVE_STATUS:-0}"
 EOF

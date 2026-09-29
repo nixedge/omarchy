@@ -16,28 +16,28 @@ stub_bin="$test_dir/bin"
 mkdir -p "$home" "$stub_bin"
 
 cat >"$stub_bin/id" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${STUB_GROUPS:-wheel input}"
 STUB
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 cat >"$stub_bin/usermod" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo "$@" >>"${USERMOD_CALLS:?}"
 STUB
 cat >"$stub_bin/gpasswd" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo "$@" >>"${GPASSWD_CALLS:?}"
 STUB
 cat >"$stub_bin/gum" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 touch "${GUM_CALLED:?}"
 exit "${GUM_ANSWER:-0}"
 STUB
 cat >"$stub_bin/omarchy-system-reboot" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 touch "${REBOOT_CALLED:?}"
 STUB
 chmod +x "$stub_bin"/*

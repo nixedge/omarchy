@@ -13,7 +13,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-launch-webapp" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$@" >>"$OMARCHY_TEST_ARGV"
 SH
 chmod +x "$mock_bin"/*

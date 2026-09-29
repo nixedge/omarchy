@@ -9,14 +9,14 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin" "$test_tmp/home/.config/chromium" "$test_tmp/home/.local/state/omarchy/current"
 
 cat >"$mock_bin/omarchy-theme-set" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$OMARCHY_TEST_THEME_CALLS"
 SH
 chmod +x "$mock_bin/omarchy-theme-set"
 
 for command in omarchy-theme-set-pi; do
   cat >"$mock_bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
   chmod +x "$mock_bin/$command"

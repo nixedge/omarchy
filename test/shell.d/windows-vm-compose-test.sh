@@ -414,7 +414,7 @@ scan_helper="$TMPDIR/tree-scan-helper"
 saved_tree_scan_find=$TREE_SCAN_FIND
 saved_tree_scan_timeout=$TREE_SCAN_TIMEOUT_SECONDS
 saved_tree_scan_kill_after=$TREE_SCAN_KILL_AFTER_SECONDS
-printf '#!/bin/bash\n/bin/sleep 10\n' >"$scan_helper"
+printf '#!/bin/sh\n/bin/sleep 10\n' >"$scan_helper"
 chmod 0700 "$scan_helper"
 TREE_SCAN_FIND=$scan_helper
 TREE_SCAN_TIMEOUT_SECONDS=0.05
@@ -423,7 +423,7 @@ __priv_remove 2>/dev/null && fail "removal continued after its containment scan 
 [[ -f $HOME/.windows/disk.img && -f $HOME/Windows/keep.txt && -f $COMPOSE ]] || fail "timed-out containment scan changed state"
 [[ $(mount_layer_count "$EXPECTED_STORAGE") == 1 && $(mount_layer_count "$EXPECTED_SHARED") == 1 ]] || fail "timed-out containment scan changed mounts"
 
-printf '#!/bin/bash\nexit 42\n' >"$scan_helper"
+printf '#!/bin/sh\nexit 42\n' >"$scan_helper"
 __priv_remove 2>/dev/null && fail "removal continued after its containment scanner failed"
 [[ -f $HOME/.windows/disk.img && -f $HOME/Windows/keep.txt && -f $COMPOSE ]] || fail "failed containment scan changed state"
 [[ $(mount_layer_count "$EXPECTED_STORAGE") == 1 && $(mount_layer_count "$EXPECTED_SHARED") == 1 ]] || fail "failed containment scan changed mounts"

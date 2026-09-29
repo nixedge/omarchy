@@ -10,7 +10,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 mkdir -p "$tmp_dir/bin"
 
 cat >"$tmp_dir/bin/omarchy-pkg-drop" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'drop:%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/bin/omarchy-pkg-drop"
@@ -18,7 +18,7 @@ chmod +x "$tmp_dir/bin/omarchy-pkg-drop"
 # omarchy-remove-ai-claude quits the running app before deleting its state;
 # a real pkill here would take the developer's own Claude with it.
 cat >"$tmp_dir/bin/pkill" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'pkill:%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/bin/pkill"
@@ -30,7 +30,7 @@ chmod +x "$tmp_dir/bin/pkill"
 # because the OpenClaw section below greps TEST_LOG to prove gum was never
 # reached, and the pty runs here call it on purpose.
 cat >"$tmp_dir/bin/gum" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'gum:%s\n' "$*" >>"$TEST_GUM_LOG"
 exit "${TEST_GUM_STATUS:-1}"
 SCRIPT
@@ -225,7 +225,7 @@ pass "Ollama removal is offered only where the package is installed"
 # state in ~/.openclaw is the user's. systemctl and openclaw are stubbed so the
 # sandbox never reaches the real user manager or a real gateway.
 cat >"$tmp_dir/bin/systemctl" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl:%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/bin/systemctl"
@@ -233,7 +233,7 @@ chmod +x "$tmp_dir/bin/systemctl"
 # Default openclaw stub: the packaged CLI predates `gateway uninstall`, so the
 # remover has to fall back to its manual systemd path.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 exit 1
 SCRIPT
@@ -258,7 +258,7 @@ fresh_openclaw_home() {
 # gum would ask about ~/.openclaw; the tests never run on a terminal, so it
 # must not even be reached. Logging it proves that.
 cat >"$tmp_dir/bin/gum" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'gum:%s\n' "$*" >>"$TEST_LOG"
 exit 0
 SCRIPT
@@ -298,7 +298,7 @@ pass "OpenClaw removal keeps the user's agent state"
 # A CLI that knows `gateway uninstall` owns the teardown; the manual systemd
 # fallback must not run.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 rm -f "$HOME/.config/systemd/user/openclaw-$1.service" \
   "$HOME/.config/systemd/user/default.target.wants/openclaw-$1.service"
@@ -330,7 +330,7 @@ pass "OpenClaw removal leaves systemd alone when onboarding never ran"
 # A gateway that will not stop aborts the removal before the package drop:
 # pacman would otherwise strand the live process on deleted code.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 exit 1
 SCRIPT
@@ -360,7 +360,7 @@ pass "OpenClaw removal aborts when the gateway cannot be stopped"
 # An unreachable user manager is not a stopped gateway: every probe failing
 # with no answer must still abort, not read as "confirmed inactive".
 cat >"$tmp_dir/bin/systemctl" <<'SCRIPT'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl:%s\n' "$*" >>"$TEST_LOG"
 echo "Failed to connect to user scope bus" >&2
 exit 1

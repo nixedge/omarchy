@@ -16,7 +16,7 @@ export CALL_LOG="$scratch/calls"
 export PATH="$scratch/bin:$ROOT/bin:$PATH"
 
 cat > "$scratch/bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 STUB
 # INSTALLED lists the installed package names, one per line; an install adds

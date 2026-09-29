@@ -31,15 +31,15 @@ if [[ $* == "query default x-scheme-handler/https" ]]; then
 fi
 SH
 cat >"$mock_bin/chromium" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 cat >"$mock_bin/systemd-run" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >"$OMARCHY_TEST_BROWSER_LAUNCH"
 SH
 cat >"$mock_bin/omarchy-hyprland-focus-app" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$1" >"$OMARCHY_TEST_BROWSER_FOCUS"
 SH
 chmod +x "$mock_bin"/*

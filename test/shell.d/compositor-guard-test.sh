@@ -28,7 +28,7 @@ attempts_log="$test_dir/hyprctl-attempts"
 stub_hyprctl() {
   : >"$attempts_log"
   cat >"$stub_bin/hyprctl" <<STUB
-#!/bin/bash
+#!/bin/sh
 echo asked >>"$attempts_log"
 exit $1
 STUB

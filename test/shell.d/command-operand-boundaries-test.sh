@@ -70,17 +70,17 @@ pass "pkg-present still finds an installed package"
 
 package_calls="$test_tmp/package-calls"
 cat >"$mock_bin/omarchy-pkg-missing" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 exit 0
 STUB
 cat >"$mock_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 exec "$@"
 STUB
 cat >"$mock_bin/yay" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_PACKAGE_CALLS:?}"
 {
@@ -139,7 +139,7 @@ pass "hw-match still accepts an ordinary hardware pattern"
 
 pkill_calls="$test_tmp/pkill-calls"
 cat >"$mock_bin/pkill" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_PKILL_CALLS:?}"
 printf '<%s>\n' "$@" >"$OMARCHY_TEST_PKILL_CALLS"
@@ -168,7 +168,7 @@ mkdir -p "$fake_home/.local/state/omarchy/defaults"
 printf 'nvim\n' >"$fake_home/.local/state/omarchy/defaults/editor"
 
 cat >"$mock_bin/nvim" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_EDITOR_CALLS:?}"
 printf '<%s>\n' "$@" >"$OMARCHY_TEST_EDITOR_CALLS"
@@ -184,7 +184,7 @@ editor_argv=$(<"$editor_calls")
 pass "launch-editor separates an option-shaped path from editor options"
 
 cat >"$mock_bin/omarchy-launch-tui" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_EDITOR_CALLS:?}"
 printf '<%s>\n' "$@" >"$OMARCHY_TEST_EDITOR_CALLS"
@@ -202,7 +202,7 @@ pass "launch-editor separates a terminal editor path from editor options"
 setsid_calls="$test_tmp/setsid-calls"
 printf 'code\n' >"$fake_home/.local/state/omarchy/defaults/editor"
 cat >"$mock_bin/code" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 exit 0
 STUB
@@ -220,7 +220,7 @@ hook_calls="$test_tmp/hook-calls"
 hook_home="$test_tmp/hook-home"
 printf '#!/bin/bash\n' >"$test_tmp/--help"
 cat >"$mock_bin/basename" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_HOOK_CALLS:?}"
 {
@@ -231,7 +231,7 @@ cat >"$mock_bin/basename" <<'STUB'
 printf 'literal-hook\n'
 STUB
 cat >"$mock_bin/cp" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 : "${OMARCHY_TEST_HOOK_CALLS:?}"
 {
@@ -241,7 +241,7 @@ cat >"$mock_bin/cp" <<'STUB'
 } >>"$OMARCHY_TEST_HOOK_CALLS"
 STUB
 for command in mkdir chmod; do
-  printf '#!/bin/bash\nexit 0\n' >"$mock_bin/$command"
+  printf '#!/bin/sh\nexit 0\n' >"$mock_bin/$command"
 done
 chmod +x "$mock_bin/basename" "$mock_bin/cp" "$mock_bin/mkdir" "$mock_bin/chmod"
 

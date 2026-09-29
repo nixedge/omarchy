@@ -28,7 +28,7 @@ PY
 
 mkdir -p "$test_dir/bin"
 cat > "$test_dir/bin/fc-cache" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >> "$FONT_TEST_CACHE_LOG"
 exit "${FONT_TEST_CACHE_STATUS:-0}"
 SH

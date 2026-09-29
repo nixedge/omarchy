@@ -20,16 +20,16 @@ setup_scenario() {
   local closed="$2" docked="$3"
 
   cat >"$mock_bin/omarchy-hw-laptop-closed" <<SH
-#!/bin/bash
+#!/bin/sh
 exit $closed
 SH
   cat >"$mock_bin/omarchy-hw-external-monitors" <<SH
-#!/bin/bash
+#!/bin/sh
 exit $docked
 SH
   for command in omarchy-system-lock omarchy-hyprland-monitor-clamshell; do
     cat >"$mock_bin/$command" <<SH
-#!/bin/bash
+#!/bin/sh
 echo $command >>"\$CALL_LOG"
 SH
   done
@@ -81,7 +81,7 @@ pass "an open lid never locks the session"
 # must not stop the display reconciliation behind it.
 setup_scenario failing_lock 0 1
 cat >"$mock_bin/omarchy-system-lock" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo omarchy-system-lock >>"$CALL_LOG"
 exit 1
 SH

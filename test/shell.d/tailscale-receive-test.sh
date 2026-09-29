@@ -23,7 +23,7 @@ mv "$WORKDIR/outbox/"* "\$target/"
 SH
 
 cat >"$WORKDIR/bin/omarchy-notification-send" <<SH
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "\$*" >>"$WORKDIR/notifications"
 SH
 

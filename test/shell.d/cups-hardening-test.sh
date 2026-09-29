@@ -120,17 +120,17 @@ cat >"$mock_bin/omarchy-pkg-present" <<'SH'
 SH
 for command in omarchy-pkg-add omarchy-pkg-drop; do
   cat >"$mock_bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\t%s\n' "${0##*/}" "$*" >>"$OMARCHY_CUPS_TEST_LOG"
 SH
 done
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'systemctl\t%s\n' "$*" >>"$OMARCHY_CUPS_TEST_LOG"
 exit 0
 SH
 cat >"$mock_bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'sudo\t%s\n' "$*" >>"$OMARCHY_CUPS_TEST_LOG"
 exec "$@"
 SH

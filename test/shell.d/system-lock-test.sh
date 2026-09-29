@@ -13,13 +13,13 @@ mkdir -p "$mock_bin"
 
 for command in omarchy-shell hyprctl pkill timeout; do
   cat >"$mock_bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s %s\n' "$(basename "$0")" "$*" >>"$CALL_LOG"
 SH
 done
 
 cat >"$mock_bin/pgrep" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 1
 SH
 chmod +x "$mock_bin"/*

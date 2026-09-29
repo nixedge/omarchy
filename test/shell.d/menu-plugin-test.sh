@@ -16,31 +16,31 @@ mkdir -p "$STUB_DIR"
 # decided to a verb-specific command, so stubbing both ends shows which plugin
 # a pick actually resolved to -- the thing a source-level check cannot see.
 cat >"$STUB_DIR/omarchy-plugin-list" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 cat "$FAKE_PLUGINS"
 STUB
 
 for command in omarchy-plugin-enable omarchy-plugin-disable; do
   cat >"$STUB_DIR/$command" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s %s\n' "${0##*/}" "$*" >>"$FAKE_CALLS"
 STUB
 done
 
 # Records the rows it was offered, then answers with the pick under test.
 cat >"$STUB_DIR/omarchy-menu-select" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 cat >"$FAKE_ROWS"
 printf '%s\n' "$FAKE_PICK"
 STUB
 
 cat >"$STUB_DIR/omarchy-notification-send" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'notification: %s\n' "$*" >>"$FAKE_CALLS"
 STUB
 
 cat >"$STUB_DIR/omarchy-launch-floating-terminal-with-presentation" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'terminal: %s\n' "$*" >>"$FAKE_CALLS"
 STUB
 

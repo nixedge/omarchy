@@ -16,13 +16,13 @@ cat >"$mock_bin/omarchy-cmd-present" <<'SH'
 SH
 
 cat >"$mock_bin/setsid" <<'SH'
-#!/bin/bash
+#!/bin/sh
 shift
 printf 'launch:%s\n' "$*" >"$OMARCHY_TEST_LOG"
 SH
 
 cat >"$mock_bin/omarchy-launch-floating-terminal-with-presentation" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'install:%s\n' "$*" >"$OMARCHY_TEST_LOG"
 SH
 

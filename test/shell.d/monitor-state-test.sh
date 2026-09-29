@@ -18,12 +18,12 @@ cat "$FAKE_MONITORS"
 EOF
 
 cat >"$test_bin/omarchy-brightness-display" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo 42
 EOF
 
 cat >"$test_bin/omarchy-hyprland-monitor-scaling" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo 1.5
 EOF
 

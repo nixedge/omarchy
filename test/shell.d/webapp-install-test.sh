@@ -100,7 +100,7 @@ sed -n "${count}p" "$GUM_ANSWERS"
 GUM
 
 cat >"$stubs/curl" <<'CURL'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$CURL_LOG"
 exit 1
 CURL

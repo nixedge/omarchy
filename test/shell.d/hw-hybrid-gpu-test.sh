@@ -29,7 +29,7 @@ printf '%s\n' "${SUPPORTED_MODES:-Integrated Hybrid}"
 STUB
 
 cat >"$fake_bin/lspci" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 
 for _ in $(seq "${GPU_COUNT:-1}"); do
   echo "0000:00:02.0 VGA compatible controller: Stub GPU"
@@ -81,7 +81,7 @@ BLOCKED=kill-only GPU_COUNT=2 hybrid_gpu ||
 pass "hybrid GPU detection counts multiple GPUs when supergfxd is wedged"
 
 cat >"$fake_bin/omarchy-cmd-present" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 1
 STUB
 chmod +x "$fake_bin/omarchy-cmd-present"

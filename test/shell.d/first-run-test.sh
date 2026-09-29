@@ -9,11 +9,11 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin" "$test_tmp/home"
 
 cat >"$mock_bin/omarchy-done" <<'SH'
-#!/bin/bash
-[[ $1 == "check" && $2 == "first-run-user" ]]
+#!/bin/sh
+[ "$1" = "check" ] && [ "$2" = "first-run-user" ]
 SH
 cat >"$mock_bin/omarchy-provision-user" <<'SH'
-#!/bin/bash
+#!/bin/sh
 touch "$OMARCHY_TEST_FINALIZE_CALLED"
 SH
 chmod +x "$mock_bin/omarchy-done" "$mock_bin/omarchy-provision-user"

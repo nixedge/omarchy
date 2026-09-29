@@ -29,7 +29,7 @@ esac
 STUB
 mkdir "$boundary_tmp/user commands"
 cat >"$boundary_tmp/user commands/update-user-tool" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'user-tool:%s\n' "$1" >>"$SUDO_TEST_LOG"
 STUB
 chmod +x "$SUDO_TEST_ROOT/bin/script" "$SUDO_TEST_ROOT/bin/omarchy-update-lock" "$boundary_tmp/user commands/update-user-tool"

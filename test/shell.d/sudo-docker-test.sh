@@ -19,7 +19,7 @@ command="$ROOT/bin/omarchy-sudo-docker"
 # Stub id so the configured groups are controllable.
 mkdir -p "$TMPDIR/bin"
 cat >"$TMPDIR/bin/id" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "${STUB_GROUPS:-wheel input}"
 STUB
 chmod +x "$TMPDIR/bin/id"

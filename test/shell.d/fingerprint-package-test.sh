@@ -16,11 +16,11 @@ export CALL_LOG="$scratch/calls"
 export PATH="$scratch/bin:$ROOT/bin:$PATH"
 
 cat > "$scratch/bin/omarchy-hw-fingerprint" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit "${HARDWARE_STATUS:-0}"
 STUB
 cat > "$scratch/bin/sudo" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 case "$1" in
   pacman | fprintd-enroll) exec "$@" ;;
   *) echo "Unexpected privileged call: $*" >> "$CALL_LOG"; exit 99 ;;
@@ -46,13 +46,13 @@ case "$1" in
 esac
 STUB
 cat > "$scratch/bin/fprintd-enroll" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 # Stop before verification/PAM; no host authentication files may be changed.
 echo enroll >> "$CALL_LOG"
 exit 1
 STUB
 cat > "$scratch/bin/fprintd-verify" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo verify >> "$CALL_LOG"
 exit 1
 STUB

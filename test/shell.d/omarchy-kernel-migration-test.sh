@@ -35,7 +35,7 @@ esac
 SH
 
 cat > "$scratch/bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'sudo %s\n' "$*" >> "$CALL_LOG"
 case "$1" in
   pacman | mkdir | touch | sed | tee | install | limine-mkinitcpio | limine-entry-tool) exec "$@" ;;
@@ -64,7 +64,7 @@ printf 'state %s\n' "$*" >> "$CALL_LOG"
 SH
 
 cat > "$scratch/bin/uname" <<'SH'
-#!/bin/bash
+#!/bin/sh
 case "$1" in
   -m) printf '%s\n' "${TEST_ARCH:-x86_64}" ;;
   -r) printf '%s\n' "${TEST_KERNEL_RELEASE:-7.2.5-arch1-1}" ;;
@@ -73,7 +73,7 @@ esac
 SH
 
 cat > "$scratch/bin/omarchy-notification-dismiss" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 chmod +x "$scratch/bin/"*

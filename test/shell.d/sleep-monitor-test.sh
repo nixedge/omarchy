@@ -25,7 +25,7 @@ exec "$@"
 SH
 
 cat >"$mock_bin/dbus-monitor" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 echo "$$" >"$PRODUCER_PID_FILE"
 printf '   boolean true\n'
@@ -33,7 +33,7 @@ exec sleep 30
 SH
 
 cat >"$mock_omarchy/bin/omarchy-system-sleep-lock" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 echo locked >>"$LOCK_LOG"
 SH
@@ -69,7 +69,7 @@ pass "sleep monitor reaps its event producer"
 # Terminating the monitor must also clean up the producer instead of orphaning
 # it under the user systemd instance.
 cat >"$mock_bin/dbus-monitor" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 sleep 0.1
 echo "$$" >"$PRODUCER_PID_FILE"

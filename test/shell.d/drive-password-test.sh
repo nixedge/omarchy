@@ -8,18 +8,18 @@ tmp_dir=$(mktemp -d)
 trap 'rm -r "$tmp_dir"' EXIT
 
 cat >"$tmp_dir/blkid" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 echo /dev/test-luks
 EOF
 
 cat >"$tmp_dir/gum" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 head -n 1 "$TEST_INPUTS"
 sed -i '1d' "$TEST_INPUTS"
 EOF
 
 cat >"$tmp_dir/sudo" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$@" >"$TEST_ARGS"
 cat >"$TEST_STDIN"
 EOF

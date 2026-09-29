@@ -231,7 +231,7 @@ mkdir -p "$TMPDIR/home/.config/omarchy"
 ipc_mock_bin="$TMPDIR/ipc-mock"
 mkdir -p "$ipc_mock_bin"
 cat >"$ipc_mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 set -euo pipefail
 
 mkdir -p "$HOME/.local/state/omarchy"
@@ -351,7 +351,7 @@ cp "$OMARCHY_PATH/config/$relative_path" "$HOME/.config/$relative_path"
 SH
 
 cat >"$mock_bin/omarchy-restart-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 set -euo pipefail
 
 mkdir -p "$HOME/.local/state/omarchy"

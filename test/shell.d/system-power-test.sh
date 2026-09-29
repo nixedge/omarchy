@@ -19,7 +19,7 @@ SH
 
 for command in omarchy-state omarchy-hyprland-window-close-all sleep; do
   cat >"$mock_bin/$command" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s %s\n' "$(basename "$0")" "$*" >>"$CALL_LOG"
 SH

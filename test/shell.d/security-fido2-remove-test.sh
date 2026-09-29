@@ -72,7 +72,7 @@ esac
 SH
 
 cat >"$stub_bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 SH
 
 chmod +x "$stub_bin/sudo" "$stub_bin/omarchy-pkg-drop"

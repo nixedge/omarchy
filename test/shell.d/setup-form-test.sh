@@ -34,7 +34,7 @@ printf '%s\n' "$TZ_GUESS"
 EOF
 
 cat >"$tmp_dir/timedatectl" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' UTC Europe/Copenhagen America/Chicago
 EOF
 

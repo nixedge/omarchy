@@ -573,7 +573,7 @@ done
 exec /usr/bin/install "${args[@]}"
 SH
 cat >"$stub_bin/sleep" <<'SH'
-#!/bin/bash
+#!/bin/sh
 :
 SH
 chmod +x "$stub_bin/hook-supergfxctl" "$stub_bin/hook-install" "$stub_bin/sleep"
@@ -690,7 +690,7 @@ mkdir -p "$keyboard_led_dir/asus::kbd_backlight"
 sed "s|/sys/class/leds/\*kbd_backlight\*|$keyboard_led_dir/*kbd_backlight*|" \
   "$ROOT/default/systemd/system-sleep/keyboard-backlight" >"$keyboard_hook_copy"
 cat >"$stub_bin/brightnessctl" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$KEYBOARD_CALLS"
 SH
 chmod +x "$stub_bin/brightnessctl"

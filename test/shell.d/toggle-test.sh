@@ -58,7 +58,7 @@ pass "bar off disables bar-off toggle"
 export OMARCHY_PATH="$ROOT"
 stub_bin="$TMPDIR/bin"
 mkdir -p "$stub_bin"
-printf '#!/bin/bash\nexit 0\n' >"$stub_bin/hyprctl"
+printf '#!/bin/sh\nexit 0\n' >"$stub_bin/hyprctl"
 chmod +x "$stub_bin/hyprctl"
 export PATH="$stub_bin:$PATH"
 
@@ -86,7 +86,7 @@ HOME="$test_home" omarchy-toggle-fullscreen-desktop on
 pass "fullscreen on enters full screen"
 
 # The flag records animations being off, so on and off are the other way round.
-printf '#!/bin/bash\nexit 0\n' >"$stub_bin/omarchy-notification-send"
+printf '#!/bin/sh\nexit 0\n' >"$stub_bin/omarchy-notification-send"
 chmod +x "$stub_bin/omarchy-notification-send"
 animations_flag="$test_home/.local/state/omarchy/toggles/hypr/no-animations.lua"
 

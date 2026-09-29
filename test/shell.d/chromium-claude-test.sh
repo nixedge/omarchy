@@ -27,7 +27,7 @@ done
 pass "Claude extension installer registers all supported browser families"
 
 cat >"$test_tmp/bin/pkexec" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$@" >"$AUTH_LOG"
 exit 42
 SH

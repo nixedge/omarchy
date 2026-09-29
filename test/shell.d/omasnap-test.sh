@@ -27,7 +27,7 @@ stub_bin="$test_tmp/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/omasnap" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\t%s\n' "${OMASNAP_SCREENSHOT_DIR:-}" "$*" >>"$OMASNAP_TEST_LOG"
 SH
 chmod +x "$stub_bin/omasnap"
@@ -62,12 +62,12 @@ OMASNAP_TEST_LOG="$capture_log" PATH="$stub_bin:$PATH" \
 pass "the Omarchy screenshot route delegates compatible arguments to Omasnap"
 
 cat >"$stub_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'add\t%s\n' "$*" >>"$OMASNAP_MIGRATION_LOG"
 exit "${OMASNAP_PACKAGE_STATUS:-0}"
 SH
 cat >"$stub_bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'drop\t%s\n' "$*" >>"$OMASNAP_MIGRATION_LOG"
 SH
 chmod +x "$stub_bin/omarchy-pkg-add" "$stub_bin/omarchy-pkg-drop"

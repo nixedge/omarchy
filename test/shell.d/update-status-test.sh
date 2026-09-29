@@ -12,13 +12,13 @@ shell_calls="$test_tmp/shell-calls"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/omarchy-update-available" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 exit "${UPDATE_AVAILABLE_STATUS:-0}"
 SH
 
 cat >"$stub_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 printf '%s\n' "$*" >>"$SHELL_CALLS"
 SH

@@ -21,7 +21,7 @@ name_file="$state_dir/touchpad-disabled-name"
 state_lua="$state_dir/touchpad-disabled.lua"
 
 cat >"$stub_dir/hyprctl" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 case $1 in
   eval) printf '%s\n' "$2" >>"$HYPRCTL_LOG" ;;
   reload) printf 'reload\n' >>"$HYPRCTL_LOG" ;;
@@ -30,7 +30,7 @@ EOF
 chmod +x "$stub_dir/hyprctl"
 
 cat >"$stub_dir/omarchy-osd" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 :
 EOF
 chmod +x "$stub_dir/omarchy-osd"
@@ -39,7 +39,7 @@ stub_device() {
   local kind=$1
   local name=$2
   cat >"$stub_dir/omarchy-hw-$kind" <<EOF
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' '$name'
 EOF
   chmod +x "$stub_dir/omarchy-hw-$kind"
@@ -174,7 +174,7 @@ LUA
 pass "PoC device name cannot execute via eval or reload"
 
 cat >"$stub_dir/omarchy-hw-touchpad" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 printf 'evil\nname\n'
 EOF
 chmod +x "$stub_dir/omarchy-hw-touchpad"
@@ -198,7 +198,7 @@ set -e
 pass "a bad device name cannot wedge the persisted disable"
 
 cat >"$stub_dir/omarchy-hw-touchpad" <<'EOF'
-#!/bin/bash
+#!/bin/sh
 :
 EOF
 chmod +x "$stub_dir/omarchy-hw-touchpad"

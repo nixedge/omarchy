@@ -167,7 +167,7 @@ fi
 STUB
 
 cat >"$stub_bin/mise" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 printf 'mise:%s\n' "$*" >>"$TEST_EVENT_LOG"
 STUB
 

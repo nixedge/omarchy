@@ -32,7 +32,7 @@ fi
 SH
 
 cat >"$mock_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >>"$OMARCHY_TEST_NOTIFICATION_HISTORY"
 SH
 
@@ -42,22 +42,22 @@ cat >"$mock_bin/omarchy-cmd-missing" <<'SH'
 SH
 
 cat >"$mock_bin/omarchy-launch-tui" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >"$OMARCHY_TEST_AGENT_LAUNCH_LOG"
 SH
 
 cat >"$mock_bin/omarchy-launch-floating-terminal-with-presentation" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >"$OMARCHY_TEST_AGENT_TERMINAL_LOG"
 SH
 
 cat >"$mock_bin/opencode" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' opencode "$@" >"$OMARCHY_TEST_AGENT_INLINE_LOG"
 SH
 
 cat >"$mock_bin/omarchy-mise-install" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "$*" >>"$OMARCHY_TEST_STUB_LOG"
 SH
 
@@ -80,12 +80,12 @@ fi
 SH
 
 cat >"$mock_bin/omarchy-menu" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' "$@" >"$OMARCHY_TEST_AGENT_MENU_LOG"
 SH
 
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 echo "Muse must install through mise" >&2
 exit 1
 SH
@@ -101,7 +101,7 @@ fi
 SH
 
 cat >"$mock_bin/omarchy-test-noop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 
@@ -435,7 +435,7 @@ omarchy-remove-preinstalls >/dev/null
 [[ -L $test_home/.local/bin/cursor-agent ]] || fail "Remove Preinstalls keeps an official Cursor CLI install"
 rm -f "$test_home/.local/bin/cursor-agent" "$test_home/.local/bin/cursor-agent.official"
 pass "Remove Preinstalls keeps an official Cursor CLI install"
-printf '#!/bin/bash\necho user-muse\n' >"$test_home/.local/bin/muse"
+printf '#!/bin/sh\necho user-muse\n' >"$test_home/.local/bin/muse"
 chmod +x "$test_home/.local/bin/muse"
 omarchy-remove-preinstalls >/dev/null
 [[ $("$test_home/.local/bin/muse") == "user-muse" ]] || fail "Remove Preinstalls deletes a user-managed Muse"
@@ -477,7 +477,7 @@ grep -Fq 'o.bind("SUPER + SHIFT + CTRL + A", "Agent", "omarchy-agent --pick")' \
 pass "agent launcher has a keyboard shortcut"
 
 cat >"$mock_bin/omarchy-agent" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' omarchy-agent "$@" >"$OMARCHY_TEST_AGENT_OPEN_LOG"
 SH
 chmod +x "$mock_bin/omarchy-agent"
@@ -723,7 +723,7 @@ pass "default agent reports Muse mise failures without changing the selection"
 
 # A manually installed launcher belongs to the user; selecting it must not
 # install a second copy or replace it with the Omarchy wrapper.
-printf '#!/bin/bash\necho user-muse\n' >"$test_home/.local/bin/muse"
+printf '#!/bin/sh\necho user-muse\n' >"$test_home/.local/bin/muse"
 chmod +x "$test_home/.local/bin/muse"
 : >"$mise_history"
 : >"$stub_log"
@@ -881,15 +881,15 @@ cat >"$mock_bin/omarchy-pkg-present" <<'SH'
 [[ $1 == openclaw && ${OMARCHY_TEST_OPENCLAW_INSTALLED:-false} == "true" ]]
 SH
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "pkg-add $*" >>"$OMARCHY_TEST_STUB_LOG"
 SH
 cat >"$mock_bin/omarchy-launch-openclaw" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\0' omarchy-launch-openclaw "$@" >"$OMARCHY_TEST_AGENT_INLINE_LOG"
 SH
 cat >"$mock_bin/openclaw" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exit 0
 SH
 chmod +x "$mock_bin/omarchy-pkg-present" "$mock_bin/omarchy-pkg-add" \

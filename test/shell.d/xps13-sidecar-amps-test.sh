@@ -26,24 +26,24 @@ cat >"$test_tmp/bin/omarchy-hw-match" <<'SH'
 SH
 
 cat >"$test_tmp/bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'pkg-add %s\n' "$*" >>"$CALL_LOG"
 exit "${TEST_PKG_ADD_STATUS:-0}"
 SH
 
 cat >"$test_tmp/bin/sudo" <<'SH'
-#!/bin/bash
+#!/bin/sh
 exec "$@"
 SH
 
 cat >"$test_tmp/bin/dell-xps13-sidecar-amps-apply" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'apply\n' >>"$CALL_LOG"
 exit "${TEST_APPLY_STATUS:-0}"
 SH
 
 cat >"$test_tmp/bin/omarchy-state" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf 'state %s\n' "$*" >>"$CALL_LOG"
 SH
 

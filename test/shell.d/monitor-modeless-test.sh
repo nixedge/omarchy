@@ -79,20 +79,20 @@ cat >"$fake_bin/omarchy-hyprland-reload-guard" <<'SH'
 SH
 
 cat >"$fake_bin/socat" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 exec cat "$OMARCHY_TEST_EVENTS"
 SH
 
 # A desktop, so the clamshell half of the watcher stays idle.
 cat >"$fake_bin/omarchy-hw-laptop" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 exit 1
 SH
 
 cat >"$fake_bin/omarchy-hyprland-monitor-clamshell" <<'SH'
-#!/bin/bash
+#!/bin/sh
 
 exit 0
 SH

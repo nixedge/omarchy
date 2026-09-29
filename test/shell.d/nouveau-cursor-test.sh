@@ -9,7 +9,7 @@ trap 'rm -rf "$test_tmp"' EXIT
 
 mkdir -p "$test_tmp/bin" "$test_tmp/home/.config/hypr"
 cat >"$test_tmp/bin/lspci" <<'SH'
-#!/bin/bash
+#!/bin/sh
 printf '%s\n' "Kernel driver in use: ${TEST_VIDEO_DRIVER:-nouveau}"
 SH
 chmod +x "$test_tmp/bin/lspci"

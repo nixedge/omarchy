@@ -11,7 +11,7 @@ mkdir -p "$test_dir/bin" "$test_dir/run"
 touch "$test_dir/run/wayland-1" "$test_dir/run/wayland-1.lock"
 
 cat >"$test_dir/bin/qs" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 echo "display=[$WAYLAND_DISPLAY]"
 STUB
 chmod +x "$test_dir/bin/qs"

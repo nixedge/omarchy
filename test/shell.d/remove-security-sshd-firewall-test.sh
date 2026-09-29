@@ -50,7 +50,7 @@ mv "$next" "$UFW_STATE"
 STUB
 
 cat >"$stub_bin/gum" <<'STUB'
-#!/bin/bash
+#!/bin/sh
 exit 1
 STUB
 
