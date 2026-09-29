@@ -426,6 +426,23 @@
             done < <(find "$src" -type f -print0)
           fi
         '';
+
+        # ── First-login user provisioning ─────────────────────────────────────
+        # Runs omarchy-provision-first-run once per user after the graphical
+        # session is live. The script is idempotent — subsequent logins are
+        # instant no-ops guarded by the finalize-user done marker.
+        systemd.user.services.omarchy-provision = {
+          description = "Omarchy first-login user provisioning";
+          wantedBy = [ "graphical-session.target" ];
+          after = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${omarchy}/bin/omarchy-provision-first-run";
+            RemainAfterExit = true;
+            # Don't hold up the graphical session if provisioning is slow.
+            TimeoutStartSec = "5min";
+          };
+        };
       };
     };
 }

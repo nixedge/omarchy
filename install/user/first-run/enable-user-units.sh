@@ -12,13 +12,22 @@
 set -euo pipefail
 
 systemctl --user daemon-reload
-systemctl --user enable --now \
+
+# Enable each unit individually so an absent unit (e.g. on NixOS where units
+# are declared in the module rather than dropped as loose files) does not abort
+# the whole step and block first-run from completing.
+for unit in \
   bt-agent.service \
   owed.service \
   omarchy-recover-internal-monitor.service \
   omarchy-sleep-lock.service \
   omarchy-migrate-notify.service \
   omarchy-fcitx5.service \
-  omarchy-crash-watch.service
+  omarchy-crash-watch.service; do
+  systemctl --user enable --now "$unit" 2>/dev/null || true
+done
 
-omarchy-hook-install theme-set /usr/share/owe/10-owe-sync
+# Only ship this hook if the OWE path is present (Arch-only package).
+if [[ -f /usr/share/owe/10-owe-sync ]]; then
+  omarchy-hook-install theme-set /usr/share/owe/10-owe-sync
+fi

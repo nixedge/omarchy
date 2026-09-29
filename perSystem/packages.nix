@@ -537,9 +537,7 @@
               omarchy-apply-hardware \
               omarchy-apply-system \
               omarchy-apply-lock \
-              omarchy-provision-first-run \
-              omarchy-provision-owner \
-              omarchy-provision-user; do
+              omarchy-provision-owner; do
               install -m 0755 ${../pkgs/omarchy/cinque-not-implemented.sh} $out/cinque-shims/$cmd
             done
 

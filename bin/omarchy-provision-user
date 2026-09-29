@@ -7,17 +7,11 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: omarchy finalize user [--force] [--first-install]
+Usage: omarchy finalize user [--force]
 
-Runs the per-user setup steps that /etc/skel can't seed:
+Runs the per-user setup steps that NixOS activation can't seed:
 dev-aware skill symlinks, xdg-user-dirs + gtk bookmarks (need \$HOME),
 default browser/mailto, and install/user/all.sh.
-
-For shipped configs see /etc/skel (new users) and omarchy-reinstall-configs
-(existing users explicitly resyncing).
-
---first-install is used by the ISO in the target chroot. It marks shipped
-migrations complete for the freshly-created user.
 
 Idempotency marker: ~/.local/state/omarchy/done/finalize-user
 USAGE
@@ -29,15 +23,9 @@ if (( EUID == 0 )); then
 fi
 
 force=0
-first_install=0
 while (($#)); do
   case "$1" in
     --force)
-      force=1
-      shift
-      ;;
-    --first-install)
-      first_install=1
       force=1
       shift
       ;;
@@ -61,16 +49,10 @@ if omarchy-done check finalize-user && (( force == 0 )); then
   exit 0
 fi
 
-export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+export OMARCHY_PATH="${OMARCHY_PATH:-/run/current-system/sw/share/omarchy}"
 export OMARCHY_INSTALL="${OMARCHY_INSTALL:-$OMARCHY_PATH/install}"
 export OMARCHY_SETUP_CONTEXT="${OMARCHY_SETUP_CONTEXT:-runtime}"
-export PATH="$OMARCHY_PATH/bin:$PATH"
-
-if (( first_install )) && [[ $OMARCHY_SETUP_CONTEXT == "runtime" ]]; then
-  # The ISO chroot doesn't set a context; omarchy-provision-owner runs first-install
-  # finalization too but with OMARCHY_SETUP_CONTEXT=provision-owner already set.
-  export OMARCHY_SETUP_CONTEXT=iso-chroot
-fi
+export PATH="$OMARCHY_PATH/bin:/run/current-system/sw/bin:$PATH"
 
 if [[ -n ${OMARCHY_INSTALL_LOG_FILE:-} && -f $OMARCHY_INSTALL/helpers/logging.sh ]]; then
   source "$OMARCHY_INSTALL/helpers/logging.sh"
@@ -103,7 +85,7 @@ for skill in "$OMARCHY_PATH"/default/agents/skills/*/; do
   fi
 done
 
-mkdir -p ~/Downloads ~/Pictures ~/Videos ~/.config/gtk-3.0
+mkdir -p ~/Downloads ~/Projects ~/Pictures ~/Videos ~/.config/gtk-3.0
 xdg-user-dirs-update --set TEMPLATES "$HOME"
 xdg-user-dirs-update --set PUBLICSHARE "$HOME"
 xdg-user-dirs-update --set DESKTOP "$HOME"
@@ -120,7 +102,9 @@ omarchy-refresh-applications
 env -u BROWSER xdg-settings set default-web-browser chromium.desktop
 xdg-mime default HEY.desktop x-scheme-handler/mailto
 
-if (( first_install )); then
+# NixOS Cinque has no installer phase, so mark all shipped migrations complete
+# on the first run to avoid replaying every historical migration on a fresh install.
+if (( force == 0 )); then
   mkdir -p "$state_dir/migrations"
   for migration in "$OMARCHY_PATH"/migrations/*.sh; do
     [[ -f $migration ]] && touch "$state_dir/migrations/$(basename "$migration")"
