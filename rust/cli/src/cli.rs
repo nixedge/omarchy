@@ -421,6 +421,8 @@ pub enum VersionCmd {
     Show,
     #[command(name = "branch", about = "Show current branch - dev checkout only (omarchy version branch)")]
     Branch,
+    #[command(name = "pkgs", about = "Show NixOS system and nixpkgs version (omarchy version pkgs)")]
+    Pkgs,
 }
 
 #[derive(Subcommand)]
@@ -1136,6 +1138,8 @@ pub enum TailscaleCmd {
 
 #[derive(Subcommand)]
 pub enum UpdateCmd {
+    #[command(about = "Check for available Omarchy updates (omarchy update available)")]
+    Available,
     #[command(about = "Pull latest dev checkout (omarchy update dev)")]
     Dev,
     #[command(about = "Update firmware via fwupd (omarchy update firmware)")]
@@ -1146,12 +1150,18 @@ pub enum UpdateCmd {
         #[arg(trailing_var_arg = true)]
         cmd_args: Vec<String>,
     },
+    #[command(about = "Upgrade mise-managed tools (omarchy update mise)")]
+    Mise,
     #[command(name = "requires-free-space", about = "Check for 10GiB free space (omarchy update requires free space)")]
     RequiresFreeSpace,
+    #[command(about = "Prompt for reboot and restart the shell after updates (omarchy update restart)")]
+    Restart,
     #[command(about = "Check for updates and refresh indicators (omarchy update status)")]
     Status,
     #[command(name = "stay-awake", about = "Inhibit sleep during updates (omarchy update stay awake)")]
     StayAwake { action: String },
+    #[command(name = "system-pkgs", about = "Rebuild NixOS system with current flake (omarchy update system pkgs)")]
+    SystemPkgs,
     #[command(about = "Sync system clock (omarchy update time)")]
     Time,
     #[command(name = "user-notify", about = "Delegate to omarchy-migrate-notify (omarchy update user notify)")]
@@ -1159,6 +1169,10 @@ pub enum UpdateCmd {
         #[arg(trailing_var_arg = true)]
         args: Vec<String>,
     },
+    #[command(name = "confirm", about = "Prompt user to confirm an update (omarchy update confirm)")]
+    Confirm,
+    #[command(name = "analyze-logs", about = "Analyze update logs for issues (omarchy update analyze logs)")]
+    AnalyzeLogs,
 }
 
 #[derive(Subcommand)]

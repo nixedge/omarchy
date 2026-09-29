@@ -7,7 +7,9 @@
     ./hermes.nix
     ./hibernation.nix
     ./hybrid-gpu.nix
+    ./intel.nix
     ./nordvpn.nix
+    ./nvidia.nix
     ./signal.nix
     ./spotify.nix
     ./sshd.nix

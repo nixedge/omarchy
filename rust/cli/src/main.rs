@@ -198,6 +198,7 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         // version
         "omarchy-version" => Some(&["version"]),
         "omarchy-version-branch" => Some(&["version", "branch"]),
+        "omarchy-version-pkgs" => Some(&["version", "pkgs"]),
         // powerprofiles
         "omarchy-powerprofiles-init" => Some(&["powerprofiles", "init"]),
         "omarchy-powerprofiles-list" => Some(&["powerprofiles", "list"]),
@@ -211,12 +212,18 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-tailscale-receive" => Some(&["tailscale", "receive"]),
         "omarchy-tailscale-send" => Some(&["tailscale", "send"]),
         // update
+        "omarchy-update-available" => Some(&["update", "available"]),
+        "omarchy-update-analyze-logs" => Some(&["update", "analyze-logs"]),
+        "omarchy-update-confirm" => Some(&["update", "confirm"]),
         "omarchy-update-dev" => Some(&["update", "dev"]),
         "omarchy-update-firmware" => Some(&["update", "firmware"]),
         "omarchy-update-lock" => Some(&["update", "lock"]),
+        "omarchy-update-mise" => Some(&["update", "mise"]),
         "omarchy-update-requires-free-space" => Some(&["update", "requires-free-space"]),
+        "omarchy-update-restart" => Some(&["update", "restart"]),
         "omarchy-update-status" => Some(&["update", "status"]),
         "omarchy-update-stay-awake" => Some(&["update", "stay-awake"]),
+        "omarchy-update-system-pkgs" => Some(&["update", "system-pkgs"]),
         "omarchy-update-time" => Some(&["update", "time"]),
         "omarchy-update-user-notify" => Some(&["update", "user-notify"]),
         // setup
@@ -1296,6 +1303,7 @@ fn main() {
         Cmd::Version { subcmd } => match subcmd {
             None | Some(VersionCmd::Show) => cmds::version_cmd::version(),
             Some(VersionCmd::Branch) => cmds::version_cmd::branch(),
+            Some(VersionCmd::Pkgs) => cmds::version_cmd::pkgs(),
         },
         Cmd::Powerprofiles { subcmd } => match subcmd {
             PowerprofilesCmd::Init => cmds::powerprofiles::init(),
@@ -1314,12 +1322,18 @@ fn main() {
             TailscaleCmd::Send { machine, files } => cmds::tailscale::send(&machine, &files),
         },
         Cmd::Update { subcmd } => match subcmd {
+            UpdateCmd::Available => cmds::update::available(),
+            UpdateCmd::AnalyzeLogs => cmds::update::analyze_logs(),
+            UpdateCmd::Confirm => cmds::update::confirm(),
             UpdateCmd::Dev => cmds::update::dev(),
             UpdateCmd::Firmware => cmds::update::firmware(),
             UpdateCmd::Lock { action, cmd_args } => cmds::update::lock(&action, &cmd_args),
+            UpdateCmd::Mise => cmds::update::mise(),
             UpdateCmd::RequiresFreeSpace => cmds::update::requires_free_space(),
+            UpdateCmd::Restart => cmds::update::restart(),
             UpdateCmd::Status => cmds::update::status(),
             UpdateCmd::StayAwake { action } => cmds::update::stay_awake(&action),
+            UpdateCmd::SystemPkgs => cmds::update::system_pkgs(),
             UpdateCmd::Time => cmds::update::time(),
             UpdateCmd::UserNotify { args } => cmds::update::user_notify(&args),
         },

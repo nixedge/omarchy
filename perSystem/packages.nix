@@ -199,6 +199,7 @@
               omarchy-show-logo \
               omarchy-version \
               omarchy-version-branch \
+              omarchy-version-pkgs \
               omarchy-powerprofiles-init \
               omarchy-powerprofiles-list \
               omarchy-powerprofiles-set \
@@ -207,12 +208,18 @@
               omarchy-windows-vm \
               omarchy-tailscale-receive \
               omarchy-tailscale-send \
+              omarchy-update-analyze-logs \
+              omarchy-update-available \
+              omarchy-update-confirm \
               omarchy-update-dev \
               omarchy-update-firmware \
               omarchy-update-lock \
+              omarchy-update-mise \
               omarchy-update-requires-free-space \
+              omarchy-update-restart \
               omarchy-update-status \
               omarchy-update-stay-awake \
+              omarchy-update-system-pkgs \
               omarchy-update-time \
               omarchy-update-user-notify \
               omarchy-setup-direct-boot \
@@ -517,22 +524,14 @@
               omarchy-reinstall-configs \
               omarchy-reinstall-pkgs \
               omarchy-snapshot \
-              omarchy-update \
-              omarchy-update-analyze-logs \
-              omarchy-update-available \
               omarchy-update-aur-pkgs \
-              omarchy-update-confirm \
               omarchy-update-keyring \
-              omarchy-update-mise \
               omarchy-update-orphan-pkgs \
               omarchy-update-pacman-guard \
               omarchy-update-pkg-prune \
-              omarchy-update-restart \
-              omarchy-update-system-pkgs \
               omarchy-update-system-pkgs-when-conflicted \
               omarchy-update-pacman \
               omarchy-version-channel \
-              omarchy-version-pkgs \
               omarchy-dev-pkg-test \
               omarchy-upgrade-to-quattro \
               omarchy-apply-hardware \

@@ -2,6 +2,197 @@ use std::fs;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
+pub fn available() -> i32 {
+    let omarchy_path = std::env::var("OMARCHY_PATH")
+        .unwrap_or_else(|_| "/usr/share/omarchy".to_string());
+
+    if omarchy_path != "/usr/share/omarchy" {
+        return check_dev_updates(&omarchy_path);
+    }
+
+    // Production: no update channel configured yet
+    println!("Omarchy is up to date");
+    1
+}
+
+fn check_dev_updates(omarchy_path: &str) -> i32 {
+    let _ = Command::new("git")
+        .args(["-C", omarchy_path, "fetch", "--quiet"])
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .stderr(Stdio::null())
+        .status();
+
+    let upstream_out = Command::new("git")
+        .args(["-C", omarchy_path, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .output();
+
+    let upstream = match upstream_out {
+        Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).trim().to_string(),
+        _ => return 1,
+    };
+
+    let behind_out = Command::new("git")
+        .args(["-C", omarchy_path, "rev-list", "--count", &format!("HEAD..{upstream}")])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .output();
+
+    let behind: u64 = match behind_out {
+        Ok(o) if o.status.success() => {
+            String::from_utf8_lossy(&o.stdout).trim().parse().unwrap_or(0)
+        }
+        _ => return 1,
+    };
+
+    if behind > 0 {
+        let short_upstream = upstream.trim_start_matches("origin/");
+        println!("omarchy-dev-checkout {behind} new commit(s) on {short_upstream}");
+        0
+    } else {
+        println!("Omarchy is up to date");
+        1
+    }
+}
+
+pub fn analyze_logs() -> i32 {
+    // No-op on NixOS — pacman log analysis not applicable
+    0
+}
+
+pub fn confirm() -> i32 {
+    let _ = Command::new("gum")
+        .args(["style", "--border", "normal", "--padding", "1 2",
+               "Ready to update?",
+               "",
+               "• Updates cannot be stopped once started!",
+               "• Make sure you're connected to power or have a full battery",
+               ""])
+        .status();
+
+    let confirmed = Command::new("gum")
+        .args(["confirm", "Continue with update?"])
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false);
+
+    if confirmed {
+        0
+    } else {
+        println!("Update cancelled");
+        1
+    }
+}
+
+pub fn mise() -> i32 {
+    let status = Command::new("mise")
+        .arg("upgrade")
+        .status();
+
+    match status {
+        Ok(s) if s.success() => 0,
+        Ok(_) => 1,
+        Err(e) => {
+            eprintln!("mise upgrade failed: {e}");
+            1
+        }
+    }
+}
+
+pub fn restart() -> i32 {
+    println!();
+
+    // On NixOS, a rebuild that changed the kernel shows up as booted ≠ current.
+    let booted = fs::read_link("/run/booted-system").unwrap_or_default();
+    let current = fs::read_link("/run/current-system").unwrap_or_default();
+
+    if booted != current && !booted.as_os_str().is_empty() {
+        let confirmed = Command::new("gum")
+            .args(["confirm", "System update requires a reboot. Reboot now?"])
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false);
+
+        if confirmed {
+            let _ = Command::new("omarchy-system-reboot").status();
+            return 0;
+        }
+    } else {
+        // Check legacy marker
+        let home = std::env::var("HOME").unwrap_or_default();
+        let reboot_marker = format!("{home}/.local/state/omarchy/reboot-required");
+        if Path::new(&reboot_marker).exists() {
+            let confirmed = Command::new("gum")
+                .args(["confirm", "Updates require reboot. Ready?"])
+                .status()
+                .map(|s| s.success())
+                .unwrap_or(false);
+
+            if confirmed {
+                let _ = Command::new("omarchy-system-reboot").status();
+                return 0;
+            }
+        }
+    }
+
+    // Service restart markers
+    let home = std::env::var("HOME").unwrap_or_default();
+    let state_dir = format!("{home}/.local/state/omarchy");
+    if let Ok(entries) = fs::read_dir(&state_dir) {
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().to_string();
+            if name.starts_with("restart-") && name.ends_with("-required") {
+                let service = name
+                    .trim_start_matches("restart-")
+                    .trim_end_matches("-required")
+                    .to_string();
+                println!("Restarting {service}");
+                let _ = Command::new("omarchy-state").args(["clear", &name]).status();
+                let _ = Command::new(format!("omarchy-restart-{service}")).status();
+            }
+        }
+    }
+
+    println!("\x1b[32m\nRestarting shell\x1b[0m");
+    println!("All plugins have been reloaded");
+    let _ = Command::new("omarchy-restart-shell").status();
+    0
+}
+
+pub fn system_pkgs() -> i32 {
+    let flake_uri = fs::read_to_string("/etc/omarchy/flake-uri")
+        .unwrap_or_default()
+        .trim()
+        .to_string();
+
+    if flake_uri.is_empty() {
+        eprintln!("No flake URI configured at /etc/omarchy/flake-uri");
+        return 1;
+    }
+
+    println!("Rebuilding NixOS system…");
+
+    let status = Command::new("sudo")
+        .args(["nixos-rebuild", "switch", "--flake", &flake_uri, "--impure"])
+        .status();
+
+    match status {
+        Ok(s) if s.success() => {
+            println!("System rebuild complete.");
+            0
+        }
+        Ok(s) => {
+            eprintln!("nixos-rebuild failed (exit {})", s.code().unwrap_or(-1));
+            1
+        }
+        Err(e) => {
+            eprintln!("Failed to run nixos-rebuild: {e}");
+            1
+        }
+    }
+}
+
 pub fn dev() -> i32 {
     let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
     if omarchy_path == "/usr/share/omarchy" {
