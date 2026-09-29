@@ -87,6 +87,11 @@ for name in stat chown install rm mv systemd-run systemctl date getent sudo gum;
   ln -s mock "$test_tmp/bin/$name"
 done
 
+if [[ ! -x $ROOT/bin/omarchy-sudo-passwordless ]]; then
+  pass "passwordless-sudo tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 python3 - "$ROOT" "$test_tmp" <<'PY'
 from pathlib import Path
 import sys

@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "installed-service tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 export PATH="$ROOT/bin:$PATH"
 
 TMPDIR=$(mktemp -d)

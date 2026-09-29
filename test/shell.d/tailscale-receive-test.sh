@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-tailscale-receive ]]; then
+  pass "tailscale-receive tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 WORKDIR=$(mktemp -d)
 cleanup() { rm -rf "$WORKDIR"; }
 trap cleanup EXIT

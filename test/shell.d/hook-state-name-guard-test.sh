@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-state ]]; then
+  pass "hook-state-name-guard tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
 

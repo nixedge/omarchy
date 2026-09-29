@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "security-fido2-migration tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 migration="$ROOT/migrations/1787494718.sh"
 
 test_tmp=$(mktemp -d)

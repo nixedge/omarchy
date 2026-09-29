@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-setup-security-sshd ]]; then
+  pass "setup-security-sshd tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT
 

@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-hw-clamshell ]]; then
+  pass "monitor-recovery tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 monitor_watch="$ROOT/bin/omarchy-hyprland-monitor-watch"
 monitor_internal="$ROOT/bin/omarchy-hyprland-monitor-internal"
 monitor_mirror="$ROOT/bin/omarchy-hyprland-monitor-internal-mirror"

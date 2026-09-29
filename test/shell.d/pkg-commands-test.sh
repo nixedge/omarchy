@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -d $ROOT/pkgs/omarchy/cinque-shims ]]; then
+  pass "pkg-commands tests skipped: cinque-shims not built (run nix build .#omarchy first) # SKIP"
+  exit 0
+fi
+
 # Test the cinque-shim versions of pkg-present and pkg-missing against a
 # synthetic packages.json. These scripts read /run/omarchy/packages.json, so
 # we override the path via a temp file and a PATH-prepended wrapper.

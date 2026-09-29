@@ -3,6 +3,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "kitty-config tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT
 test_home="$test_dir/home"
@@ -147,7 +152,7 @@ run_command omarchy-display-text-size 16
 grep -qx 'font_size 12.0' "$kitty_config" || fail "size command handles absent config"
 pass "font controls create missing Kitty overrides without restoring the theme include"
 
-if "$ROOT/bin/omarchy-cmd-present" kitty; then
+if "$(omarchy_bin omarchy-cmd-present)" kitty; then
   kitty +runpy "$(cat "$ROOT/test/shell.d/fixtures/kitty/check-config.py")"
 else
   skip "Kitty not installed; skipping native config parser checks"

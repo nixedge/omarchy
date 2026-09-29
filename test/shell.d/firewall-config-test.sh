@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "firewall-config tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 stub_dir=$(mktemp -d)
 trap 'rm -rf "$stub_dir"' EXIT
 

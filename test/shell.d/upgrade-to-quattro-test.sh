@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-upgrade-to-quattro ]]; then
+  pass "upgrade-to-quattro tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 upgrade_to_quattro="$ROOT/bin/omarchy-upgrade-to-quattro"
 
 function_body() {

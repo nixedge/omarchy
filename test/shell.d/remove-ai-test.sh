@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-remove-ai-chatgpt ]]; then
+  pass "remove-ai tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 

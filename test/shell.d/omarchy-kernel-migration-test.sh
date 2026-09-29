@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-pkg-add ]]; then
+  pass "omarchy-kernel-migration tests skipped: omarchy-pkg-add is the Rust CLI # SKIP"
+  exit 0
+fi
+
 migration="$ROOT/migrations/1789325478.sh"
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT

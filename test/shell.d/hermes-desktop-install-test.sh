@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-install-ai-hermes ]]; then
+  pass "hermes-desktop-install tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 for command in git jq python3; do require_command "$command"; done
 
 test_tmp=$(mktemp -d)

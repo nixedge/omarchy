@@ -12,21 +12,21 @@ args_file="$tmpdir/args"
 # Stub the D-Bus transport: record the Notify call verbatim and echo a returned
 # id the way busctl prints a UINT32 return ("u <id>").
 printf '%s\n' \
-  '#!/bin/bash' \
+  '#!/bin/sh' \
   'printf "%s\n" "$@" >"$OMARCHY_TEST_BUSCTL_ARGS"' \
   'echo "u 42"' \
   >"$tmpdir/busctl"
 chmod +x "$tmpdir/busctl"
 
 # notify-send must never be used. If anything reaches for it, fail loudly.
-printf '%s\n' '#!/bin/bash' 'echo "notify-send was invoked" >"$OMARCHY_TEST_NOTIFY_TRIPWIRE"; exit 3' \
+printf '%s\n' '#!/bin/sh' 'echo "notify-send was invoked" >"$OMARCHY_TEST_NOTIFY_TRIPWIRE"; exit 3' \
   >"$tmpdir/notify-send"
 chmod +x "$tmpdir/notify-send"
 tripwire="$tmpdir/notify-send-was-used"
 
 send() {
   OMARCHY_TEST_BUSCTL_ARGS="$args_file" OMARCHY_TEST_NOTIFY_TRIPWIRE="$tripwire" \
-    PATH="$tmpdir:$ROOT/bin:$PATH" omarchy-notification-send "$@"
+    PATH="$tmpdir:$ROOT/result/bin:$ROOT/bin:$PATH" omarchy-notification-send "$@"
 }
 
 # Notify(susssasa{sv}i) args, by position in the recorded busctl argv:

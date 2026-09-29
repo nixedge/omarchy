@@ -9,6 +9,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-remove-security-sudoless-docker ]]; then
+  pass "sudoless-docker-toggle tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT
 home="$test_dir/home"

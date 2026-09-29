@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-webapp-remove ]]; then
+  pass "webapp-name tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT
 mkdir -p "$tmp_dir/bin" "$tmp_dir/home"
@@ -15,7 +20,7 @@ done
 
 run_install() {
   HOME="$tmp_dir/home" PATH="$tmp_dir/bin:$PATH" \
-    "$ROOT/bin/omarchy-webapp-install" "$@"
+    "$(omarchy_bin omarchy-webapp-install)" "$@"
 }
 
 run_remove() {
@@ -82,7 +87,7 @@ chmod +x "$tmp_dir/ibin/gum" "$tmp_dir/ibin/curl"
 
 if HOME="$tmp_dir/home" PATH="$tmp_dir/ibin:$PATH" \
   GUM_STUB_COUNT="$tmp_dir/gum-count" \
-  "$ROOT/bin/omarchy-webapp-install" >/dev/null 2>&1; then
+  "$(omarchy_bin omarchy-webapp-install)" >/dev/null 2>&1; then
   fail "interactive webapp install rejects a name containing a slash"
 fi
 if compgen -G "$icons_dir/*.png" >/dev/null; then

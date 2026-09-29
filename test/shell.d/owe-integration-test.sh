@@ -2,6 +2,11 @@
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "owe-integration tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$work/bin" "$work/home"

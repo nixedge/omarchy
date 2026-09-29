@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-update-orphan-pkgs ]]; then
+  pass "update-orphan tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
 

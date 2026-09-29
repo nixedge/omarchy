@@ -90,8 +90,25 @@ pub fn run(args: &[String]) -> i32 {
             exec_present = true;
             break;
         }
-        // parse remaining flags
-        match args[i].as_str() {
+        // Handle --key=value form in post-headline position
+        let arg = args[i].as_str();
+        if let Some(rest) = arg.strip_prefix("--") {
+            if let Some((key, val)) = rest.split_once('=') {
+                let matched = match format!("--{key}").as_str() {
+                    "--glyph" => { glyph = Some(val.to_string()); true }
+                    "--urgency" => { urgency = val.to_string(); true }
+                    "--app-name" => { app_name = val.to_string(); true }
+                    "--icon" => { app_icon = val.to_string(); true }
+                    "--image" => { image = Some(val.to_string()); true }
+                    "--replace-id" => { replaces_id = val.parse().unwrap_or(0); true }
+                    "--expire-time" => { expire_timeout = val.parse().unwrap_or(-1); true }
+                    _ => false,
+                };
+                if matched { i += 1; continue; }
+            }
+        }
+        // parse remaining flags (two-arg forms)
+        match arg {
             "-p" | "--print-id" => { print_id = true; i += 1; }
             "-g" | "--glyph" => { if i + 1 < n { glyph = Some(args[i + 1].clone()); i += 2; } else { i += 1; } }
             "-u" | "--urgency" => { if i + 1 < n { urgency = args[i + 1].clone(); i += 2; } else { i += 1; } }

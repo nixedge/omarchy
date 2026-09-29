@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "system-sleep-ownership-migration tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 migration="$ROOT/migrations/1788662350.sh"
 test_tmp=$(mktemp -d -p /tmp)
 trap 'rm -rf "$test_tmp"' EXIT

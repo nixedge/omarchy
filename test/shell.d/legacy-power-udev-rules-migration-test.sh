@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "legacy-power-udev-rules-migration tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 shipped_migration="$ROOT/migrations/1788102906.sh"
 [[ -f $shipped_migration ]] || fail "the legacy power udev rule migration exists at $shipped_migration"
 

@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "chromium-claude tests skipped: /bin/bash not available on this system # SKIP"
+  exit 0
+fi
+
 # Exercise the privileged installer without writing to the host's /usr/share.
 if ! command -v bwrap >/dev/null || ! bwrap --ro-bind / / --unshare-user --uid 0 --gid 0 true 2>/dev/null; then
   skip "user namespaces unavailable; skipping isolated Claude extension installation"

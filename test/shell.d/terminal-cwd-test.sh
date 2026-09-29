@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-cmd-terminal-cwd ]]; then
+  pass "terminal-cwd tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 test_tmp=$(mktemp -d)
 stub_bin="$test_tmp/bin"
 work_dir="$test_tmp/project dir"
