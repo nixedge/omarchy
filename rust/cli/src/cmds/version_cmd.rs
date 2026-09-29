@@ -63,6 +63,29 @@ pub fn pkgs() -> i32 {
     0
 }
 
+pub fn channel() -> i32 {
+    // NixOS Cinque always tracks nixos-unstable — there is no stable/rc/edge
+    // channel distinction as in the Arch-based Quattro. Show the booted system
+    // generation hash so users can correlate changelogs to their install.
+    let gen_hash = fs::read_link("/run/booted-system")
+        .ok()
+        .and_then(|p| {
+            p.to_str().and_then(|s| {
+                // Store paths look like /nix/store/<hash>-nixos-system-...; extract hash.
+                s.split('/').nth(3).map(|part| {
+                    let hash = part.split('-').next().unwrap_or(part);
+                    hash[..hash.len().min(8)].to_string()
+                })
+            })
+        });
+
+    match gen_hash {
+        Some(h) => println!("nixos-unstable ({h})"),
+        None => println!("nixos-unstable"),
+    }
+    0
+}
+
 pub fn branch() -> i32 {
     let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
 

@@ -423,6 +423,8 @@ pub enum VersionCmd {
     Branch,
     #[command(name = "pkgs", about = "Show NixOS system and nixpkgs version (omarchy version pkgs)")]
     Pkgs,
+    #[command(name = "channel", about = "Show the active nixpkgs channel (omarchy version channel)")]
+    Channel,
 }
 
 #[derive(Subcommand)]

@@ -198,6 +198,7 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         // version
         "omarchy-version" => Some(&["version"]),
         "omarchy-version-branch" => Some(&["version", "branch"]),
+        "omarchy-version-channel" => Some(&["version", "channel"]),
         "omarchy-version-pkgs" => Some(&["version", "pkgs"]),
         // powerprofiles
         "omarchy-powerprofiles-init" => Some(&["powerprofiles", "init"]),
@@ -1303,6 +1304,7 @@ fn main() {
         Cmd::Version { subcmd } => match subcmd {
             None | Some(VersionCmd::Show) => cmds::version_cmd::version(),
             Some(VersionCmd::Branch) => cmds::version_cmd::branch(),
+            Some(VersionCmd::Channel) => cmds::version_cmd::channel(),
             Some(VersionCmd::Pkgs) => cmds::version_cmd::pkgs(),
         },
         Cmd::Powerprofiles { subcmd } => match subcmd {

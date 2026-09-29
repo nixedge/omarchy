@@ -199,6 +199,7 @@
               omarchy-show-logo \
               omarchy-version \
               omarchy-version-branch \
+              omarchy-version-channel \
               omarchy-version-pkgs \
               omarchy-powerprofiles-init \
               omarchy-powerprofiles-list \
@@ -531,7 +532,6 @@
               omarchy-update-pkg-prune \
               omarchy-update-system-pkgs-when-conflicted \
               omarchy-update-pacman \
-              omarchy-version-channel \
               omarchy-dev-pkg-test \
               omarchy-upgrade-to-quattro \
               omarchy-apply-hardware \
