@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ conf_file="$test_tmp/omarchy.conf"
 mkdir -p "$stub_bin" "$test_tmp/home"
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'sudo' >>"$OMARCHY_DEV_UNLINK_TEST_LOG"
 for arg in "$@"; do

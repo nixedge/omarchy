@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Wake displays and restore brightness after idle
 # omarchy:group=system

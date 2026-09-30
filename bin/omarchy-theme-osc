@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Print OSC sequences for an Omarchy color theme
 # omarchy:hidden=true

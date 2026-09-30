@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Install a hook into ~/.config/omarchy/hooks/<type>.d/
 # omarchy:group=hook

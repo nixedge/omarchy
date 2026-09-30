@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Update Omarchy and system packages
 # omarchy:alias=omarchy up

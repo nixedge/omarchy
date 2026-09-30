@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ mkdir -p "$wrapper_root/shell" "$wrapper_bin"
 touch "$wrapper_root/shell/shell.qml"
 
 cat >"$wrapper_bin/qs" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ -n ${OMARCHY_TEST_QS_ARGS:-} ]] && printf '%s\n' "$*" >"$OMARCHY_TEST_QS_ARGS"
 
@@ -83,7 +83,7 @@ ln -s "$(omarchy_bin omarchy-cmd-missing)" "$restart_bin/omarchy-cmd-missing"
 ln -s "$ROOT/bin/omarchy-hyprland-session-locked" "$restart_bin/omarchy-hyprland-session-locked"
 
 cat >"$restart_bin/qs" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$OMARCHY_TEST_IPC_LOG"
 
@@ -108,7 +108,7 @@ esac
 SH
 
 cat >"$restart_bin/quickshell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$OMARCHY_TEST_QS_LOG"
 
@@ -129,7 +129,7 @@ esac
 SH
 
 cat >"$restart_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ ${1:-} == "-j" && ${2:-} == "monitors" ]]; then
   # Hyprland reports an active session lock as a reason the monitor cannot hand
@@ -151,7 +151,7 @@ SH
 
 # Keep the test hermetic where journald has no usable stream socket.
 cat >"$restart_bin/systemd-cat" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 while (( $# > 0 )); do
   [[ $1 == "--" ]] && { shift; break; }
@@ -161,7 +161,7 @@ exec "$@"
 SH
 
 cat >"$restart_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ ${1:-} == "--user" && ${2:-} == "show-environment" ]]; then
   printf 'OMARCHY_PATH=%s\n' "$OMARCHY_TEST_SESSION_PATH"
@@ -173,7 +173,7 @@ fi
 SH
 
 cat >"$restart_bin/busctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ -z ${OMARCHY_TEST_NOTIFICATION_CHECKS:-} ]]; then
   echo 'b false'
 else

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show or pin the Wi-Fi band for the active connection
 # omarchy:group=network

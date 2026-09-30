@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Reboot after closing application windows
 # omarchy:examples=omarchy reboot | omarchy system reboot

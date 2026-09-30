@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Apply the speaker tuning for this laptop. Runs at first-run rather than at
 # finalize-user time because finalize-user also runs in the ISO chroot, where

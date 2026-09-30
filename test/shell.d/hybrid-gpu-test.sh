@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -24,7 +24,7 @@ exit 1
 STUB
 
 cat >"$fake_bin/supergfxctl" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 attempts_file="$TEST_TMP/attempts"
 attempts=0
 [[ -f $attempts_file ]] && attempts=$(<"$attempts_file")

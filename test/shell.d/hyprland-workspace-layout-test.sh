@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 
@@ -13,7 +13,7 @@ log_file="$tmpdir/hyprctl.log"
 mkdir -p "$stub_dir" "$home_dir"
 
 cat >"$stub_dir/hyprctl" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "activeworkspace" && -n $HYPRCTL_BROKEN ]]; then
   printf '{}\n'

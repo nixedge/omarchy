@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Measure theme switcher cache and selector prep times
 # omarchy:args=[--repeat=<count>] [--keep-cache]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Tell running Hunk sessions to pick up the new terminal colors
 # omarchy:hidden=true

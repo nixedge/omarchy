@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ ${1:-} == "-j" && ${2:-} == "monitors" ]] || exit 1
 [[ ${OMARCHY_TEST_HYPRCTL_FAILS:-0} == 1 ]] && exit 4

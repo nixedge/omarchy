@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Manage the speaker tuning for this laptop
 # omarchy:args=<on|off|status|match|fronted-sink> [--force]

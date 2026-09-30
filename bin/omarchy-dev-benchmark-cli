@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Measure Omarchy CLI response times
 # omarchy:args=[--repeat=<count>]

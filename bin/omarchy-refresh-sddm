@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Refresh the SDDM theme from default
 # omarchy:requires-sudo=true

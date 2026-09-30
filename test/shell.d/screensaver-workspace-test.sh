@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -19,7 +19,7 @@ mkfifo "$tmpdir/events"
 exec {events}<>"$tmpdir/events"
 
 cat >"$tmpdir/bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$TEST_DIR/calls"
 case "$*" in
   'monitors -j')

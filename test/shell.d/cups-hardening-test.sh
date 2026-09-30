@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -106,7 +106,7 @@ group_db="$test_tmp/group"
 touch "$passwd_db" "$group_db"
 
 cat >"$mock_bin/getent" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   passwd) database="$OMARCHY_CUPS_TEST_PASSWD" ;;
   group) database="$OMARCHY_CUPS_TEST_GROUP" ;;
@@ -120,7 +120,7 @@ else
 fi
 SH
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "cups" || $1 == "cups-browsed" ]]
 SH
 for command in omarchy-pkg-add omarchy-pkg-drop; do
@@ -205,7 +205,7 @@ pass "the migration safely converts an active existing installation once"
 # An interrupted earlier run leaves cups-browsed stopped. A retry still needs
 # to resume an enabled service before recording completion.
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl\t%s\n' "$*" >>"$OMARCHY_CUPS_TEST_LOG"
 [[ $1 == "is-active" ]] && exit 1
 exit 0
@@ -228,7 +228,7 @@ pass "a run following an interrupted one still resumes printer discovery"
 
 # A masked or disabled unit is deliberately left alone.
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl\t%s\n' "$*" >>"$OMARCHY_CUPS_TEST_LOG"
 [[ $1 == "is-active" || $1 == "is-enabled" ]] && exit 1
 exit 0

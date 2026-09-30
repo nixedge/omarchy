@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Validate a plugin folder against the Omarchy plugin manifest schema
 # omarchy:group=plugin

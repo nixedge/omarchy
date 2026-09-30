@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -31,7 +31,7 @@ mkdir -p "$stub_bin"
 : >"$calls"
 
 cat >"$stub_bin/lspci" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Chatty like real lspci: keep writing well past the pipe buffer after the T2
 # match, so a grep -q consumer would kill this stub with SIGPIPE and pipefail
@@ -62,7 +62,7 @@ printf '\n' >>"$TEST_LOG"
 SH
 
 cat >"$stub_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 (( ${TINY_DFR_INSTALLED:-0} == 1 ))
 SH

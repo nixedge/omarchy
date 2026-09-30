@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -111,7 +111,7 @@ chmod +x "$stub_bin/pkexec"
 # and logs the elevation otherwise. STUB_GRANTED empty stands for an install
 # whose omarchy-settings predates the file.
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == -n && $2 == -l ]]; then
   for granted in ${STUB_GRANTED-Cloudflare Google DHCP}; do
     [[ ${!#} == "$granted" ]] || continue

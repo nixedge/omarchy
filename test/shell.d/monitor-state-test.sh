@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -12,7 +12,7 @@ cleanup() {
 trap cleanup EXIT
 
 cat >"$test_bin/hyprctl" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $* == "monitors all -j" ]] || exit 1
 cat "$FAKE_MONITORS"
 EOF

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ STUB
 # omarchy-update-pacman wraps the transaction in a real PID 1 scope; the tests
 # must stay inside the fixture, so drop the wrapper's options and run the command.
 cat >"$stub_bin/systemd-run" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 while [[ $1 == -* ]]; do shift; done
 exec "$@"
 STUB
@@ -30,7 +30,7 @@ STUB
 # its questions on stderr once it is not running --noconfirm, so a retry meant
 # for a person has to keep that stream.
 cat >"$stub_bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 attempt=$(($(cat "$PACMAN_ATTEMPTS") + 1))
 echo "$attempt" >"$PACMAN_ATTEMPTS"
 {

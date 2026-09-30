@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show or adjust brightness on the focused display.
 # omarchy:args=[--no-osd] [--monitor name] [+N%|N%-|N%|off|on]

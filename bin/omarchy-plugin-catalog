@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Emit every first-party and user plugin manifest as JSON
 # omarchy:group=plugin

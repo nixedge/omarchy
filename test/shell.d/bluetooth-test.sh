@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -153,7 +153,7 @@ mkdir -p "$mock_bin"
 export POWERED_FILE="$device_tmp/powered"
 
 cat >"$mock_bin/bluetoothctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$BLUETOOTHCTL_LOG"
 [[ $1 == "power" && $2 == "on" ]] && echo yes >"$POWERED_FILE"
@@ -169,7 +169,7 @@ exit 0
 SH
 
 cat >"$mock_bin/rfkill" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'rfkill %s\n' "$*" >>"$BLUETOOTHCTL_LOG"
 # Lifting the block is normally all it takes: AutoEnable is left at its default,

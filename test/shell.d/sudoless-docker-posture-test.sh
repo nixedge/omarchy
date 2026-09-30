@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Docker is root-equivalent, so no automatic path may grant it. Raw input access
 # is likewise excluded unless a feature that explicitly needs it is installed.
@@ -14,7 +14,7 @@ trap 'rm -rf "$TMPDIR"' EXIT
 mkdir -p "$TMPDIR/bin"
 printf '#!/bin/sh\nexit 0\n' >"$TMPDIR/bin/getent" # every group "exists"
 cat >"$TMPDIR/bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "-Qq" ]] || exit 2
 [[ " ${STUB_PACKAGES:-} " == *" $2 "* ]]
 STUB

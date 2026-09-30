@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Cycle to the next media source and transfer playback when the current source is playing
 # omarchy:args=[next|previous]

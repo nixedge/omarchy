@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Run pending Omarchy migrations.
 # omarchy:args=[--pending]

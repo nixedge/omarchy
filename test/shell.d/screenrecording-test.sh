@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ stub_bin="$tmp_dir/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/v4l2-ctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ ${OMARCHY_TEST_NO_WEBCAM:-false} == "true" ]] && exit 0
 
@@ -320,7 +320,7 @@ printf 'DP-1\n'
 SH
 
 cat >"$stub_bin/gpu-screen-recorder" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 for i in "$@"; do
   [[ -n ${take_next:-} ]] && { : >"$i"; break; }
   [[ $i == "-o" ]] && take_next=1

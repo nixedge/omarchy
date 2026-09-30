@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ pass "removal names its FIDO2 directory once, and the test drives a retargeted c
 sed "s|^authdir=/etc/fido2$|authdir=$authdir|" "$remove" >"$remove_copy"
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 

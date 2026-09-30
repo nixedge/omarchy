@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
@@ -165,7 +165,7 @@ reset_grant
 # Hold the source lock, then start package removal. A native flock on the
 # mapped file must serialize both implementations.
 cat >"$test_tmp/worker" <<'WORKER'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 source "$TEST_LIBRARY"
 critical() {

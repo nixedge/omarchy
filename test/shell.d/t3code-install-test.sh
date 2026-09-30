@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -19,12 +19,12 @@ mkdir -p "$mock_bin"
 # Run the real theme refresh, renderer and publisher in a throwaway home.
 # Only package installation, the T3 CLI and desktop launch are stubbed.
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "t3code-bin" ]]
 SH
 
 cat >"$mock_bin/t3" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "theme" && $2 == "set" && $3 == "omarchy" && $4 == "--base-dir" && $5 == "$T3CODE_HOME" ]] || exit 1
 palette="$T3CODE_HOME/userdata/themes/omarchy.json"
 if [[ ! -f $palette ]] || ! jq -e '.name == "Omarchy" and (.accent | test("^#[0-9a-fA-F]{6}$"))' "$palette" >/dev/null; then

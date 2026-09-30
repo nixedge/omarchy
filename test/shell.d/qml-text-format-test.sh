@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A QML Text element with no textFormat uses Text.AutoText. Qt then runs
 # mightBeRichText() over the string and promotes it to Text.RichText when it

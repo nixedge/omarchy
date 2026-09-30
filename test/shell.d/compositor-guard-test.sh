@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -40,7 +40,7 @@ STUB
 stub_flaky_hyprctl() {
   : >"$attempts_log"
   cat >"$stub_bin/hyprctl" <<STUB
-#!/bin/bash
+#!/usr/bin/env bash
 echo asked >>"$attempts_log"
 (( \$(grep -c asked "$attempts_log") > 1 ))
 STUB

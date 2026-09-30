@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Adjust output volume and show the Omarchy OSD
 # omarchy:args=<raise|lower|mute-toggle|+N|-N>

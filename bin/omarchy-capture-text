@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Extract text from a screenshot region with OCR
 # omarchy:group=capture

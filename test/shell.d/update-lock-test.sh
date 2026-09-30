@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ sed -i \
   "$SUDO_TEST_ROOT/bin/omarchy-update-lock" \
   "$SUDO_TEST_ROOT/bin/omarchy-update-stay-awake"
 cat >"$SUDO_TEST_ROOT/mock/setpriv" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 while [[ ${1:-} == --* ]]; do
   case "$1" in
     --reuid|--regid) shift 2 ;;
@@ -50,7 +50,7 @@ write_stub() {
 
   rm -f "$stub_bin/$name"
   cat >"$stub_bin/$name" <<SH
-#!/bin/bash
+#!/usr/bin/env bash
 $body
 SH
   chmod +x "$stub_bin/$name"
@@ -157,7 +157,7 @@ if (( EUID != 0 )); then
   # delayed child and succeed, then stop it before script tears down the PTY.
   terminal_driver="$test_tmp/terminal-stay-awake"
   cat >"$terminal_driver" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 omarchy-update-stay-awake start
 [[ -s $XDG_RUNTIME_DIR/REPLACE_STAY_AWAKE_DIR/inhibit-pid ]]

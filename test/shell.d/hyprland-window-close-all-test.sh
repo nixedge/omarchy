@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -12,7 +12,7 @@ hyprctl_log="$test_tmp/hyprctl.log"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "clients" ]]; then
   printf '[{"address":"0xabc"},{"address":"0xdef"}]\n'

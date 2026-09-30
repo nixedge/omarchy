@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Apply the current theme color to Chromium, Chrome, Edge, and Brave
 # omarchy:hidden=true

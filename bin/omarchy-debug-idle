@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show idle, screensaver, and lock diagnostics
 # omarchy:group=debug

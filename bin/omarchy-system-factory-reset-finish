@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=First-boot worker that finishes an omarchy-system-factory-reset reset
 # omarchy:requires-sudo=true

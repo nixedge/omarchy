@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:hidden=true
 # omarchy:summary=Provide internal helpers for command-scoped sudo authentication

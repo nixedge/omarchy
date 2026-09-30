@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Share clipboard, files, or folders with LocalSend
 # omarchy:group=share

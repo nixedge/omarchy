@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # One hop between the expansion and the home path it carries. The token in the
 # heredoc has no slash and the value never resolves to a literal path, so a scan

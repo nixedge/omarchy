@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -26,7 +26,7 @@ STUB
 chmod +x "$fake_bin/sudo"
 
 cat >"$fake_bin/snapper" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'snapper %s\n' "$*" >>"$TEST_LOG"
 if [[ "$*" == *"--csvout list"* ]]; then
   echo "number,cleanup"
@@ -65,7 +65,7 @@ pass "leak migration removes leaked timeline snapshots in batches and keeps the 
 printf '%s\n' 'TIMELINE_CREATE="no"' 'NUMBER_CLEANUP="yes"' >"$snapper_config"
 
 cat >"$fake_bin/snapper" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'snapper %s\n' "$*" >>"$TEST_LOG"
 if [[ "$*" == *"--csvout list"* ]]; then
   echo "number,cleanup"

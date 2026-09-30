@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=List themes that can style the Plymouth boot screen
 # omarchy:examples=omarchy plymouth list

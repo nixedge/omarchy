@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show or adjust DDC/CI display brightness for a Hyprland monitor.
 # omarchy:args=<monitor> [+N%|N%-|N%]

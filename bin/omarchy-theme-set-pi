@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Sync the generated Omarchy Pi theme
 # omarchy:args=[--activate]

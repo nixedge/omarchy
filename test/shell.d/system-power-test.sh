@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -12,7 +12,7 @@ call_log="$test_tmp/calls.log"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/systemd-run" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'systemd-run %s\n' "$*" >>"$CALL_LOG"
 [[ ${FAIL_SYSTEMD_RUN:-false} == "true" ]] && exit 1

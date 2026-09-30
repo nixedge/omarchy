@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Send an IPC call to the running Omarchy shell
 # omarchy:args=[-q] <target> <method> [args...]

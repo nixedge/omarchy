@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Overwrite the user config for hyprsunset with the Omarchy default and restart the service.
 

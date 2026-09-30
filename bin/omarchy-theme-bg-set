@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set the current background image or video
 # omarchy:args=<path-to-media>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -6,7 +6,7 @@ tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
 
 cat >"$tmpdir/hyprctl" <<'BASH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "activewindow" && $2 == "-j" ]]; then
   printf '{"fullscreenClient":%s}\n' "${HYPR_FULLSCREEN_CLIENT:-0}"

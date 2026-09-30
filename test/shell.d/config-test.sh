@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -336,7 +336,7 @@ mock_bin="$TMPDIR/mock-bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-refresh-config" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 relative_path="${1:-}"
@@ -354,20 +354,20 @@ touch "$HOME/.local/state/omarchy/restart-shell-called"
 SH
 
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_SHELL_DOWN:-0} == "1" ]] && exit 1
 printf 'ok\n'
 SH
 
 cat >"$mock_bin/omarchy-installed-service-dropbox" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 [[ ${OMARCHY_TEST_DROPBOX:-0} == "1" ]]
 SH
 
 cat >"$mock_bin/omarchy-installed-service-tailscale" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 [[ ${OMARCHY_TEST_TAILSCALE:-0} == "1" ]]

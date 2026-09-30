@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Launch the installed Battle.net client via umu-launcher + GE-Proton.
 # omarchy:args=[--with-mangohud]

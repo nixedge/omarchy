@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Detect whether NVIDIA drives the display (rather than a hybrid iGPU).
 

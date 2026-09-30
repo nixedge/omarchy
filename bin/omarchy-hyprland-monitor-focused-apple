@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Return success if the focused or named Hyprland monitor is an Apple display.
 # omarchy:args=[monitor]

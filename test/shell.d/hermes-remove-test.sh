@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -34,7 +34,7 @@ SH
 # would hang a test run, and one that answered "yes" on its own would be the
 # very data loss the default-no exists to prevent.
 cat >"$mock_bin/gum" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\0' "$@" >>"$OMARCHY_TEST_GUM_LOG"
 if [[ -n ${OMARCHY_TEST_PROMPT_GATE:-} ]]; then
   touch "$OMARCHY_TEST_PROMPT_GATE.started"
@@ -49,7 +49,7 @@ SH
 # A unit that will not stop, when a test says so: disable fails and is-active
 # keeps answering active.
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 echo "systemctl $*" >>"$OMARCHY_TEST_SYSTEMCTL_LOG"
 if [[ ${OMARCHY_TEST_UNIT_STUCK:-0} == 1 ]]; then
   [[ $2 == "disable" ]] && exit 1
@@ -181,7 +181,7 @@ pass "removal leaves a Hermes the app never installed"
 # claim a wrapper pointing at a sibling directory that merely looks like it.
 seed_install
 mkdir -p "$test_home/xhermes/bin"
-sibling_body="#!/bin/bash
+sibling_body="#!/usr/bin/env bash
 exec $test_home/xhermes/bin/hermes \"\$@\""
 printf '%s\n' "$sibling_body" >"$test_home/.local/bin/hermes"
 remove || fail "remove succeeds with a wrapper pointing at a sibling directory"

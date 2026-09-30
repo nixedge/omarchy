@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-install-hermes-cli" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 echo "check" >>"$OMARCHY_TEST_HERMES_CALLS"
 [[ $1 == "--check" && ${OMARCHY_TEST_HERMES_READY:-0} == "1" ]]
 SH
@@ -28,7 +28,7 @@ SH
 # A theme switch finishes the hand-over only for the desktop app Omarchy
 # installed; --activate is asked for by name and does not look.
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "hermes-desktop" && ${OMARCHY_TEST_DESKTOP_INSTALLED:-1} == "1" ]]
 SH
 
@@ -41,7 +41,7 @@ exit 1
 SH
 
 cat >"$mock_bin/hermes-stub" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$OMARCHY_TEST_HERMES_CALLS"
 if [[ $1 == "config" && $2 == "get" ]]; then
   [[ ${OMARCHY_TEST_HERMES_GET_FAILS:-0} == 0 ]] || exit 1
@@ -63,7 +63,7 @@ SH
 # --wait sleeps between its polls and once more after activating; the stub
 # records the delays it was asked for and returns at once.
 cat >"$mock_bin/sleep" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sleep %s\n' "$1" >>"$OMARCHY_TEST_HERMES_CALLS"
 if [[ $1 == 60 && -n ${OMARCHY_TEST_SWAP_SOURCE:-} ]]; then
   printf '%s\n' "$OMARCHY_TEST_SWAP_SOURCE" >"$HOME/.local/state/omarchy/current/theme/hermes.yaml"

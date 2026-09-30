@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Factory-reset this machine back to its freshly-installed state
 # omarchy:group=setup

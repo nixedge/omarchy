@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Toggle a full screen desktop: hide the top bar and remove the window gaps together
 # omarchy:args=[toggle|on|off]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ awk '
 ' "$ROOT/bin/omarchy-system-factory-reset" >"$test_tmp/functions"
 
 cat >"$test_tmp/reset" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 source "$1/functions"
 TOP_MNT="$2"

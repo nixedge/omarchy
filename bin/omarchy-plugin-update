@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Update installed git-managed plugins
 # omarchy:group=plugin

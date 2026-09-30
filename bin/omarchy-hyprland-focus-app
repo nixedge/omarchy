@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Focus a Hyprland window by application identity
 # omarchy:args=<app-name>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Sync Omarchy theme to VS Code, VSCodium, and Cursor
 # omarchy:hidden=true

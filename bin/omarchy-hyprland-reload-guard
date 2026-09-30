@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Pause or resume Hyprland config auto-reload around package transactions.
 # omarchy:hidden=true

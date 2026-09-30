@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -52,7 +52,7 @@ trap 'rm -rf "$TMPDIR"' EXIT
 mkdir -p "$TMPDIR/bin"
 
 cat >"$TMPDIR/bin/wl-copy" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 args="$*"
 target="$WL_COPY_OUT"
 if [[ $args == "--type text/plain --sensitive --foreground" ]]; then

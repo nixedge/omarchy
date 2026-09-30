@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Select a drive from a list with info that includes space and brand. Used by omarchy-drive-password.
 

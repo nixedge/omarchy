@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A file Omarchy writes into /usr belongs to nobody, and the
 # day a package starts shipping that same path, pacman refuses the upgrade for

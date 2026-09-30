@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Toggle nightlight screen temperature
 # omarchy:args=[--status]

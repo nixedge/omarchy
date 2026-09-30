@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ mkdir -p "$mock_bin"
 # outlives the socket that wrote it, and the generator's, re-read from
 # environment.d on every reload, which disable triggers.
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 state=$OMARCHY_TEST_MANAGER
 case $2 in
   disable)

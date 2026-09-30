@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -63,7 +63,7 @@ fake_dir=$(mktemp -d)
 trap 'rm -rf "$fake_dir"' EXIT
 
 cat >"$fake_dir/ssh" <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 [[ \$1 == "-G" ]] && { echo "remotecommand none"; exit 0; }
 n=\$(( \$(cat "$fake_dir/count" 2>/dev/null || echo 0) + 1 ))
 echo "\$n" >"$fake_dir/count"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Configure Quickshell lock screen authentication
 # omarchy:requires-sudo=true

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Adjust keyboard backlight brightness using available steps.
 # omarchy:args=[--no-osd] <up|down|cycle|off|restore>

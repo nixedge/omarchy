@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Regenerate the AI agent usage data files
 # omarchy:args=[--force] [--limits-only] [--except <agent>] [agent...]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -60,7 +60,7 @@ hyprctl_fail="$test_tmp/hyprctl-fails"
 
 # The monitor list lives in a file so a reload can "fix" it mid-run.
 cat >"$fake_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Mirrors are absent from plain `monitors`, so the helper must ask for `all`.
 if [[ ${1:-} == "monitors" && ${2:-} == "all" && ${3:-} == "-j" ]]; then
@@ -74,7 +74,7 @@ fi
 SH
 
 cat >"$fake_bin/omarchy-hyprland-reload-guard" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ ${1:-} == "paused" && ${OMARCHY_TEST_GUARD_PAUSED:-0} == 1 ]]
 SH

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # The name is introduced with a packaged root-owned value and then reassigned to
 # one under the user's home. Judging the first assignment would read this as the

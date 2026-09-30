@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -81,7 +81,7 @@ SH
 # map every write into that directory; arbitrary direct commands are outside
 # this harness.
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 # shellcheck source=/dev/null
@@ -240,7 +240,7 @@ SH
 # gives it a pipe to privileged tee; refusing a regular-file descriptor keeps a
 # regression from writing credential bytes into a caller-owned named file.
 cat >"$stub_bin/pamu2fcfg" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 

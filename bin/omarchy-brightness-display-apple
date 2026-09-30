@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show or adjust Apple Studio Display and Apple XDR Display brightness using asdcontrol.
 # omarchy:args=[--no-osd] [+N%|N%-|N%]

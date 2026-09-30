@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ test_home="$test_tmp/home"
 mkdir -p "$stub_bin" "$test_home"
 
 cat >"$stub_bin/omarchy-migrate" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ ${1:-} == "--pending" && ${OMARCHY_TEST_PENDING_MIGRATIONS:-0} == 1 ]]; then
   echo 200-migration.sh
   exit 0
@@ -29,7 +29,7 @@ chmod +x "$stub_bin/omarchy-migrate"
 # wait to prove the notifier re-checks afterwards instead of sending a toast it
 # decided to send before the update existed.
 cat >"$stub_bin/omarchy-notification-wait" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_LOCK_DURING_WAIT:-0} == 1 ]] || exit 0
 
 lock="$XDG_RUNTIME_DIR/omarchy-update.lock"
@@ -57,7 +57,7 @@ SH
 chmod +x "$stub_bin/omarchy-notification-wait"
 
 cat >"$stub_bin/omarchy-notification-send" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_NOTIFY_SEND:-send} == "fail" ]] && exit 1
 printf '%s\n' "$@" >"$OMARCHY_TEST_NOTIFY_ARGS"
 SH

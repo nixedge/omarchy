@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Watch Hyprland monitor events and recover monitor toggles when a monitor is removed
 

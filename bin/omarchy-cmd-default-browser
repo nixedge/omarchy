@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Print the desktop entry ID of the default web browser
 # omarchy:hidden=true

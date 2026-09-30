@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ printf 'mine' >"$downloads/unrelated.txt"
 # decoy is whatever else drops into the downloads directory while Taildrop is
 # still blocking on the next delivery.
 cat >"$WORKDIR/bin/tailscale" <<SH
-#!/bin/bash
+#!/usr/bin/env bash
 target="\${*: -1}"
 [[ -n \${DECOY:-} ]] && printf 'iso' >"$downloads/\$DECOY"
 mv "$WORKDIR/outbox/"* "\$target/"

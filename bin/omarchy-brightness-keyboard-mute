@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set the mic-mute indicator LED on laptops that expose a platform::micmute LED node.
 # omarchy:args=<on|off>

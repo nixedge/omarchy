@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ mise_log="$test_tmp/mise-log"
 mkdir -p "$mock_bin" "$test_home/.local/bin"
 
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_DESKTOP_INSTALLED:-0} == 1 ]]
 SH
 
@@ -36,7 +36,7 @@ SH
 # can make either removal stick. Every call is logged, so a test can tell
 # being asked from being told to remove.
 cat >"$mock_bin/mise" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$OMARCHY_TEST_MISE_LOG"
 case "$1" in
   where)
@@ -114,7 +114,7 @@ pass "the migration is a no-op once the wrapper is gone"
 # Anyone else's hermes stays exactly where it is, is not run, and does not vouch
 # for a mise environment being Omarchy's.
 foreign_ran="$test_tmp/foreign-ran"
-foreign_body="#!/bin/bash
+foreign_body="#!/usr/bin/env bash
 touch $foreign_ran
 exec $test_home/.hermes/hermes-agent/venv/bin/hermes \"\$@\""
 printf '%s\n' "$foreign_body" >"$hermes"
@@ -240,7 +240,7 @@ touch "$app_runtime/.hermes-bootstrap-complete" "$app_runtime/apps/desktop/relea
 printf '#!/bin/sh\nexit 0\n' >"$app_runtime/apps/desktop/release/linux-unpacked/Hermes"
 chmod +x "$app_runtime/apps/desktop/release/linux-unpacked/Hermes"
 cat >"$hermes" <<SH
-#!/bin/bash
+#!/usr/bin/env bash
 # stands in for: exec "$app_runtime/venv/bin/python" "$app_runtime/hermes" "\$@"
 if [[ \${1:-} == "chat" && \${2:-} == "--help" ]]; then
   echo "[-q QUERY, --query QUERY] [--tui]"

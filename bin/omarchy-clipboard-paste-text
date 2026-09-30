@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Copy text to the clipboard and type or paste it
 # omarchy:group=clipboard

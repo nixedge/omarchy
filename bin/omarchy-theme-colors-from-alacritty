@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Generate a theme's colors.toml from its alacritty.toml palette
 # omarchy:args=<theme-dir>

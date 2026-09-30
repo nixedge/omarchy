@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ export unit
 listener_file="$tmp_dir/listener"
 export listener_file
 cat >"$tmp_dir/bin/systemctl" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl:%s\n' "$*" >>"$TEST_LOG"
 if [[ $* == *MainPID* ]]; then
   [[ -f $unit ]] && echo 4242 || echo 0
@@ -31,7 +31,7 @@ fi
 SCRIPT
 chmod +x "$tmp_dir/bin/systemctl"
 cat >"$tmp_dir/bin/ss" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 pid=
 [[ -f $listener_file ]] && pid=$(cat "$listener_file")
 [[ -z $pid && -f $unit ]] && pid=4242
@@ -46,7 +46,7 @@ export OMARCHY_OPENCLAW_ONBOARD_GATEWAY_TIMEOUT=1
 # gateway" by writing the config a moment in, so the gateway only starts
 # answering partway through, never at once.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard)
@@ -82,7 +82,7 @@ pass "a wizard that lingers after the gateway is up is stopped and counts as suc
 : >"$TEST_LOG"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $1 == onboard ]] && { echo "Skipped for now."; exit 3; }
 echo '{"ok":false}'; exit 1
@@ -98,7 +98,7 @@ pass "an abandoned wizard passes its exit code through"
 # A wizard that finishes and exits on its own is simply waited for.
 : >"$TEST_LOG"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $1 == onboard ]] && { mkdir -p "$HOME/.openclaw"; touch "$HOME/.openclaw/openclaw.json"; exit 0; }
 echo '{"ok":true,"port":18789}'
@@ -138,7 +138,7 @@ pass "the wizard reads terminal input"
 : >"$TEST_LOG"
 mkdir -p "$HOME/.openclaw" && touch "$HOME/.openclaw/openclaw.json"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $1 == onboard ]] && { echo wizard-ran >>"$TEST_LOG"; exit 0; }
 echo '{"ok":true,"port":18789}'
@@ -270,7 +270,7 @@ pass "an orphaned gateway answering with no config does not end the wizard"
 rm -rf "$HOME/.openclaw" "$unit" "$listener_file"
 echo 999 >"$listener_file"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 case $1 in
 onboard) mkdir -p "$HOME/.openclaw" "${unit%/*}"; touch "$HOME/.openclaw/openclaw.json" "$unit"; trap 'echo terminated >>"$TEST_LOG"; exit 143' TERM; while :; do sleep 0.2; done ;;

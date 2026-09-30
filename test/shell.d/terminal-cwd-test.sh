@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -35,7 +35,7 @@ for _ in $(seq 50); do
 done
 
 cat >"$stub_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -n ${ACTIVE_PID:-} ]] && printf 'Window 1 -> terminal:\n\tpid: %s\n' "$ACTIVE_PID"
 exit 0
 SH

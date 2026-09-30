@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -11,7 +11,7 @@ trap 'rm -rf "$TEST_HOME"' EXIT
 mkdir -p "$TEST_HOME/.codex/sessions/$(date +%Y/%m/%d)" "$TEST_HOME/bin"
 
 cat >"$TEST_HOME/bin/codex" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ -n ${CODEX_ARGS_FILE:-} ]]; then
   printf '%s\0' "$@" >"$CODEX_ARGS_FILE"

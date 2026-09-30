@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Pick a shell plugin to enable, disable, clone, or remove
 # omarchy:group=menu

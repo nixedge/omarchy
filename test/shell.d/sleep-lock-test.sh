@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -73,7 +73,7 @@ run_sleep_lock() {
 # A responsive shell locks immediately, even when the clamshell sync stalls.
 setup_scenario responsive
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 if [[ $* == "lock lock" ]]; then
@@ -107,7 +107,7 @@ pass "sleep lock bounds a stalled clamshell sync"
 # than hold logind's delay inhibitor open.
 setup_scenario never_secure
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 if [[ $* == "lock lock" ]]; then
@@ -149,7 +149,7 @@ pass "sleep lock keeps polling until the deadline"
 # instead of suspending an unlocked session over one slow IPC call.
 setup_scenario retry_lock
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 
@@ -193,7 +193,7 @@ pass "sleep lock stops requesting once the lock lands"
 # inhibitor budget sending the same request again.
 setup_scenario pending_lock
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 
@@ -231,7 +231,7 @@ pass "sleep lock does not retry an observed pending lock"
 # perform has to end the wait instead of burning the rest of the window on it.
 setup_scenario missing_pam
 cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 if [[ $* == "lock lock" ]]; then
@@ -271,7 +271,7 @@ pass "sleep lock records the unlocked suspend in the journal"
 # is also the one that shows which budget was derived.
 never_secures() {
   cat >"$mock_bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'shell %s\n' "$*" >>"$CALL_LOG"
 if [[ $* == "lock lock" ]]; then

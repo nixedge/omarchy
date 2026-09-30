@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ stub_bin="$tmp/bin"
 mkdir -p "$images" "$stub_bin"
 
 cat >"$stub_bin/vipsthumbnail" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 image="$1"
 shift

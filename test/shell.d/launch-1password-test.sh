@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -11,7 +11,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-cmd-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_INSTALLED:-false} == "true" ]]
 SH
 

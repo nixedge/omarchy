@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -101,7 +101,7 @@ trap 'rm -rf "$stub_dir"' EXIT
 # `-Qi` wraps a long list onto indented continuation lines whenever COLUMNS is
 # set, so gvim's provides arrive the way a wrapped terminal would emit them.
 cat >"$stub_dir/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
 -Qq)
   printf '%s\n' bash gvim

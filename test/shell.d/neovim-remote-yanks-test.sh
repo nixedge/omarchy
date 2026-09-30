@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
@@ -14,7 +14,7 @@ sed "s@/usr/share/omarchy-nvim/config/lua/config/remote_clipboard.lua@$test_home
   "$ROOT/migrations/1788996284.sh" >"$test_home/migration.sh"
 printf '%s\n' '-- corrected packaged provider' >"$test_home/package.lua"
 cat >"$test_home/bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $* == '-Q omarchy-nvim' ]] || exit 1
 printf 'omarchy-nvim %s\n' "${TEST_NVIM_VERSION:-2026.9.21-2}"
 STUB

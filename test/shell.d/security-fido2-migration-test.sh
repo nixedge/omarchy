@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -46,7 +46,7 @@ pass "migration names its authfile once, and the test drives a retargeted copy"
 # This contains malformed calls made through that interface; arbitrary direct
 # privileged commands in the migration are outside this harness.
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -187,7 +187,7 @@ SH
 chmod +x "$stub_bin/sudo"
 
 cat >"$stub_bin/stat" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 

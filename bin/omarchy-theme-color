@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Resolve semantic colors from an Omarchy theme colors.toml
 # omarchy:args=[--file <colors.toml>] (--all | --raw | <key> [fallback])

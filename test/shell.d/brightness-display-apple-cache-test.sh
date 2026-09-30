@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -39,7 +39,7 @@ STUB
 chmod +x "$stub_dir/sudo"
 
 cat >"$stub_dir/asdcontrol" <<STUB
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "\$*" >>"$asd_log"
 # --detect reports nothing, so detection never yields a device.
 if [[ \$1 == "--detect" ]]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Enable AND start the user systemd units we ship. Runs at first-run rather
 # than at finalize-user time because the user manager isn't live during the

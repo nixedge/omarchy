@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set up hibernation with swap and boot resume configuration
 # omarchy:requires-sudo=true

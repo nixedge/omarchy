@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -106,13 +106,13 @@ pass "migration is idempotent"
 
 # Anything the generator did not write is the user's own file.
 cat >"$bin_dir/hand-written" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 export MISE_MINIMUM_RELEASE_AGE=0
 mise use -g "something" || exit 1
 echo "and then something else entirely"
 EOF
 cat >"$bin_dir/mismatched" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 export MISE_MINIMUM_RELEASE_AGE=0
 mise use -g "one-package" || exit 1
 exec mise x "another-package" -- "bin" "$@"
@@ -120,7 +120,7 @@ EOF
 # A generated wrapper someone added a line to. Regenerating would drop that
 # line, so the exact-match check has to leave the whole file alone.
 cat >"$bin_dir/customized" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 export MISE_MINIMUM_RELEASE_AGE=0
 export SOME_TOKEN=abc123
 mise use -g "customized" || exit 1

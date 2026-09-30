@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -92,7 +92,7 @@ stubs="$tmpdir/stubs"
 mkdir -p "$stubs"
 
 cat >"$stubs/gum" <<'GUM'
-#!/bin/bash
+#!/usr/bin/env bash
 count=$(cat "$GUM_COUNT" 2>/dev/null || echo 0)
 count=$((count + 1))
 printf '%s\n' "$count" >"$GUM_COUNT"

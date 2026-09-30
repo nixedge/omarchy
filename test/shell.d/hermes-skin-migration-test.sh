@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,12 +21,12 @@ calls="$test_tmp/calls"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "hermes-desktop" && ${OMARCHY_TEST_DESKTOP_INSTALLED:-0} == 1 ]]
 SH
 
 cat >"$mock_bin/omarchy-theme-set-hermes" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 echo "omarchy-theme-set-hermes $*" >>"$OMARCHY_TEST_CALLS"
 [[ ${OMARCHY_TEST_HOOK_FAILS:-0} == 0 ]]
 SH

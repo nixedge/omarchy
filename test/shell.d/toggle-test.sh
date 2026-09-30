@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -101,7 +101,7 @@ pass "animations toggle turns the no-animations flag the right way round"
 # A VM install starts without animations; other machines keep them.
 for virt in vm none; do
   rm -rf "$test_home/.local/state/omarchy/toggles/hypr"
-  printf '#!/bin/bash\n[[ %s == vm ]]\n' "$virt" >"$stub_bin/omarchy-hw-vm"
+  printf '#!/usr/bin/env bash\n[[ %s == vm ]]\n' "$virt" >"$stub_bin/omarchy-hw-vm"
   chmod +x "$stub_bin/omarchy-hw-vm"
   HOME="$test_home" OMARCHY_PATH="$ROOT" bash "$ROOT/install/user/hardware/vm-no-animations.sh" >/dev/null
   if [[ $virt == "vm" ]]; then

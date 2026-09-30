@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ -n ${OMARCHY_TEST_PACKAGE_CALLS:-} ]]; then
   {
@@ -123,7 +123,7 @@ else
 fi
 
 cat >"$mock_bin/grep" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 != "-qi" ]]; then
   exit 2
@@ -163,7 +163,7 @@ cat >"$mock_bin/pkill" <<'STUB'
 printf '<%s>\n' "$@" >"$OMARCHY_TEST_PKILL_CALLS"
 STUB
 cat >"$mock_bin/setsid" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ -n ${OMARCHY_TEST_SETSID_CALLS:-} ]]; then
   printf '<%s>\n' "$@" >"$OMARCHY_TEST_SETSID_CALLS"

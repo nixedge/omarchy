@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -42,7 +42,7 @@ SCRIPT
 chmod +x "$tmp_dir/bin/update-desktop-database"
 
 cat >"$tmp_dir/bin/pacman" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "-Qqo" && $2 == */native.desktop ]]; then
   printf 'native-pkg\n'
 fi

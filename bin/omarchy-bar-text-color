@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Choose a legible transparent bar text color
 # omarchy:hidden=true

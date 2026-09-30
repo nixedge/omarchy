@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open the omarchy-shell dev gallery (qs.Ui kit preview)
 # omarchy:args=[section]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Enable an SSH agent (gcr-ssh-agent) that prompts for key passphrases graphically.
 

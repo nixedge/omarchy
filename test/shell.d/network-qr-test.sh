@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -13,13 +13,13 @@ export QR_ROUTE_EXIT=0
 
 # Loopback is never wireless, so exercise the connected-Wi-Fi fallback.
 cat >"$tmp/bin/ip" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $QR_ROUTE_EXIT == "0" ]] || exit "$QR_ROUTE_EXIT"
 printf '1.1.1.1 dev lo\n'
 EOF
 
 cat >"$tmp/bin/nmcli" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $* == *"DEVICE,TYPE,STATE"* ]]; then
   printf 'eth0:ethernet:connected\nwlan0:wifi:connected\n'
 elif [[ $* == *GENERAL.CON-UUID* ]]; then
@@ -30,7 +30,7 @@ fi
 EOF
 
 cat >"$tmp/bin/qrencode" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 for arg in "$@"; do
   [[ $arg != WIFI:* ]] || exit 97
 done

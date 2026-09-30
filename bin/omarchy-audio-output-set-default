@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set the default audio output and move active streams
 # omarchy:args=<node-id> <sink-name>

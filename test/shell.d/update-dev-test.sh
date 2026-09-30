@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ checkout="$test_tmp/checkout"
 mkdir -p "$stub_bin" "$checkout"
 
 cat >"$stub_bin/git" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$TEST_GIT_LOG"
 

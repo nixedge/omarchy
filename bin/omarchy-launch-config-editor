@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open a config file in the user's editor and surface a toast
 # omarchy:args=<path>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -16,12 +16,12 @@ mkdir -p "$stub_bin"
 trap 'rm -rf "$test_dir"' EXIT
 
 cat >"$stub_bin/omarchy-cmd-present" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "ufw" && ${UFW_PRESENT:-1} == 1 ]]
 STUB
 
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 printf '%s\n' "$*" >>"${CALL_LOG:?}"

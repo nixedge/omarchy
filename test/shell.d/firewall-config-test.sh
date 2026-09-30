@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ stub_dir=$(mktemp -d)
 trap 'rm -rf "$stub_dir"' EXIT
 
 cat >"$stub_dir/ufw" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'ufw %s\n' "$*" >>"$TEST_LOG"
 if [[ ${1:-} == status ]]; then
   echo 'Status: inactive'
@@ -32,7 +32,7 @@ fi
 STUB
 
 cat >"$stub_dir/sed" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sed %s\n' "$*" >>"$TEST_LOG"
 if [[ ${1:-} == 0,/^PATH=* ]]; then
   exec /usr/bin/sed "$@"

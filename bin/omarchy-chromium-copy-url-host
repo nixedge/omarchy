@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Native messaging host: copy a Chromium tab URL to the clipboard
 # omarchy:hidden=true

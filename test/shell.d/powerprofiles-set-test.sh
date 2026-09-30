@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 mkdir -p "$tmp_dir/bin" "$tmp_dir/state"
 
 cat >"$tmp_dir/bin/powerprofilesctl" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "list" ]]; then
   printf '  power-saver:\n* balanced:\n  performance:\n'
@@ -27,7 +27,7 @@ EOF
 chmod +x "$tmp_dir/bin/powerprofilesctl"
 
 cat >"$tmp_dir/bin/busctl" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ ${ON_BATTERY:-0} == "1" ]]; then
   echo "b true"

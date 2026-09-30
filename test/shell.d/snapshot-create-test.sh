@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -37,7 +37,7 @@ chmod +x "$fake_bin/omarchy-version"
 
 # Snapper with no configs: list-configs prints only the CSV header.
 cat >"$fake_bin/snapper" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'snapper %s\n' "$*" >>"$TEST_LOG"
 if [[ "$*" == *"list-configs"* ]]; then
   echo "config,subvolume"
@@ -62,7 +62,7 @@ grep -qF 'No Snapper configs found' <<<"$stderr" ||
 pass "snapshot create fails loudly when Snapper is installed but unconfigured"
 
 cat >"$fake_bin/snapper" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'snapper %s\n' "$*" >>"$TEST_LOG"
 if [[ "$*" == *"list-configs"* ]]; then
   echo "config,subvolume"

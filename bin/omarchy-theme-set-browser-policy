@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Write the current theme color into the browser policy directories
 # omarchy:args=<rrggbb>

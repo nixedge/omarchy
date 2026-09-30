@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Privileged groups are never granted by the default install. Docker remains an
 # explicit opt-in, and raw input-device access is granted only by the optional

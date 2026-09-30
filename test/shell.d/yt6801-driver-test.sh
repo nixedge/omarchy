@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ export PATH="$stub_bin:$PATH"
 # Model kernel state separately from package files: DKMS removal deletes the
 # latter and refreshes depmod, but cannot unload the module already in memory.
 cat >"$stub_bin/stub" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 command=${0##*/}
 printf '%s %s\n' "$command" "$*" >>"$TEST_CALLS"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Toggling sudoless Docker changes the docker group, which only takes effect on a
 # reboot. The setup/remove commands must flag the reboot and offer to do it now

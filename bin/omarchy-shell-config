@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Shared helpers for editing ~/.config/omarchy/shell.json (source this, don't run it).
 # omarchy:hidden=true

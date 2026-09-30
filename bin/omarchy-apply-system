@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Apply Omarchy system setup in the installed target
 # omarchy:group=apply

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Print the directory holding a theme, preferring a user-installed copy
 # omarchy:args=<theme-name>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ trap 'rm -rf "$test_tmp"' EXIT
 mkdir -p "$test_tmp/bin"
 
 cat >"$test_tmp/bin/omarchy-hw-match" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${TEST_PRODUCT_NAME:-} == *"$1"* ]]
 SH
 
@@ -50,7 +50,7 @@ SH
 # Mock the hardware detector for leaf/migration tests so TEST_PRODUCT_NAME
 # controls matching rather than the real DMI tables (which differ per machine).
 cat >"$test_tmp/bin/omarchy-hw-dell-xps13-sidecar-amps" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 sku=$(cat "${OMARCHY_DMI_PRODUCT_SKU:-/sys/class/dmi/id/product_sku}" 2>/dev/null || true)
 [[ ${TEST_PRODUCT_NAME:-} == *"DX13260"* ]] && [[ $sku == "0E53" ]]
 SH

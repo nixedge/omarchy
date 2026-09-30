@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ mock_bin="$TMPDIR/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/omarchy-cmd-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 case "${1:-}" in
@@ -35,28 +35,28 @@ esac
 SH
 
 cat >"$mock_bin/dropbox-cli" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 [[ ${OMARCHY_TEST_DROPBOX_RUNNING:-0} == "1" && ${1:-} == "running" ]]
 SH
 
 cat >"$mock_bin/tailscale" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 [[ ${OMARCHY_TEST_TAILSCALE_STATUS:-0} == "1" && ${1:-} == "status" && ${2:-} == "--json" ]]
 SH
 
 cat >"$mock_bin/systemctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 [[ ${OMARCHY_TEST_TAILSCALE_SYSTEMD:-0} == "1" ]]
 SH
 
 cat >"$mock_bin/pgrep" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 if (( $# == 0 )); then

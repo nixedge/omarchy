@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:heredoc-expands paths=none -- review regression fixture
 sudo tee /etc/omarchy/review.conf >/dev/null <<EOF

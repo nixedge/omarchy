@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -28,13 +28,13 @@ write_stub() {
   chmod +x "$stub_bin/$name"
 }
 
-write_stub omarchy-refresh-pacman '#!/bin/bash
+write_stub omarchy-refresh-pacman '#!/usr/bin/env bash
 printf "refresh" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub sudo '#!/bin/bash
+write_stub sudo '#!/usr/bin/env bash
 case "${1:-}" in
   -h) echo "usage: sudo [-ABbEHkNnPS] command"; exit 0 ;;
   -k|-K) exit 0 ;;
@@ -46,39 +46,39 @@ printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 
 cp "$stub_bin/sudo" "$SUDO_TEST_ROOT/mock/sudo"
 
-write_stub omarchy-update-pacman '#!/bin/bash
+write_stub omarchy-update-pacman '#!/usr/bin/env bash
 printf "update-pacman" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub omarchy-dev-unlink '#!/bin/bash
+write_stub omarchy-dev-unlink '#!/usr/bin/env bash
 printf "unlink" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub omarchy-state '#!/bin/bash
+write_stub omarchy-state '#!/usr/bin/env bash
 printf "state" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub omarchy-update '#!/bin/bash
+write_stub omarchy-update '#!/usr/bin/env bash
 printf "update" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\tOMARCHY_PATH=%s" "$OMARCHY_PATH" >>"$OMARCHY_CHANNEL_TEST_LOG"
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub gum '#!/bin/bash
+write_stub gum '#!/usr/bin/env bash
 printf "gum" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 exit 0
 '
 
-write_stub git '#!/bin/bash
+write_stub git '#!/usr/bin/env bash
 printf "git" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
@@ -89,17 +89,17 @@ if [[ $1 == "clone" ]]; then
 fi
 '
 
-write_stub omarchy-dev-link '#!/bin/bash
+write_stub omarchy-dev-link '#!/usr/bin/env bash
 printf "link" >>"$OMARCHY_CHANNEL_TEST_LOG"
 for arg in "$@"; do printf "\t%s" "$arg" >>"$OMARCHY_CHANNEL_TEST_LOG"; done
 printf "\n" >>"$OMARCHY_CHANNEL_TEST_LOG"
 '
 
-write_stub omarchy-version-channel '#!/bin/bash
+write_stub omarchy-version-channel '#!/usr/bin/env bash
 printf "%s\n" "${OMARCHY_TEST_VERSION_CHANNEL:-unknown}"
 '
 
-write_stub pacman '#!/bin/bash
+write_stub pacman '#!/usr/bin/env bash
 [[ $1 == "-Q" ]] || exit 1
 shift
 case "${OMARCHY_TEST_PACKAGES:-}" in

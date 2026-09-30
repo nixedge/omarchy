@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -9,14 +9,14 @@ copy_boundary_file bin/omarchy-update
 # Model the two exec boundaries without a host update log or a real lock.
 # Both child processes inherit the environment exactly as script/lock would.
 cat >"$SUDO_TEST_ROOT/bin/script" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'logged-reexec\n' >>"$SUDO_TEST_LOG"
 [[ $1 == "-qefc" ]] || exit 90
 exec /usr/bin/bash -p -c "$2"
 STUB
 rm "$SUDO_TEST_ROOT/bin/omarchy-update-lock"
 cat >"$SUDO_TEST_ROOT/bin/omarchy-update-lock" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   held) [[ ${SUDO_TEST_LOCKED:-0} == "1" ]] ;;
   run)
@@ -37,7 +37,7 @@ chmod +x "$SUDO_TEST_ROOT/bin/script" "$SUDO_TEST_ROOT/bin/omarchy-update-lock" 
 for step in omarchy-hook omarchy-update-mise; do
   rm "$SUDO_TEST_ROOT/bin/$step"
   cat >"$SUDO_TEST_ROOT/bin/$step" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -e $SUDO_TEST_CACHE ]] || exit 91
 [[ $(command -v sudo) != "$OMARCHY_PATH/default/omarchy/sudo-no-update/sudo" ]] || exit 92
 update-user-tool "${0##*/}"

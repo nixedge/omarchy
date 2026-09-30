@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ mkdir -p "$stub_bin"
 # KEYRING_TEST_RECV_STATUS     exit status of --recv-keys (default 0)
 # KEYRING_TEST_REINSTALL_STATUS exit status of the archlinux-keyring reinstall (default 0)
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'sudo' >>"$KEYRING_TEST_LOG"
 for arg in "$@"; do

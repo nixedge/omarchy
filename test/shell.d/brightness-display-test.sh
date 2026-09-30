@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -30,7 +30,7 @@ printf 'mock_backlight\n'
 SH
 
 cat >"$mock_bin/brightnessctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'brightnessctl %s\n' "$*" >>"$CALL_LOG"
 if [[ $* == *" -m"* ]]; then
   printf 'mock_backlight,backlight,40,40%%\n'
@@ -38,7 +38,7 @@ fi
 SH
 
 cat >"$mock_bin/ddcutil" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'ddcutil %s\n' "$*" >>"$CALL_LOG"
 
 if [[ $* == *" detect --brief"* ]]; then

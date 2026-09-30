@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -168,7 +168,7 @@ mkdir -p "$test_tmp/bin" "$test_tmp/backgrounds" "$test_tmp/generator-cache" "$t
 printf 'not a real video\n' >"$test_tmp/backgrounds/sample.mp4"
 
 cat >"$test_tmp/bin/ffmpegthumbnailer" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 while (( $# > 0 )); do
   case "$1" in
     -i) input=$2; shift 2 ;;
@@ -181,7 +181,7 @@ SH
 chmod +x "$test_tmp/bin/ffmpegthumbnailer"
 
 cat >"$test_tmp/bin/md5sum" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if (( $# > 0 )); then
   printf 'unexpected file hash: %s\n' "$*" >>"$MD5_FILE_CALLS"
 fi

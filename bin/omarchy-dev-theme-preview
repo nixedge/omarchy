@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Preview an Omarchy theme palette in the terminal
 # omarchy:args=[theme-name|theme-dir|colors.toml] [--no-color] [--no-osc|--osc]

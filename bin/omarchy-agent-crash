@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Diagnose a crashed process with the default coding agent
 # omarchy:args=<pid> [comm] [exe] [signal]

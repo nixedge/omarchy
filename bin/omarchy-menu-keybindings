@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Display Hyprland keybindings defined in your configuration using an interactive search menu.
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Apply the current theme keyboard color to ASUS ROG keyboards
 # omarchy:hidden=true

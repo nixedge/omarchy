@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -27,7 +27,7 @@ conf="$test_tmp/etc/modprobe.d/brcmfmac.conf"
 mkdir -p "$stub_bin" "$test_tmp/dmi"
 
 cat >"$stub_bin/lspci" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Chatty like real lspci: keep writing well past the pipe buffer after the
 # match, so a grep -q consumer would kill this stub with SIGPIPE and pipefail

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Enable, disable, or toggle a Hyprland input device
 # omarchy:args=<touchpad|touchscreen> [on|off|toggle]

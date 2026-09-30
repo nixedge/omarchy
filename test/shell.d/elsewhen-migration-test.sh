@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ printf 'drop %s\n' "$*" >>"$CALL_LOG"
 exit "${PACKAGE_STATUS:-0}"
 SH
 cat >"$test_dir/bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$CALL_LOG"
 quiet=0
 if [[ $1 == "-q" ]]; then

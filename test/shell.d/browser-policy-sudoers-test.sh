@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -68,7 +68,7 @@ chmod +x "$stub_bin/pkexec"
 # STUB_GRANTED empty stands for an install whose omarchy-settings predates the
 # sudoers file. The default is granted, matching a current Omarchy.
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == -n && $2 == -l ]]; then
   if [[ ${STUB_GRANTED-granted} == "granted" ]]; then
     echo "    Options: !authenticate"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Insert an emoji into the focused application
 # omarchy:group=menu

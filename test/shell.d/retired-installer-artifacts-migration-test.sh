@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ exec "$@"
 STUB
 
 cat >"$test_dir/bin/systemctl" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'systemctl %s\n' "$*" >>"$CALLS"
 if [[ $* == "daemon-reload" && -n ${FAIL_DAEMON_RELOAD_ONCE_MARKER:-} && ! -e $FAIL_DAEMON_RELOAD_ONCE_MARKER ]]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Apply Omarchy hardware-specific packages and system configuration
 # omarchy:group=apply

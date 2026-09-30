@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Transcode an image into ASCII/Unicode art text
 # omarchy:group=transcode

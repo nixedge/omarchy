@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Decode a QR code from a screenshot region
 # omarchy:group=capture

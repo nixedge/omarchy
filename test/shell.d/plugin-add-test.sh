@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -75,7 +75,7 @@ chmod +x "$guard_stubs/omarchy-shell"
 
 clone_marker="$TMPDIR/git-clone-reached"
 cat >"$guard_stubs/git" <<STUB
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ \$1 == "clone" ]]; then
   touch "$clone_marker"
   exit 1
@@ -87,7 +87,7 @@ chmod +x "$guard_stubs/git"
 # A gum stub that answers `gum input` with a caller-chosen value, so a test can
 # drive any URL through the interactive prompt path.
 cat >"$guard_stubs/gum" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "input" ]]; then
   printf '%s\n' "$GUM_INPUT_VALUE"
 fi

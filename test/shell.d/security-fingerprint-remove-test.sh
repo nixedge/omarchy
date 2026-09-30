@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ sed -e "s|/etc/pam.d/|$test_tmp/etc/pam.d/|g" \
   -e "s|/usr/bin/id|$test_tmp/trusted-id|g" "$remove" >"$copy"
 
 cat >"$test_tmp/trusted-id" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'id %s\n' "$*" >>"$TEST_LOG"
 [[ ${TEST_ID_FAIL:-0} == 0 ]] || exit 93
 case "$1" in
@@ -42,14 +42,14 @@ cat >"$test_tmp/bin/id" <<'SH'
 printf 'bob\n'
 SH
 cat >"$test_tmp/bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sudo %s\n' "$*" >>"$TEST_LOG"
 [[ $# == 4 && $1 == rm && $2 == -rf && $3 == -- && $4 == "$TEST_FPRINT/$TEST_EXPECTED_USER" ]] || exit 91
 [[ ${TEST_DELETE_FAIL:-0} == 0 ]] || exit 92
 exec /usr/bin/rm -rf -- "$4"
 SH
 cat >"$test_tmp/bin/omarchy-pkg-drop" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'package %s\n' "$*" >>"$TEST_LOG"
 [[ ${TEST_PACKAGE_FAIL:-0} == 0 ]]
 SH

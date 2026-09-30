@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -106,7 +106,7 @@ done
 # Only the stubs count as installed, so a real browser on the host, such as
 # google-chrome-stable, is neither preferred nor launched.
 cat >"$browser_bin/omarchy-cmd-present" <<'FAKE'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -x ${BROWSER_BIN:?}/$1 ]]
 FAKE
 chmod +x "$browser_bin"/*

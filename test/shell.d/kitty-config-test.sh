@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
@@ -107,7 +107,7 @@ printf '#!/bin/sh\nexit 1\n' >"$test_dir/bin/pgrep"
 printf '#!/bin/sh\nprintf "Test Font\\n"\n' >"$test_dir/bin/fc-list"
 printf '#!/bin/sh\nexit 0\n' >"$test_dir/bin/kitty"
 cat >"$test_dir/bin/gsettings" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "get" ]]; then
   if [[ $3 == "font-name" ]]; then
     echo "'Sans 11'"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Display annotated Herdr keybindings using an interactive search menu.
 # omarchy:args=[--print|-p] [--config <path>]

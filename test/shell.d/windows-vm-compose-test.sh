@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Security regression coverage for the Windows VM compose/mount boundary.
 
 set -euo pipefail

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Show which theme is styling the Plymouth boot screen
 # omarchy:examples=omarchy plymouth current

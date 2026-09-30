@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -181,7 +181,7 @@ ytdlp_argv="$TMPDIR/ytdlp-argv"
 notify_argv="$TMPDIR/notify-argv"
 
 cat >"$fake_root/bin/yt-dlp" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$YTDLP_ARGV_LOG"
 for arg in "$@"; do
   if [[ $arg == "--no-simulate" ]]; then

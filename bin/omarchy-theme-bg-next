@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Cycle to the next background for the current theme
 # omarchy:examples=omarchy theme bg next

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Native messaging host: download the URL sent by the yt-dlp Chromium extension
 # omarchy:hidden=true

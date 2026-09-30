@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Install a theme from a git repository
 # omarchy:args=[git-repo-url]

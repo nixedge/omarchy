@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=List the user-installed themes that came from a git clone
 # omarchy:examples=omarchy theme extras

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Edit, set, or reset screensaver branding
 # omarchy:group=branding

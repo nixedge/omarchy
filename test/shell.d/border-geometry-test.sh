@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source "$(dirname "$0")/base-test.sh"
 
 run_node_test <<'JS'

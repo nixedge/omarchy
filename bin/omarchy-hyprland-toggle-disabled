@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Check if a Hyprland toggle is currently disabled (missing).
 # omarchy:args=<flag-name>

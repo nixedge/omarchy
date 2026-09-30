@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Returns true when Hyprland has an enabled monitor with no mode
 # omarchy:hidden=true

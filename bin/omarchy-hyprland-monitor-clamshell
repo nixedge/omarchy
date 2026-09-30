@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Apply clamshell display state to Hyprland monitors
 # omarchy:hidden=true

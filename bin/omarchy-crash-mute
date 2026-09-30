@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Silence crash notifications for one program, or list what is silenced
 # omarchy:args=[--] [<program>] [on|off|toggle]

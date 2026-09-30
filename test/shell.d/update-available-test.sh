@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -35,7 +35,7 @@ SH
 chmod +x "$stub_bin/checkupdates"
 
 cat >"$stub_bin/pacman" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   -Qq)
     case "${TEST_INSTALLED_PACKAGE:-omarchy}" in
@@ -59,7 +59,7 @@ SH
 chmod +x "$stub_bin/pacman"
 
 cat >"$stub_bin/git" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$TEST_GIT_LOG"
 

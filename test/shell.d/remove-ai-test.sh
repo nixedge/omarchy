@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -341,7 +341,7 @@ exit 1
 SCRIPT
 chmod +x "$tmp_dir/bin/openclaw"
 cat >"$tmp_dir/bin/systemctl" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl:%s\n' "$*" >>"$TEST_LOG"
 [[ $2 == disable ]] && exit 1
 [[ $2 == is-active ]] && exit 0

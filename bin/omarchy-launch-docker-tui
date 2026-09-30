@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open the Docker TUI (lazydocker) with access to the Docker daemon
 # omarchy:hidden=true

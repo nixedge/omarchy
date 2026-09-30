@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Mirror the current theme to your herdr machines that run Omarchy
 # omarchy:args=[--available]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ boot_order='BOOT_ORDER="linux-omarchy, linux-omarchy-*, *, *fallback, Snapshots"
 
 # Exercise the real package helpers, including their post-install queries.
 cat > "$scratch/bin/pacman" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   -Q) grep -Fxq "$2" "$INSTALLED_PACKAGES" ;;
   -S)
@@ -49,12 +49,12 @@ esac
 SH
 
 cat > "$scratch/bin/limine-mkinitcpio" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${REBUILD_FAIL:-0} == "0" ]]
 SH
 
 cat > "$scratch/bin/limine-entry-tool" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $* == "--tree" ]] || exit 99
 printf '%s\n' 'Omarchy' '  linux-ptl' '  linux-omarchy-ptl-novrr-mm' '  linux-omarchy-bore' '  linux-omarchy-fallback' '  Snapshots'
 if [[ ${MISSING_ENTRY:-0} == "0" ]]; then
@@ -63,7 +63,7 @@ fi
 SH
 
 cat > "$scratch/bin/omarchy-state" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $* == "set reboot-required" ]] || exit 99
 printf 'state %s\n' "$*" >> "$CALL_LOG"
 SH

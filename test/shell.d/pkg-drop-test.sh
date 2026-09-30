@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ mock_path="$test_tmp/pkg-drop-bin"
 mkdir -p "$mock_path"
 
 cat >"$mock_path/pacman" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "-Qq" ]]; then
   if [[ ${TEST_PACKAGES_EMPTY:-0} == "0" ]]; then
     printf '%s\n' exact-package provider-package

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -19,7 +19,7 @@ scale_state="$state_dir/internal-monitor-scale"
 mkdir -p "$stub_bin" "$home_dir/.config/hypr"
 
 cat >"$stub_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "monitors" && $2 == "all" && $3 == "-j" ]]; then
   if [[ ${OMARCHY_TEST_INTERNAL_DISABLED:-false} == "true" ]]; then
@@ -54,12 +54,12 @@ echo eDP-1
 SH
 
 cat >"$stub_bin/omarchy-hyprland-monitor-external-active" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_EXTERNAL_ACTIVE:-false} == "true" ]]
 SH
 
 cat >"$stub_bin/omarchy-hw-clamshell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_CLAMSHELL:-false} == "true" ]]
 SH
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # The docker-group opt-in migration must remove an existing install's user from
 # the root-equivalent docker group (only when they are in it), flag a reboot so
@@ -48,7 +48,7 @@ STUB
 # must still NOT reboot (it defers to omarchy-update-restart), so neither should
 # be reached.
 cat >"$stub_bin/gum" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == confirm ]] && exit 0
 exit 0
 STUB

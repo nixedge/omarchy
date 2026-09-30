@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set the default browser for Omarchy and XDG handlers
 # omarchy:args=[chromium|chrome|brave|brave-origin|edge|firefox|zen]

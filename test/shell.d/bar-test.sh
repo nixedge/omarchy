@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -364,7 +364,7 @@ mkdir -p "$put_tmp/bin"
 ln -s "$ROOT/bin/omarchy-shell-config" "$put_tmp/bin/omarchy-shell-config"
 
 cat >"$put_tmp/bin/omarchy-shell" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case ${OMARCHY_TEST_SHELL_STATE:-ready} in
   missing)
     echo "omarchy-shell is not running" >&2

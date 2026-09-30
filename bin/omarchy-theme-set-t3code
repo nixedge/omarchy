@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Sync the generated Omarchy theme to T3 Code
 # omarchy:hidden=true

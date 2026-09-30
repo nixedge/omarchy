@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Shared helpers for animating the About branding (source this, don't run it).
 # omarchy:group=branding

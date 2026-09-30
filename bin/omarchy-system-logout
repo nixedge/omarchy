@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Log out after closing application windows
 # omarchy:examples=omarchy logout | omarchy system logout

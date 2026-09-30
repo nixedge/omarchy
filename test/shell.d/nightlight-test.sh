@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ STATE="$TMPDIR/hyprsunset-temp"
 SHELL_LOG="$TMPDIR/omarchy-shell-log"
 
 cat >"$TMPDIR/bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ ${1:-} == "hyprsunset" && ${2:-} == "temperature" ]]; then
   if [[ -n ${3:-} ]]; then

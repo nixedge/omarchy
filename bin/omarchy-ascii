@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Render text as ASCII art in the font the Omarchy logo is drawn in
 # omarchy:args=[text...]

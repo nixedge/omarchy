@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ stub_bin="$test_dir/bin"
 mkdir -p "$stub_bin"
 
 cat >"$stub_bin/systemctl" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl %s\n' "$*" >>"${CALL_LOG:?}"
 case "$1 $2" in
 "is-enabled --quiet") [[ ${SSHD_ENABLED:-0} == 1 ]] ;;
@@ -24,7 +24,7 @@ esac
 STUB
 
 cat >"$stub_bin/sshd" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sshd %s\n' "$*" >>"${CALL_LOG:?}"
 case $1 in
 -t) [[ ${SSHD_SYNTAX_VALID:-1} == 1 ]] ;;
@@ -37,7 +37,7 @@ esac
 STUB
 
 cat >"$stub_bin/sudo" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sudo %s\n' "$*" >>"${CALL_LOG:?}"
 if [[ ${SUDO_ALLOWED:-1} != 1 ]]; then
   exit 1

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Exercise complete production functions with private paths and harmless
 # command stand-ins. Never install sudo policy or start a host timer.
@@ -18,7 +18,7 @@ trap cleanup_grant_fixture EXIT
 export TEST_GRANT_ROOT=$test_tmp
 mkdir -p "$test_tmp/bin" "$test_tmp/etc/sudoers.d" "$test_tmp/etc/tmpfiles.d" "$test_tmp/run/lock" "$test_tmp/var/lib" "$test_tmp/hooks"
 cat >"$test_tmp/bin/mock" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 name=${0##*/}
 printf '%s %s\n' "$name" "$*" >>"$TEST_GRANT_ROOT/commands"

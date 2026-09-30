@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ mkdir -p "$test_dir/bin"
 # sudo runs the real command, so the removals act on the redirected rules
 # directory below and the elevated calls land in the log beside it.
 cat >"$test_dir/bin/sudo" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'sudo %s\n' "$*" >>"$CALLS"
 if [[ ${1:-} == "/usr/bin/udevadm" ]]; then
@@ -36,7 +36,7 @@ exec "$@"
 STUB
 
 cat >"$test_dir/bin/udevadm" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'udevadm %s\n' "$*" >>"$CALLS"
 if [[ -n ${FAIL_UDEV_RELOAD_ONCE_MARKER:-} && ! -e $FAIL_UDEV_RELOAD_ONCE_MARKER ]]; then
@@ -614,7 +614,7 @@ reset_machine
 write_vulnerable_power_rule
 write_vulnerable_wifi_rule
 cat >"$test_dir/failing-bin/sudo" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'sudo %s\n' "$*" >>"$CALLS"
 if [[ ${1:-} == "/usr/bin/rm" && ${*: -1} == */rules.d/99-wifi-powersave.rules ]]; then

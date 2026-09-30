@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ scale_log="$home_dir/.local/state/omarchy/monitor-scaling.log"
 mkdir -p "$stub_bin" "$home_dir/.config/hypr"
 
 cat >"$stub_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "monitors" && $2 == "-j" ]]; then
   printf '[{"name":"eDP-1","focused":true,"scale":%s,"width":%s,"height":%s,"refreshRate":120.0}]' \

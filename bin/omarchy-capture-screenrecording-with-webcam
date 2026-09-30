@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Pick a webcam and start a screen recording with it
 # omarchy:examples=omarchy capture screenrecording-with-webcam

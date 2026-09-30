@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -uo pipefail
 
@@ -121,7 +121,7 @@ cat >"$stub_dir/omarchy-restart-gum" <<'STUB'
 STUB
 
 cat >"$stub_dir/setsid" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 while (( $# >= 3 )); do
   if [[ $1 == "bash" && $2 == "-c" ]]; then
     exec bash -c "$3"
@@ -206,7 +206,7 @@ real_realpath=$(command -v realpath)
 SH
 
 cat >"$fake_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 set -u
 # shellcheck source=/dev/null
 source "${0%/*}/real-paths.sh"
@@ -277,7 +277,7 @@ exec "$real_stat" "$@"
 SH
 
 cat >"$root_tools/chown" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 last=${!#}
 [[ $last == "$TEST_FAKE_ROOT"* || $last == /tmp/omarchy-plymouth.* ]] || exit 93
 exit 0

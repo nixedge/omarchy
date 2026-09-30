@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ trap 'rm -r "$tmp_dir"' EXIT
 # list drain stdin, matching the real ones, so the piped layouts and timezones
 # can be asserted.
 cat >"$tmp_dir/gum" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 count=$(($(cat "$GUM_COUNT") + 1))
 printf '%s' "$count" >"$GUM_COUNT"
 printf '%s\n' "$*" >>"$GUM_ARGS"
@@ -30,7 +30,7 @@ exit "${line%%:*}"
 EOF
 
 cat >"$tmp_dir/tzupdate" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -n ${TZ_GUESS:-} ]] || exit 1
 printf '%s\n' "$TZ_GUESS"
 EOF
@@ -46,7 +46,7 @@ EOF
 # return; both cases exit with the same status, and this marker is the only
 # thing that tells them apart.
 cat >"$tmp_dir/driver" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 set -T

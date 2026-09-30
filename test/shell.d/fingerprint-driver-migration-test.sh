@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # The fingerprint driver migration only repairs a machine an earlier version of
 # it left with fprintd and no libfprint; any installed driver is left alone.
@@ -27,7 +27,7 @@ STUB
 # INSTALLED lists the installed package names, one per line; an install adds
 # its packages to INSTALLED_LOG so omarchy-pkg-add's follow-up query sees them.
 cat > "$scratch/bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   -Q)
     if [[ $2 == "--" ]]; then

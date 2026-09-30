@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -59,7 +59,7 @@ pass "webapp install refuses a name that would escape the applications directory
 mkdir -p "$tmp_dir/ibin"
 cp "$tmp_dir/bin"/* "$tmp_dir/ibin/"
 cat >"$tmp_dir/ibin/gum" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 count_file="${GUM_STUB_COUNT:?}"
 count=$(cat "$count_file" 2>/dev/null || echo 0)
 count=$((count + 1))
@@ -71,7 +71,7 @@ else
 fi
 STUB
 cat >"$tmp_dir/ibin/curl" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 # Answer any download with a real PNG so the icon fetch reports success.
 out=""
 prev=""

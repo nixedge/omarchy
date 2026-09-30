@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Turn Bluetooth on or off, remembered across reboots
 # omarchy:group=bluetooth

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -17,7 +17,7 @@ mkdir -p "$tmp_dir/power/BAT0"
 printf '900000\n' >"$tmp_dir/power/BAT0/current_now"
 printf '12000000\n' >"$tmp_dir/power/BAT0/voltage_now"
 cat >"$tmp_dir/bin/upower" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "-e" ]]; then
   echo "/org/freedesktop/UPower/devices/battery_BAT0"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ browser_file="$test_tmp/browser"
 mkdir -p "$mock_bin" "$test_home/.config" "$installed_dir"
 
 cat >"$mock_bin/omarchy-cmd-missing" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ! -e $OMARCHY_TEST_INSTALLED_DIR/$1 ]]
 SH
 
@@ -38,19 +38,19 @@ printf '%s\0' "$@" >>"$OMARCHY_TEST_NOTIFICATION_LOG"
 SH
 
 cat >"$mock_bin/omarchy-test-setup-call" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s:%s\n' "${0##*/}" "$*" >>"$OMARCHY_TEST_SETUP_LOG"
 [[ ${OMARCHY_TEST_SETUP_FAIL:-} != "${0##*/}" ]]
 SH
 
 cat >"$mock_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'sudo:%s\n' "$*" >>"$OMARCHY_TEST_SETUP_LOG"
 [[ ${OMARCHY_TEST_SETUP_FAIL:-} != "sudo" ]]
 SH
 
 cat >"$mock_bin/xdg-settings" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case $1 in
 get) [[ -f $OMARCHY_TEST_BROWSER_FILE ]] && cat "$OMARCHY_TEST_BROWSER_FILE" ;;
 set) printf '%s\n' "$3" >"$OMARCHY_TEST_BROWSER_FILE" ;;
@@ -58,7 +58,7 @@ esac
 SH
 
 cat >"$mock_bin/omarchy-test-installer" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 installer=${0##*/}
 
 if [[ $installer == "omarchy-install-browser" && ${OMARCHY_TEST_REAL_BROWSER_INSTALL:-false} == "true" ]]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ELSEWHEN_ONLINE=1 also checks day and night against Open-Meteo's is_day.
 

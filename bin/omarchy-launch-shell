@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Launch the Omarchy shell with its log kept in the journal
 # omarchy:hidden=true

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -36,7 +36,7 @@ EOF
 
 # ssh runs the script it receives against a fake home for that machine, as the remote would.
 cat >"$stub_bin/ssh" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 while [[ $1 == "-o" ]]; do
   shift 2
 done

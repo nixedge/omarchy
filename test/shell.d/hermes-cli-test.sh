@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ mkdir -p "$mock_bin" "$test_home/.local/bin"
 : >"$mise_log"
 
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${OMARCHY_TEST_DESKTOP_INSTALLED:-0} == 1 ]]
 SH
 
@@ -40,7 +40,7 @@ SH
 # environment and `ls -g` lists it as requested when a test says it was built,
 # until uninstalled and unrequested respectively. Every call is logged.
 cat >"$mock_bin/mise" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'mise %s\n' "$*" >>"$OMARCHY_TEST_MISE_LOG"
 case "$1" in
   where)
@@ -84,7 +84,7 @@ run_installer() {
 # upstream's launcher does; without, it is a command from somewhere else.
 write_hermes() {
   cat >"$hermes" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 touch "$OMARCHY_TEST_RAN"
 if [[ ${1:-} == "chat" && ${2:-} == "--help" ]]; then
   printf '%s\n' "${OMARCHY_TEST_HERMES_HELP-[-q QUERY, --query QUERY] [--tui]}"

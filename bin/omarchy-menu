@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Control the Omarchy menu (toggle / summon / close / refresh)
 # omarchy:args=[toggle|summon|close|refresh|ping] [route]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Watch for process crashes and offer an AI diagnosis
 # omarchy:hidden=true

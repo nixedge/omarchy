@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open HEY webmail and translate mailto links
 # omarchy:args=[url]

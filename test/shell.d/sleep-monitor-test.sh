@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ lock_log="$tmpdir/lock-log"
 mkdir -p "$mock_bin" "$mock_omarchy/bin"
 
 cat >"$mock_bin/systemd-inhibit" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 while [[ $1 == --* ]]; do
   shift

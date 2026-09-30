@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Print the sink whose volume and mute a given output really uses
 # omarchy:args=[sink-name]

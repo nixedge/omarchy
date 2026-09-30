@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Launch a TUI command in the default terminal with Omarchy styling
 # omarchy:args=[--app-id=<app-id>] <command> [args...]

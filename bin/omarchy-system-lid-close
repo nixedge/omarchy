@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Lock and reconcile displays when the laptop lid closes
 # omarchy:group=system

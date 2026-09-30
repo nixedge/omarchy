@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Configure the bar and its widget layout
 # omarchy:group=bar

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Exercise the real EUID-0/PKEXEC_UID boundary in an isolated user+mount namespace.
 
 set -euo pipefail

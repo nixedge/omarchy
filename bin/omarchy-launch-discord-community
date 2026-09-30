@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open the Omarchy Discord community in the Discord app or a browser.
 

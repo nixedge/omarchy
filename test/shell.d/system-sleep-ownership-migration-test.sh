@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -48,7 +48,7 @@ sed \
   "$migration" >"$migration_copy"
 
 cat >"$stub_bin/stat" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 path=${!#}
 if [[ :${INACCESSIBLE_AS_USER:-}: == *":$path:"* && ${FAKE_SUDO:-0} == 0 ]]; then
@@ -82,7 +82,7 @@ esac
 SH
 
 cat >"$stub_bin/readlink" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 path=${!#}
 if [[ :${INACCESSIBLE_AS_USER:-}: == *":$path:"* && ${FAKE_SUDO:-0} == 0 ]]; then
@@ -94,7 +94,7 @@ SH
 chmod +x "$stub_bin/stat" "$stub_bin/readlink"
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -258,7 +258,7 @@ pass "migration replaces exact vulnerable installer artifacts without inventing 
 
 legacy_keyboard="$test_tmp/legacy-keyboard-backlight"
 cat >"$legacy_keyboard" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Turn off keyboard backlight before hibernate to prevent hang on power-off.
 # The ASUS keyboard controller can block S4 shutdown if LEDs are active.
@@ -330,7 +330,7 @@ pass "migration activates only exact packaged hooks while preserving safe custom
 
 legacy_force_igpu="$test_tmp/legacy-force-igpu"
 cat >"$legacy_force_igpu" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Use the Vfio to Integrated trick to turn off NVIDIA dgpu when in integrated mode
 # without needing to restart the computer. This is needed because computers like the Asus G14
@@ -529,7 +529,7 @@ sed \
   -e "s|/run/omarchy-force-igpu-integrated|$hook_marker|g" \
   "$ROOT/default/systemd/system-sleep/force-igpu" >"$hook_copy"
 cat >"$stub_bin/hook-supergfxctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 case "$1" in
   -m)
@@ -562,7 +562,7 @@ case "$1" in
 esac
 SH
 cat >"$stub_bin/hook-install" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 args=()
 while (($#)); do
   case "$1" in

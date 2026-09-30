@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -10,7 +10,7 @@ mkdir -p "$TMPDIR/home/.config/omarchy" "$TMPDIR/bin"
 CALLS="$TMPDIR/calls"
 
 cat >"$TMPDIR/bin/omarchy-shell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $* == *"listShellConfig"* ]]; then
   if [[ -n ${FAKE_SHELL_CONFIG:-} ]]; then
     printf '%s\n' "$FAKE_SHELL_CONFIG"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -37,13 +37,13 @@ mkdir -p "$stub_bin" "$test_home" "$mapped_root/bin" "$mapped_root/default/omarc
 : >"$inhibitor_log"
 
 cat >"$stub_bin/pkexec" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -z ${SUDO_EVENT_LOG:-} ]] || printf 'pkexec\n' >>"$SUDO_EVENT_LOG"
 exec "$@"
 SH
 
 cat >"$stub_bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case ${1:-} in
   -h) echo 'usage: sudo [-bHkNnPS] command'; exit 0 ;;
   -k|-K|-v)
@@ -69,7 +69,7 @@ fi
 SH
 
 cat >"$stub_bin/setpriv" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 while [[ ${1:-} == --* ]]; do
   case "$1" in
     --reuid|--regid) shift 2 ;;
@@ -81,7 +81,7 @@ exec "$@"
 SH
 
 cat >"$stub_bin/systemd-inhibit" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ ${SYSTEMD_FAIL:-0} == "0" ]] || exit 42
 printf '%s\n' "$$" >>"$INHIBITOR_LOG"
 if [[ -n ${CREATE_BAD_IDLE:-} ]]; then

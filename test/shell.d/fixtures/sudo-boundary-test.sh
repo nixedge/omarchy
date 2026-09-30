@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Test the real orchestration with fixed privileged paths redirected to harmless
 # stand-ins. No host sudo, package transaction, namespace root, or exploit runs.
@@ -40,7 +40,7 @@ copy_boundary_file bin/omarchy-update-pacman
 copy_boundary_file default/omarchy/sudo-no-update/sudo
 
 cat >"$SUDO_TEST_ROOT/mock/sudo" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 printf 'sudo' >>"$SUDO_TEST_LOG"
 printf ' %q' "$@" >>"$SUDO_TEST_LOG"
@@ -92,7 +92,7 @@ chmod +x "$SUDO_TEST_ROOT/mock/sudo"
 ln -s ../mock/sudo "$SUDO_TEST_ROOT/bin/sudo"
 
 cat >"$SUDO_TEST_ROOT/bin/test-step" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 step=${0##*/}
 printf 'step:%s %s\n' "$step" "$*" >>"$SUDO_TEST_LOG"

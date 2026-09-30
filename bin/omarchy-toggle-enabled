@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Check if a toggle is enabled (flag file exists)
 # omarchy:args=<flag-name>

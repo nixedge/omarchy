@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # The fingerprint setup installs libfprint-git in place of stock libfprint. The
 # two conflict, so the swap has to happen inside one --ask 4 transaction, and a
@@ -33,7 +33,7 @@ esac
 STUB
 # INSTALLED lists the installed package names, one per line.
 cat > "$scratch/bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   -Q)
     if [[ $2 == "--" ]]; then

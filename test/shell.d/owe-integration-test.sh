@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
@@ -13,7 +13,7 @@ mkdir -p "$work/bin" "$work/home"
 export TEST_CALLS="$work/calls"
 for command in omarchy-pkg-add omarchy-hook-install systemctl; do
   cat >"$work/bin/$command" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s %s\n' "${0##*/}" "$*" >>"$TEST_CALLS"
 case "$*" in
   '--user enable owed.service') [[ ${TEST_TTY:-0} == 0 ]] ;;
@@ -64,7 +64,7 @@ grep -Fx 'omarchy-hook-install theme-set /usr/share/owe/10-owe-sync' "$TEST_CALL
 pass "fresh installs enable OWE and install the theme refresh hook"
 
 cat >"$work/bin/ffmpegthumbnailer" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'thumbnail\n' >>"$TEST_CALLS"
 while (( $# )); do
   case "$1" in

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Open the OpenClaw Control UI (or its terminal UI with --tui), onboarding or starting the gateway first when needed.
 # omarchy:args=[--tui [--message <text>]]

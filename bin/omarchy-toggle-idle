@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Toggle idle behavior so the system either idles normally or stays awake
 # omarchy:group=toggle

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -42,7 +42,7 @@ write_stub() {
 
   rm -f "$stub_bin/$name"
   cat >"$stub_bin/$name" <<SH
-#!/bin/bash
+#!/usr/bin/env bash
 $body
 SH
   chmod +x "$stub_bin/$name"

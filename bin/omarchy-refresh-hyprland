@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Overwrite all the user Hyprland Lua configs in ~/.config/hypr with the Omarchy defaults.
 

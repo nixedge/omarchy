@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Set the default editor used by omarchy-launch-editor
 # omarchy:args=[code|cursor|zed|sublime_text|helix|vim|emacs|nvim]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Sync current Omarchy theme environment into tmux
 # omarchy:hidden=true

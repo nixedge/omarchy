@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/git" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\n' "$*" >>"$OMARCHY_TEST_GIT_CALLS"
 [[ $1 == "clone" ]] && mkdir -p "${*: -1}"
 exit 0

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Toggle permanent Hyprland flags by copying them into a directory that's sourced entirely.
 # omarchy:args=<flag-name> [on|off|toggle]

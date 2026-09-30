@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -11,7 +11,7 @@ mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
 
 cat >"$mock_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "clients" ]]; then
   printf '%s\n' "$OMARCHY_TEST_CLIENTS_JSON"
 elif [[ $1 == "dispatch" ]]; then

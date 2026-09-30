@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ mkdir -p "$fake_bin" "$shell_root/shell"
 # Each launch consumes the next status from OMARCHY_TEST_QS_STATUSES; "run"
 # stands in for a healthy shell that keeps going until stopped.
 cat >"$fake_bin/quickshell" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$*" >>"$OMARCHY_TEST_QS_LOG"
 printf 'watcher=%s popup=%s\n' \
@@ -44,7 +44,7 @@ exit "${status:-0}"
 SH
 
 cat >"$fake_bin/systemd-cat" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 while (( $# > 0 )); do
   [[ $1 == "--" ]] && { shift; break; }
@@ -54,7 +54,7 @@ exec "$@"
 SH
 
 cat >"$fake_bin/hyprctl" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ ${OMARCHY_TEST_COMPOSITOR_GONE:-0} == 1 ]] && exit 4
 

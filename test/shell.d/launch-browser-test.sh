@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -20,12 +20,12 @@ Exec=chromium %U
 EOF
 
 cat >"$mock_bin/xdg-settings" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -z ${BROWSER:-} ]] || printf '%s\n' "$BROWSER" >"$OMARCHY_TEST_XDG_SETTINGS_BROWSER"
 [[ ${OMARCHY_TEST_XDG_SETTINGS_EMPTY:-0} == "1" ]] || echo chromium.desktop
 SH
 cat >"$mock_bin/xdg-mime" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $* == "query default x-scheme-handler/https" ]]; then
   echo chromium.desktop
 fi
@@ -85,7 +85,7 @@ pass "browser launcher follows opened links to the browser workspace"
 
 rm -f "$launch_log"
 cat >"$mock_bin/omarchy-cmd-browser-handoff" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "chromium" && $2 == "https://example.test/running" ]]
 SH
 chmod +x "$mock_bin/omarchy-cmd-browser-handoff"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -28,7 +28,7 @@ cat >"$stub_bin/systemctl" <<'STUB'
 printf 'systemctl %s\n' "$*" >>"${CALL_LOG:?}"
 STUB
 cat >"$stub_bin/sshd" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 case $1 in
 -t)
   [[ ${SSHD_SYNTAX_VALID:-1} == 1 ]]

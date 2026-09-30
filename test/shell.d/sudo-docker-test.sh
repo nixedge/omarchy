@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # omarchy-sudo-docker is the single answer to "does Docker need sudo", and it
 # answers two different questions on purpose. The default asks whether this

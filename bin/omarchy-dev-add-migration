@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Create a new Omarchy migration in the current source tree.
 # omarchy:args=[--no-edit]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ STUB
 # omarchy-update-pacman wraps the transaction in a real PID 1 scope; the tests
 # must stay inside the fixture, so drop the wrapper's options and run the command.
 cat >"$stub_bin/systemd-run" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 while [[ $1 == -* ]]; do shift; done
 exec "$@"
 STUB
@@ -31,7 +31,7 @@ STUB
 # Fails the first -Syu with the report under test, then succeeds unless the case
 # asked for the retry to fail too.
 cat >"$stub_bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == -Qo ]]; then
   # Anything in OWNED_PATHS has a package behind it; everything else is unowned.
   [[ " $OWNED_PATHS " == *" $2 "* ]]

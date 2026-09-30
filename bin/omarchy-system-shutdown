@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Shut down after closing application windows
 # omarchy:examples=omarchy shutdown | omarchy system shutdown

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -9,7 +9,7 @@ fake_bin="$test_tmp/bin"
 mkdir -p "$fake_bin"
 
 cat >"$fake_bin/supergfxctl" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 [[ $1 == "-s" ]] || exit 64
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$(dirname "$0")/base-test.sh"
 
@@ -16,7 +16,7 @@ trap cleanup EXIT
 mkdir -p "$(dirname "$hook_path")"
 
 cat >"$test_bin/omarchy-notification-send" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 echo notification >>"$TEST_LOG"
 exec_args=()
 while (($# > 0)); do

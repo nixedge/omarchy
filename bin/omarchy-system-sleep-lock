@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Lock before suspend and wait for the session lock to become secure
 # omarchy:group=system

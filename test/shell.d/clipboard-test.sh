@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -253,7 +253,7 @@ cat >"$WL_COPY_OUT"
 SH
 
 cat >"$TMPDIR/bin/wl-paste" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "--list-types" ]]; then
   printf '%b' "${WL_PASTE_TYPES:-text/plain\n}"
 elif [[ $1 == "--type" && $2 == "text" ]]; then
@@ -403,7 +403,7 @@ capture_output=$(WL_PASTE_TYPES="text/plain\nx-kde-passwordManagerHint\n" XDG_RU
 pass "clipboard capture ignores password manager hint"
 
 cat >"$TMPDIR/bin/wl-paste" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\t%s\n' "$BASHPID" "$*" >>"${WL_PASTE_LOG:-/dev/null}"
 sleep_pid=""
 

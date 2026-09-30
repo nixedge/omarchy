@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
@@ -16,7 +16,7 @@ export PATH="$tmp_dir/bin:$ROOT/bin:$PATH"
 
 # Keep the real package helpers, but contain every pacman transaction here.
 cat > "$tmp_dir/bin/pacman" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 case "$1" in
   -Q) grep -Fxq -- "$2" "$INSTALLED_PACKAGES" ;;
   -S)
@@ -29,7 +29,7 @@ case "$1" in
 esac
 SH
 cat > "$tmp_dir/bin/sudo" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "pacman" ]] || exit 1
 "$@"
 SH

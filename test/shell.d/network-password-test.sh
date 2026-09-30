@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -9,7 +9,7 @@ trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/bin"
 
 cat >"$tmp/bin/nmcli" <<'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $* == *GENERAL.CON-UUID* ]]; then
   echo test-uuid
 else

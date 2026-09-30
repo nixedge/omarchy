@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ cat >"$stub_bin/id" <<'STUB'
 printf '%s\n' "${STUB_GROUPS:-wheel}"
 STUB
 cat >"$stub_bin/pacman" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == "-Qq" ]] || exit 2
 [[ " ${STUB_PACKAGES:-} " == *" $2 "* ]]
 STUB

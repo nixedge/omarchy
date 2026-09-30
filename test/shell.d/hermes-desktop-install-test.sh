@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -56,7 +56,7 @@ chmod 755 "$test_tmp/package/Hermes"
 chmod 4755 "$test_tmp/package/chrome-sandbox"
 
 cat >"$test_tmp/share/install.sh" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 printf '%s\n' "$@" >"$OMARCHY_TEST_ROOT/install-args"
 printf '%s\n' "${npm_config_yes:-unset}" >"$OMARCHY_TEST_ROOT/install-npx-answer"
@@ -108,7 +108,7 @@ git -C "$runtime" rev-parse HEAD >"$runtime/venv/dependency-commit"
 # The venv command answers the readiness probes the way the real one does: the
 # installer runs the command it leaves on PATH before calling Hermes ready.
 cat >"$runtime/venv/bin/hermes" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ ${1:-} == "chat" && ${2:-} == "--help" ]]; then
   echo "[-q QUERY, --query QUERY] [--tui]"
 else
@@ -130,13 +130,13 @@ real_mv=$(command -v mv)
 SH
 
 cat >"$test_tmp/bin/omarchy-pkg-add" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'package %s\n' "$*" >>"$OMARCHY_TEST_ROOT/events"
 [[ ${OMARCHY_TEST_PACKAGE_FAIL:-0} != 1 ]] || exit 1
 touch "$OMARCHY_TEST_ROOT/package-installed"
 MOCK
 cat >"$test_tmp/bin/omarchy-pkg-present" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ -e $OMARCHY_TEST_ROOT/package-installed ]]
 MOCK
 cat >"$test_tmp/bin/git" <<'MOCK'
@@ -170,13 +170,13 @@ fi
 exec "$real_mv" "$@"
 MOCK
 cat >"$test_tmp/bin/uwsm-app" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == -- ]] || exit 1
 shift
 exec "$@"
 MOCK
 cat >"$test_tmp/bin/hermes-desktop" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 sleep 0.05
 native="$HERMES_HOME/hermes-agent/apps/desktop/release/linux-unpacked"
 if [[ -x $native/Hermes && -f $native/resources/app.asar ]]; then
@@ -198,7 +198,7 @@ MOCK
 # it was built and it has not been uninstalled and unrequested; uninstalling
 # also takes the shim stand-in named in OMARCHY_TEST_SHIM, as mise's does.
 cat >"$test_tmp/bin/mise" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'mise %s\n' "$*" >>"$OMARCHY_TEST_ROOT/mise-log"
 case "$1" in
   where) [[ ${OMARCHY_TEST_MISE_BUILT:-0} == 1 && ! -e $OMARCHY_TEST_ROOT/mise-removed ]] ;;
@@ -320,7 +320,7 @@ assert_stopped "a missing updated app prevents launch and theme setup"
 # The refusal comes before anything is touched: a launcher of the user's own
 # beside that newer runtime is neither saved aside nor replaced by a run that
 # is going to stop anyway.
-own_launcher="#!/bin/bash
+own_launcher="#!/usr/bin/env bash
 exec \"$test_home/tools/hermes\" \"\$@\""
 printf '%s\n' "$own_launcher" >"$test_home/.local/bin/hermes"
 : >"$test_tmp/events"
@@ -405,7 +405,7 @@ pass "patch conflicts and incomplete modified runtimes retain local changes and 
 # Every refusal comes before anything of the user's is touched, whatever state
 # the runtime is in: a launcher of their own is neither saved aside nor
 # replaced, and no bootstrap runs, by a run that is going to stop anyway.
-own_launcher="#!/bin/bash
+own_launcher="#!/usr/bin/env bash
 exec \"$test_home/tools/hermes\" \"\$@\""
 assert_untouched() {
   [[ $(cat "$test_home/.local/bin/hermes") == "$own_launcher" ]] || fail "$1: the user's launcher is not as it was"
@@ -610,7 +610,7 @@ pass "choosing Hermes as the default agent installs the app's runtime without op
 new_home own-hermes
 mkdir -p "$test_home/.local/bin"
 cat >"$test_home/.local/bin/hermes" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ ${1:-} == "chat" && ${2:-} == "--help" ]]; then
   echo "[-q QUERY, --query QUERY] [--tui]"
 else

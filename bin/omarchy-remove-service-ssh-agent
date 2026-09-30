@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Disable the gcr-ssh-agent SSH agent and its environment override.
 

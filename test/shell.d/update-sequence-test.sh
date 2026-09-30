@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -33,7 +33,7 @@ steps=(
 for step in "${steps[@]}"; do
   rm -f "$stub_bin/$step"
   cat >"$stub_bin/$step" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s unattended=%s\n' "${0##*/}" "${OMARCHY_UPDATE_UNATTENDED:-}" >>"$STEP_LOG"
 [[ ${FAILING_STEP:-} != "${0##*/}" ]] || exit 1
 STUB

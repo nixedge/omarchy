@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -142,7 +142,7 @@ chmod 4755 "$test_tmp/sudo"
 mount --bind "$test_tmp/sudo" /usr/bin/sudo
 
 cat >"$stub_bin/attack" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%s\n' "$$" >"$HOME/attack.pid"
 for _ in {1..200}; do
@@ -154,7 +154,7 @@ done
 STUB
 
 cat >"$stub_bin/opam" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf 'opam-ran\n' >>"$TEST_EVENT_LOG"
 /usr/bin/setsid --fork "$HOME/bin/attack" >/dev/null 2>&1

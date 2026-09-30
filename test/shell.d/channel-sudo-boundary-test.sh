@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ PY
 
 for command in omarchy-dev-link omarchy-dev-unlink omarchy-state gum git; do
   cat >"$SUDO_TEST_ROOT/bin/$command" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 step=${0##*/}
 printf 'step:%s %s\n' "$step" "$*" >>"$SUDO_TEST_LOG"
@@ -150,7 +150,7 @@ chmod +x "$boundary_tmp/user tools/channel-user-tool"
 for command in omarchy-hook omarchy-update-mise; do
   rm "$SUDO_TEST_ROOT/bin/$command"
   cat >"$SUDO_TEST_ROOT/bin/$command" <<'STUB'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ ${1:-} == "pre-refresh-pacman" ]]; then
   [[ ! -e $SUDO_TEST_CACHE ]] || exit 91
   [[ $(command -v sudo) == "$OMARCHY_PATH/default/omarchy/sudo-no-update/sudo" ]] || exit 92

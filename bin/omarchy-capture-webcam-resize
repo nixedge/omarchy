@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Resize the active webcam recording overlay
 # omarchy:group=capture

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -27,7 +27,7 @@ chmod +x "$tmp_dir/bin/sleep"
 # The launcher asks systemd whether the gateway unit is enabled; a flag file
 # stands in for the user manager.
 cat >"$tmp_dir/bin/systemctl" <<SCRIPT
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'systemctl:%s\\n' "\$*" >>"\$TEST_LOG"
 [[ \$* == *is-enabled* ]] && [[ -f $tmp_dir/gateway-enabled ]]
 SCRIPT
@@ -49,7 +49,7 @@ touch "$HOME/.openclaw/openclaw.json"
 
 # A running gateway answers the first probe; its handoff URL opens as the app.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $* == *--json* ]] &&
   echo '{"ok":true,"url":"http://127.0.0.1:18789/?token=shared","browserUrl":"http://127.0.0.1:18789/#handoff"}'
@@ -67,7 +67,7 @@ pass "OpenClaw launch opens the running gateway's handoff URL"
 # 2026.9.1 that neither installs nor starts anything and, once the gateway is
 # up, pushes a one-time pairing URL into the clipboard.
 cat >"$tmp_dir/bin/openclaw" <<SCRIPT
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\\n' "\$*" >>"\$TEST_LOG"
 if [[ \$* == *--json* ]]; then
   [[ -f $tmp_dir/gateway-up ]] || { echo '{"ok":false,"reason":"Gateway is not running."}'; exit 1; }
@@ -126,7 +126,7 @@ rm -f "$tmp_dir/bin/timeout"
 
 # A gateway that never answers fails the launch instead of opening a dead page.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $* == *--json* ]] && exit 1
 exit 0
@@ -153,7 +153,7 @@ mkdir -p "\$HOME/.openclaw" && touch "\$HOME/.openclaw/openclaw.json"
 SCRIPT
 chmod +x "$tmp_dir/bin/omarchy-openclaw-onboard"
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $* == *--json* ]] && echo '{"ok":true,"browserUrl":"http://127.0.0.1:18789/#tui"}'
 exit 0
@@ -173,7 +173,7 @@ pass "--tui onboards in place and attaches to the gateway"
 # The stub also logs argv one entry per line, so a prompt split into words
 # would show up as extra lines rather than pass a space-joined comparison.
 cat >"$tmp_dir/bin/openclaw" <<'SCRIPT'
-#!/bin/bash
+#!/usr/bin/env bash
 printf 'openclaw:%s\n' "$*" >>"$TEST_LOG"
 [[ $1 == tui ]] && printf 'argv:[%s]\n' "$@" >>"$TEST_LOG"
 [[ $* == *--json* ]] && echo '{"ok":true,"browserUrl":"http://127.0.0.1:18789/#tui"}'

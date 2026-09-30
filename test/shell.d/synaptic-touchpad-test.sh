@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ modprobe_log="$test_tmp/modprobe.log"
 # so with an empty log even though the leaf always asks modprobe first whether
 # psmouse resolves against the running kernel.
 cat >"$test_tmp/bin/modprobe" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ $1 == "-qn" ]]; then
   exit "${TEST_MODPROBE_RESOLVES:-0}"

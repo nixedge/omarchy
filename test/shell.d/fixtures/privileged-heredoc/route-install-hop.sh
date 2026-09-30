@@ -1,7 +1,7 @@
 tmp=$(mktemp)
 
 cat >"$tmp" <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 exec "$HOME/.local/share/omarchy/bin/omarchy-agent" "$@"
 EOF
 

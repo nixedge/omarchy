@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ for command in omarchy-webapp-remove-all omarchy-tui-remove-all omarchy-refresh-
 done
 
 cat >"$mock_bin/gum" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == confirm ]] && exit "${OMARCHY_TEST_CONFIRM:-0}"
 exit 0
 SH

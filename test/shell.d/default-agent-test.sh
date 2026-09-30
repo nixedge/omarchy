@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -28,7 +28,7 @@ muse_login_log="$test_tmp/muse-login"
 mkdir -p "$mock_bin" "$test_home"
 
 cat >"$mock_bin/omarchy-install-chromium-claude" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 echo claude-extension >>"$OMARCHY_TEST_STUB_LOG"
 if [[ ${OMARCHY_TEST_EXTENSION_FAIL:-false} == "true" ]]; then
   echo "Extension installation failed" >&2
@@ -42,7 +42,7 @@ printf '%s\0' "$@" >>"$OMARCHY_TEST_NOTIFICATION_HISTORY"
 SH
 
 cat >"$mock_bin/omarchy-cmd-missing" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == ${OMARCHY_TEST_MISSING_COMMAND:-} ]]
 SH
 
@@ -67,7 +67,7 @@ printf '%s\n' "$*" >>"$OMARCHY_TEST_STUB_LOG"
 SH
 
 cat >"$mock_bin/mise" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 printf '%s\0' "$@" >"$OMARCHY_TEST_MISE_LOG"
 printf '%s\n' "$*" >>"$OMARCHY_TEST_MISE_HISTORY"
 
@@ -97,7 +97,7 @@ SH
 ln -s omarchy-pkg-add "$mock_bin/omarchy-pkg-aur-add"
 
 cat >"$mock_bin/muse" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ ${1:-} == "login" ]]; then
   printf 'muse %s\n' "$*" >>"$OMARCHY_TEST_MUSE_LOGIN_LOG"
 else
@@ -882,7 +882,7 @@ pass "agent launcher reports a missing default command"
 # OpenClaw comes from its pacman package, not mise: choosing it must route
 # through omarchy-install-openclaw-cli and never touch a mise environment.
 cat >"$mock_bin/omarchy-pkg-present" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
 [[ $1 == openclaw && ${OMARCHY_TEST_OPENCLAW_INSTALLED:-false} == "true" ]]
 SH
 cat >"$mock_bin/omarchy-pkg-add" <<'SH'

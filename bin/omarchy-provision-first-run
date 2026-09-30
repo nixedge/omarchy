@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # omarchy:summary=Finish first-login setup for Omarchy.
 # omarchy:args=[--force]
