@@ -232,6 +232,11 @@ cmp -s "$ROOT/config/hypr/bindings.lua" "$migration_home/.config/hypr/bindings.l
   fail "plain legacy bindings preserve preinstall removal state"
 pass "migration converts plain legacy bindings to package-owned defaults"
 
+if [[ ! -x $ROOT/bin/omarchy-upgrade-to-quattro ]]; then
+  pass "upgrade-to-quattro content tests skipped: command is the Rust CLI # SKIP"
+  exit 0
+fi
+
 upgrade_script="$ROOT/bin/omarchy-upgrade-to-quattro"
 grep -Fq 'touch "$state_dir/preinstalls-removed"' "$upgrade_script" ||
   fail "upgrade-to-quattro preserves preinstall removal state"

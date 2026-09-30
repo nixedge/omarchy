@@ -47,7 +47,7 @@ if [[ ! -d $remote ]]; then
   echo "ssh: connect to host $target port 22: Connection refused" >&2
   exit 255
 fi
-HOME="$remote" PATH="$SYNC_TEST/remote-bin:/usr/bin:/bin" bash -s
+HOME="$remote" PATH="$SYNC_TEST/remote-bin:/usr/bin:/bin" "$BASH" -s
 EOF
 
 cat >"$remote_bin/omarchy" <<'EOF'
@@ -62,6 +62,8 @@ EOF
 
 chmod +x "$stub_bin"/* "$remote_bin"/*
 ln -sf "$(command -v jq)" "$remote_bin/jq"
+ln -sf "$(command -v cat)" "$remote_bin/cat"
+ln -sf "$(command -v id)" "$remote_bin/id"
 
 reset_remotes() {
   rm -rf "$SYNC_TEST/remotes" "$SYNC_TEST/ssh-calls"
