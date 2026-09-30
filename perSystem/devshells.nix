@@ -17,11 +17,24 @@
           pkgs.jq
           pkgs.socat
           pkgs.nixfmt
-          # Standard tools needed by tests and bin/ scripts
+          # test suite dependencies
+          pkgs.nodejs
+          pkgs.lua
+          pkgs.imagemagick
+          pkgs.util-linux
+          pkgs.glib
+          pkgs.mise
+          pkgs.plocate
+          pkgs.python3
+          pkgs.procps
+          pkgs.perl
+          pkgs.ffmpeg
+          pkgs.libxkbcommon
+          pkgs.desktop-file-utils
           pkgs.diffutils
           pkgs.gawk
-          pkgs.perl
-          pkgs.util-linux
+          pkgs.tzdata
+          pkgs.shadow
         ];
         # Make the omarchy commands available in the dev shell
         OMARCHY_PATH = config.packages.omarchy;
