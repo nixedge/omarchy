@@ -59,6 +59,22 @@ printf '\n' >>"$TEST_BARE_MKTEMP"
 exit 98
 SH
 
+# Write real tool paths into a file the sudo stub can source. Captured before
+# stub_bin is prepended to PATH so the stub can call real system tools without
+# hitting the poison stubs.
+cat >"$stub_bin/real-paths.sh" <<SH
+real_cat=$(command -v cat)
+real_chmod=$(command -v chmod)
+real_grep=$(command -v grep)
+real_install=$(command -v install)
+real_mkdir=$(command -v mkdir)
+real_mktemp=$(command -v mktemp)
+real_mv=$(command -v mv)
+real_rm=$(command -v rm)
+real_tee=$(command -v tee)
+real_test=$(command -v test)
+SH
+
 # Execute only the setup's expected bare-sudo protocol. The production mktemp
 # template is logged exactly, but its root-created sibling is represented by a
 # unique regular file inside the scratch directory. The whitelisted operations
@@ -68,6 +84,8 @@ cat >"$stub_bin/sudo" <<'SH'
 #!/bin/bash
 
 set -euo pipefail
+# shellcheck source=/dev/null
+source "$(dirname "$0")/real-paths.sh"
 
 reject() {
   printf 'refusing unexpected sudo invocation:' >&2
@@ -99,7 +117,7 @@ recorded_stage() {
 
   safe_stage_path "$candidate" || return 1
   [[ -f $candidate && ! -L $candidate ]] || return 1
-  /usr/bin/grep -Fxq -- "$candidate" "$TEST_STAGES"
+  "$real_grep" -Fxq -- "$candidate" "$TEST_STAGES"
 }
 
 case "${1:-}" in
@@ -109,9 +127,9 @@ case "${1:-}" in
     fi
 
     if (( EUID == 0 )); then
-      exec /usr/bin/install -d -m 755 -o root -g root "$TEST_AUTHDIR"
+      exec "$real_install" -d -m 755 -o root -g root "$TEST_AUTHDIR"
     else
-      exec /usr/bin/install -d -m 755 "$TEST_AUTHDIR"
+      exec "$real_install" -d -m 755 "$TEST_AUTHDIR"
     fi
     ;;
   mktemp)
@@ -121,7 +139,7 @@ case "${1:-}" in
 
     case ${TEST_MKTEMP_MODE:-normal} in
       normal)
-        stage=$(/usr/bin/mktemp -- "$2")
+        stage=$("$real_mktemp" -- "$2")
         if ! safe_stage_path "$stage" || [[ ! -f $stage || -L $stage ]]; then
           reject "$@"
         fi
@@ -131,13 +149,13 @@ case "${1:-}" in
         ;;
       malformed)
         stage="$TEST_AUTHFILE.new.A/BCDE"
-        /usr/bin/mkdir -- "${stage%/*}"
+        "$real_mkdir" -- "${stage%/*}"
         : >"$stage"
         printf '%s\n' "$stage"
         ;;
       nonregular)
         stage="$TEST_AUTHFILE.new.BAD123"
-        /usr/bin/mkdir -- "$stage"
+        "$real_mkdir" -- "$stage"
         printf '%s\n' "$stage"
         ;;
       *)
@@ -147,9 +165,9 @@ case "${1:-}" in
     ;;
   tee)
     if (( $# == 2 )) && recorded_stage "$2"; then
-      exec /usr/bin/tee "$2"
+      exec "$real_tee" "$2"
     elif (( $# == 2 )) && [[ $2 == "/etc/pam.d/polkit-1" ]]; then
-      /usr/bin/cat >/dev/null
+      "$real_cat" >/dev/null
     else
       reject "$@"
     fi
@@ -158,7 +176,7 @@ case "${1:-}" in
     if (( $# != 3 )) || [[ $2 != "-s" ]] || ! recorded_stage "$3"; then
       reject "$@"
     fi
-    /usr/bin/test -s "$3"
+    "$real_test" -s "$3"
     ;;
   chmod)
     if (( $# != 3 )) || [[ $2 != "644" ]] || ! recorded_stage "$3"; then
@@ -167,7 +185,7 @@ case "${1:-}" in
     if [[ $TEST_FAIL_CHMOD == "1" ]]; then
       exit 73
     fi
-    exec /usr/bin/chmod 644 "$3"
+    exec "$real_chmod" 644 "$3"
     ;;
   mv)
     if (( $# != 4 )) || [[ $2 != "-Tf" || $4 != "$TEST_AUTHFILE" ]] || ! recorded_stage "$3"; then
@@ -176,13 +194,13 @@ case "${1:-}" in
     if [[ $TEST_FAIL_MV == "1" ]]; then
       exit 74
     fi
-    exec /usr/bin/mv -Tf -- "$3" "$TEST_AUTHFILE"
+    exec "$real_mv" -Tf -- "$3" "$TEST_AUTHFILE"
     ;;
   rm)
     if (( $# != 4 )) || [[ $2 != "-f" || $3 != "--" ]] || ! recorded_stage "$4"; then
       reject "$@"
     fi
-    exec /usr/bin/rm -f -- "$4"
+    exec "$real_rm" -f -- "$4"
     ;;
   sed)
     if (( $# != 4 )) || [[ $2 != "-i" ]]; then

@@ -38,7 +38,7 @@ root_runner=()
 root_runtime_available=1
 if (( EUID != 0 )); then
   if command -v unshare >/dev/null && unshare --user --map-root-user true 2>/dev/null; then
-    root_runner=(unshare --user --map-root-user)
+    root_runner=("$(command -v unshare)" --user --map-root-user)
   else
     root_runtime_available=0
   fi
@@ -73,8 +73,9 @@ mkdir -p "$poison_bin" "$trusted_root_bin"
 
 # The runtime copy pins to this isolated root path. It contains every bare
 # command the exercised helper needs, but deliberately no fprintd-list.
-for helper in grep rm tee; do
-  ln -s "/usr/bin/$helper" "$trusted_root_bin/$helper"
+# bash is required so #!/usr/bin/env bash stubs launched under this PATH work.
+for helper in grep rm tee bash; do
+  ln -s "$(command -v "$helper")" "$trusted_root_bin/$helper"
 done
 
 export TEST_ATTACK_ARGS="$attack_args"
@@ -168,10 +169,21 @@ reset_runtime_files() {
 }
 
 run_as_root() {
-  local helper="$1" description="$2" output
+  local helper="$1" description="$2" output real_bash sys_bin_dirs
+  real_bash=$(command -v bash)
+  # Include real system tool directories alongside the traditional /usr/bin:/bin
+  # so this suite works on systems where tools are not in /usr/bin (e.g. NixOS).
+  sys_bin_dirs=$(printf '%s\n' \
+    "$(dirname "$(command -v tee)")" \
+    "$(dirname "$(command -v grep)")" \
+    "$(dirname "$(command -v rm)")" \
+    "$(dirname "$(command -v bash)")" \
+    /usr/bin /bin \
+    | sort -u | tr '\n' ':')
+  sys_bin_dirs="${sys_bin_dirs%:}"
 
-  if ! output=$(PATH="$poison_bin:/usr/bin:/bin" OMARCHY_INSTALL_USER="$target_user" \
-    "${root_runner[@]}" /bin/bash "$helper" 2>&1); then
+  if ! output=$(PATH="$poison_bin:$sys_bin_dirs" OMARCHY_INSTALL_USER="$target_user" \
+    "${root_runner[@]}" "$real_bash" "$helper" 2>&1); then
     fail "$description" "$output"
   fi
 }
