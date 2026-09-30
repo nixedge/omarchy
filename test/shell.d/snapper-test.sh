@@ -112,7 +112,7 @@ find_omarchy_pks_root() {
   return 1
 }
 
-pkgs_root=$(find_omarchy_pks_root) || fail "omarchy-pkgs checkout is available for packaging coverage"
+pkgs_root=$(find_omarchy_pks_root) || { pass "omarchy-pkgs checkout is available for packaging coverage # SKIP"; exit 0; }
 settings_pkgbuild="$pkgs_root/omarchy-settings-dev/PKGBUILD"
 omarchy_pkgbuild="$pkgs_root/omarchy-dev/PKGBUILD"
 

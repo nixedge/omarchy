@@ -97,7 +97,7 @@ pass "privileged action dispatch is allowlisted"
 # file from priv_target's stat checks to exercise the historical fallback.
 attack_bin="$TMPDIR/attack-bin"
 mkdir -p "$attack_bin"
-ln -s /bin/bash "$attack_bin/omarchy-windows-vm"
+ln -s "$(command -v bash)" "$attack_bin/omarchy-windows-vm"
 printf 'printf exploited >"$TMPDIR/exploited"\n' >"$TMPDIR/__priv"
 stat() {
   [[ ${!#} == /usr/bin/omarchy-windows-vm ]] && return 1

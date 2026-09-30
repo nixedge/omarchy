@@ -67,7 +67,7 @@ elif [[ :${FAKE_ROOT_FILES:-}: == *":$path:"* ]]; then
   gid=${FAKE_ROOT_GID:-0}
   mode=${FAKE_ROOT_MODE:-$actual_mode}
 else
-  exec /usr/bin/stat "$@"
+  exec stat "$@"
 fi
 
 file_type=$((16#$actual_file_mode & 16#f000))
@@ -77,7 +77,7 @@ case "$*" in
   *"%f %u %g %a"*) printf '%s %s %s %s\n' "$file_mode" "$uid" "$gid" "$mode" ;;
   *"%u %g %a"*) printf '%s %s %s\n' "$uid" "$gid" "$mode" ;;
   *"%a"*) printf '%s\n' "$mode" ;;
-  *) exec /usr/bin/stat "$@" ;;
+  *) exec stat "$@" ;;
 esac
 SH
 
@@ -138,7 +138,7 @@ case "$1" in
           ;;
       esac
     done
-    exec /usr/bin/install "${args[@]}"
+    exec install "${args[@]}"
     ;;
   *)
     printf 'unexpected sudo command: %s\n' "$*" >&2
@@ -536,7 +536,7 @@ case "$1" in
     printf '%s\n' "$*" >>"$HOOK_CALLS"
     if [[ ${HOOK_BLOCK_MODE:-} == "$2" ]]; then
       trap '' TERM
-      /usr/bin/sleep 30
+      sleep 30
     fi
     current=$(sed -n 's/.*"mode"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$HOOK_CONFIG")
     if [[ $current != "$2" ]]; then
@@ -575,7 +575,7 @@ while (($#)); do
       ;;
   esac
 done
-exec /usr/bin/install "${args[@]}"
+exec install "${args[@]}"
 SH
 cat >"$stub_bin/sleep" <<'SH'
 #!/bin/sh

@@ -363,7 +363,7 @@ for kind in ('terminal', 'desktop', 'working-directory'):
     home, runtime, env = setup(kind)
     executable_name = str(scratch / 'package/Hermes') if kind == 'desktop' else str(runtime / 'hermes')
     args = ['sleep', '30'] if kind == 'working-directory' else [executable_name, '30']
-    child = subprocess.Popen(args, executable='/usr/bin/sleep',
+    child = subprocess.Popen(args, executable='sleep',
                              cwd=runtime if kind == 'working-directory' else scratch)
     try:
         result = remove(env)

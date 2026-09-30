@@ -125,9 +125,9 @@ case "$1" in
     fi
 
     if (( EUID == 0 )); then
-      exec /usr/bin/install -T -m 644 -o root -g root "$9" "${10}"
+      exec install -T -m 644 -o root -g root "$9" "${10}"
     else
-      exec /usr/bin/install -T -m 644 "$9" "${10}"
+      exec install -T -m 644 "$9" "${10}"
     fi
     ;;
   mv)
@@ -139,7 +139,7 @@ case "$1" in
       exit 72
     fi
 
-    exec /usr/bin/mv -Tf -- "$3" "$4"
+    exec mv -Tf -- "$3" "$4"
     ;;
   chmod)
     # Only ever the FIDO2 directory, and only back to the mode the setup
@@ -148,7 +148,7 @@ case "$1" in
       reject "$@"
     fi
 
-    exec /usr/bin/chmod 755 "$TEST_AUTHDIR"
+    exec chmod 755 "$TEST_AUTHDIR"
     ;;
   test)
     # Looking behind an untraversable directory, never a write. This stub is not
@@ -176,7 +176,7 @@ case "$1" in
     fi
 
     recorded_stage "$4" || reject "$@"
-    exec /usr/bin/rm -f -- "$4"
+    exec rm -f -- "$4"
     ;;
   *)
     reject "$@"
@@ -197,10 +197,10 @@ if [[ ${TEST_FAKE_STAT:-0} == "1" && ${TEST_AUTHFILE:-} == "${TEST_AUTHDIR:-}/fi
     %U) printf '%s\n' "$TEST_STAT_OWNER" ;;
     %G) printf '%s\n' "$TEST_STAT_GROUP" ;;
     %a) printf '%s\n' "$TEST_STAT_MODE" ;;
-    *) exec /usr/bin/stat "$@" ;;
+    *) exec stat "$@" ;;
   esac
 else
-  exec /usr/bin/stat "$@"
+  exec stat "$@"
 fi
 SH
 
