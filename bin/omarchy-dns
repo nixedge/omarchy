@@ -15,7 +15,13 @@ set -euo pipefail
 # and keep root from resolving one out of that checkout. The unprivileged
 # wrapper phase keeps the caller's PATH so it can still find sudo/pkexec.
 if (( EUID == 0 )); then
-  export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
+  # On NixOS the system tools live under the current-system profile rather than
+  # /usr/bin. Prepend it when present so the same trusted-PATH policy covers both.
+  if [[ -d /run/current-system/sw/bin ]]; then
+    export PATH=/run/current-system/sw/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
+  else
+    export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
+  fi
 fi
 
 NM_DNS_CONF=/etc/NetworkManager/conf.d/20-omarchy-dns.conf

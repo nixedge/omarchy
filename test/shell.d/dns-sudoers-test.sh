@@ -37,13 +37,13 @@ pass "dns sudoers rule is scoped to the stock providers"
 # to trusted system directories and never resolves one of them out of the
 # checkout. The unprivileged wrapper phase keeps the caller's PATH, which is why
 # the pin is gated on EUID rather than set unconditionally.
-grep -Eq '^\s*export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin' "$dns" ||
+grep -Eq '^\s*export PATH=.*/usr/local/sbin:/usr/local/bin:/usr/bin' "$dns" ||
   fail "omarchy-dns pins PATH to trusted system directories when it holds root"
 # require_root carries its own `(( EUID == 0 ))`, so matching that text alone
 # would pass with the pin deleted. Anchor on the unindented guard and require the
-# pin to be the line it opens.
-gated=$(grep -A1 -E '^if \(\( EUID == 0 \)\); then$' "$dns" || true)
-[[ $gated == *"export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin"* ]] ||
+# pin to appear within the block (allow for a nested NixOS path conditional).
+gated=$(grep -A10 -E '^if \(\( EUID == 0 \)\); then$' "$dns" | sed '/^fi$/q' || true)
+[[ $gated == *"export PATH="* && $gated == *"/usr/local/sbin:/usr/local/bin:/usr/bin"* ]] ||
   fail "omarchy-dns gates the trusted-PATH pin on holding root"
 
 # The no-argument path only reads DNS config, so exercise the privileged phase
@@ -62,10 +62,11 @@ if (( EUID == 0 )) || unshare --user --map-root-user true 2>/dev/null; then
   poison_dir=$(mktemp -d)
   poison_ran="$poison_dir/ran"
   for helper in tr awk dirname install tee; do
+    real_path=$(command -v "$helper")
     cat >"$poison_dir/$helper" <<SH
 #!/bin/sh
 printf 'x' >"$poison_ran"
-exec "/usr/bin/$helper" "\$@"
+exec "$real_path" "\$@"
 SH
     chmod +x "$poison_dir/$helper"
   done
