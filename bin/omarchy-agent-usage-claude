@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # omarchy:summary=Print the Claude Code usage record as JSON
 # omarchy:args=[--force] [--limits-only]
 # omarchy:hidden=true
