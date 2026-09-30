@@ -48,7 +48,7 @@ pass "SDDM refresh allowlist covers every packaged asset"
 printf 'not yours\n' >"$secret"
 ln -s "$secret" "$test_tmp/logo-link.png"
 
-output=$(OMARCHY_PATH="$ROOT" /bin/bash "$ROOT/bin/omarchy-plymouth-set" '#1d2021' '#ebdbb2' "$test_tmp/logo-link.png" 2>&1)
+output=$(OMARCHY_PATH="$ROOT" bash "$ROOT/bin/omarchy-plymouth-set" '#1d2021' '#ebdbb2' "$test_tmp/logo-link.png" 2>&1)
 status=$?
 
 (( status != 0 )) || fail "omarchy-plymouth-set refuses a symlinked logo"
@@ -62,7 +62,7 @@ pass "a themed logo cannot republish a file it merely points at"
 # without real privilege; retain a structural assertion on hosts that disable
 # them so the invariant never becomes an untested skip.
 if unshare --user --map-root-user true 2>/dev/null; then
-  output=$(unshare --user --map-root-user env OMARCHY_PATH="$ROOT" /bin/bash "$ROOT/bin/omarchy-plymouth-set" '#1d2021' '#ebdbb2' "$secret" 2>&1)
+  output=$(unshare --user --map-root-user env OMARCHY_PATH="$ROOT" bash "$ROOT/bin/omarchy-plymouth-set" '#1d2021' '#ebdbb2' "$secret" 2>&1)
   status=$?
   (( status != 0 )) || fail "omarchy-plymouth-set refuses to run as root"
   [[ $output == *"as your user"* && $output == *"not under sudo"* ]] ||
@@ -188,9 +188,28 @@ root_tools="$test_tmp/root-tools"
 stages="$test_tmp/stages"
 mkdir -p "$fake_bin" "$root_tools" "$stages"
 
+# Capture real tool paths before fake_bin/root_tools are prepended to PATH.
+cat >"$fake_bin/real-paths.sh" <<SH
+real_bash=$(command -v bash)
+bash_dir=$(dirname "$(command -v bash)")
+mktemp_dir=$(dirname "$(command -v mktemp)")
+cmp_dir=$(dirname "$(command -v cmp)")
+find_dir=$(dirname "$(command -v find)")
+awk_dir=$(dirname "$(command -v awk)")
+sed_dir=$(dirname "$(command -v sed)")
+SH
+cat >"$root_tools/real-paths.sh" <<SH
+real_cp=$(command -v cp)
+real_install=$(command -v install)
+real_stat=$(command -v stat)
+real_realpath=$(command -v realpath)
+SH
+
 cat >"$fake_bin/sudo" <<'SH'
 #!/bin/bash
 set -u
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 
 for argument in "$@"; do
   if [[ $argument == *"$TEST_STAGES"* ]]; then
@@ -199,7 +218,7 @@ for argument in "$@"; do
 done
 
 case "$1" in
-/bin/bash)
+*/bash)
   [[ ${2:-} == -c && $# == 9 ]] || exit 90
   code=$3
   shell_name=$4
@@ -209,20 +228,21 @@ case "$1" in
   # The production helper intentionally resets PATH. For this unprivileged
   # simulation only, substitute trusted tools and map fixed system destinations
   # under the disposable fake root.
-  code=${code/PATH=\/usr\/bin:\/bin/PATH=$TEST_ROOT_TOOLS:\/usr\/bin:\/bin}
+  sys_dirs="$bash_dir:$mktemp_dir:$cmp_dir:$find_dir:$awk_dir:$sed_dir"
+  code=${code/PATH=\/usr\/bin:\/bin/PATH=$TEST_ROOT_TOOLS:$sys_dirs:\/usr\/bin:\/bin}
   code=${code/omarchy_conf=\/etc\/omarchy.conf/omarchy_conf=$TEST_OMARCHY_CONF}
   code=${code/theme_dir=\/usr\/share\/plymouth\/themes\/omarchy/theme_dir=$TEST_FAKE_ROOT\/usr\/share\/plymouth\/themes\/omarchy}
   code=${code/sddm_dir=\/usr\/share\/sddm\/themes\/omarchy/sddm_dir=$TEST_FAKE_ROOT\/usr\/share\/sddm\/themes\/omarchy}
 
   # Each rewrite above silently no-ops if the production text drifts, which
   # would point this simulation at the real /usr/share. Refuse instead.
-  [[ $code == *"PATH=$TEST_ROOT_TOOLS:/usr/bin:/bin"* ]] || exit 94
+  [[ $code == *"PATH=$TEST_ROOT_TOOLS:$sys_dirs:/usr/bin:/bin"* ]] || exit 94
   [[ $code == *"omarchy_conf=$TEST_OMARCHY_CONF"* ]] || exit 94
   [[ $code == *"theme_dir=$TEST_FAKE_ROOT/usr/share/plymouth/themes/omarchy"* ]] || exit 94
   [[ $code == *"sddm_dir=$TEST_FAKE_ROOT/usr/share/sddm/themes/omarchy"* ]] || exit 94
 
-  PATH="$TEST_ROOT_TOOLS:/usr/bin:/bin" \
-    /bin/bash -c "$code" "$shell_name" "$@"
+  PATH="$TEST_ROOT_TOOLS:$bash_dir:/usr/bin:/bin" \
+    "$real_bash" -c "$code" "$shell_name" "$@"
   ;;
 plymouth-set-default-theme | limine-mkinitcpio | mkinitcpio)
   printf 'command %s\n' "$*" >>"$TEST_SUDO_LOG"
@@ -236,7 +256,9 @@ esac
 SH
 
 cat >"$root_tools/stat" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 last=${!#}
 if [[ ${1:-} == -c && ${2:-} == %u ]]; then
   if [[ (-n ${TEST_UNTRUSTED_SOURCE:-} && $last == "$TEST_UNTRUSTED_SOURCE"*) ||
@@ -251,7 +273,7 @@ if [[ ${1:-} == -c && ${2:-} == %a && $last == /tmp ]]; then
   printf '755\n'
   exit 0
 fi
-exec /usr/bin/stat "$@"
+exec "$real_stat" "$@"
 SH
 
 cat >"$root_tools/chown" <<'SH'
@@ -262,7 +284,9 @@ exit 0
 SH
 
 cat >"$root_tools/install" <<'SH'
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 mode=
 while (( $# )); do
   case "$1" in
@@ -287,14 +311,23 @@ done
 [[ $mode == "0600" || $mode == "0644" ]] || exit 96
 destination=$2
 [[ $destination == "$TEST_FAKE_ROOT"* || $destination == /tmp/omarchy-plymouth.* ]] || exit 93
-exec /usr/bin/install -m "$mode" -- "$1" "$destination"
+exec "$real_install" -m "$mode" -- "$1" "$destination"
 SH
 
 cat >"$root_tools/magick" <<'SH'
-#!/bin/bash
-source=$1
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
+_source=$1
 destination=${@: -1}
-[[ $source == "$destination" ]] || /usr/bin/cp -- "$source" "$destination"
+[[ $_source == "$destination" ]] || "$real_cp" -- "$_source" "$destination"
+SH
+
+cat >"$root_tools/realpath" <<'SH'
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
+exec "$real_realpath" "$@"
 SH
 
 cat >"$fake_bin/omarchy-cmd-present" <<'SH'
@@ -360,12 +393,12 @@ setup_fresh_run() {
   for asset in "${plymouth_default_assets[@]}"; do
     destination="$theme/$asset"
     rm -f -- "$destination"
-    /usr/bin/install -m 0644 -- "$ROOT/default/plymouth/$asset" "$destination"
+    install -m 0644 -- "$ROOT/default/plymouth/$asset" "$destination"
   done
   for asset in "${sddm_default_assets[@]}"; do
     destination="$sddm/$asset"
     rm -f -- "$destination"
-    /usr/bin/install -m 0644 -- "$ROOT/default/sddm/omarchy/$asset" "$destination"
+    install -m 0644 -- "$ROOT/default/sddm/omarchy/$asset" "$destination"
   done
   rm -f -- "$sddm/logo.svg"
 }
@@ -392,7 +425,7 @@ run_set_colors() {
   local requested_umask="$1" background="$2" text="$3"
   shift 3
   run_in_fake_root "$requested_umask" "$@" \
-    /bin/bash "$ROOT/bin/omarchy-plymouth-set" "$background" "$text" "$test_tmp/logo.png"
+    bash "$ROOT/bin/omarchy-plymouth-set" "$background" "$text" "$test_tmp/logo.png"
 }
 
 run_set() {
@@ -402,15 +435,15 @@ run_set() {
 }
 
 run_refresh_plymouth() {
-  run_in_fake_root 022 "$@" /bin/bash "$ROOT/bin/omarchy-refresh-plymouth"
+  run_in_fake_root 022 "$@" bash "$ROOT/bin/omarchy-refresh-plymouth"
 }
 
 run_refresh_sddm() {
-  run_in_fake_root 022 "$@" /bin/bash "$ROOT/bin/omarchy-refresh-sddm"
+  run_in_fake_root 022 "$@" bash "$ROOT/bin/omarchy-refresh-sddm"
 }
 
 run_reset() {
-  run_in_fake_root 022 "$@" /bin/bash "$ROOT/bin/omarchy-plymouth-reset"
+  run_in_fake_root 022 "$@" bash "$ROOT/bin/omarchy-plymouth-reset"
 }
 
 assert_no_temporary_files() {
