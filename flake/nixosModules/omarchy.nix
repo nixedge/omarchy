@@ -211,6 +211,32 @@
           };
         };
 
+        # ── Startup rebuild warmup ────────────────────────────────────────────
+        # Runs nixos-rebuild build after each boot so the Nix evaluation cache
+        # and binary cache are primed before the first `omarchy pkg add` of the
+        # session, cutting subsequent package operations from ~3.5 min to ~20s.
+        systemd.services.omarchy-rebuild-warmup = {
+          description = "Warm Omarchy NixOS evaluation and binary caches";
+          after = [
+            "network-online.target"
+            "omarchy-nix-daemon.service"
+          ];
+          wants = [ "network-online.target" ];
+          wantedBy = [ "multi-user.target" ];
+          script = ''
+            flake=$(</etc/omarchy/flake-uri)
+            opts=()
+            if [[ -r /etc/omarchy/rebuild-opts ]]; then
+              read -ra opts <<<"$(</etc/omarchy/rebuild-opts)"
+            fi
+            exec /run/current-system/sw/bin/nixos-rebuild build \
+              --impure --accept-flake-config --flake "$flake" "''${opts[@]}"
+          '';
+          serviceConfig = {
+            Type = "oneshot";
+          };
+        };
+
         # Allow omarchy-daemon to run nixos-rebuild without a password.
         security.sudo.extraRules = [
           {
