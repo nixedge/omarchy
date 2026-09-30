@@ -4,6 +4,14 @@
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+# This test sources omarchy-windows-vm as a shell library to access its
+# internal functions. That only works with a shell script implementation.
+_windows_vm_bin=$(omarchy_bin omarchy-windows-vm)
+if [[ $(head -c 2 "$_windows_vm_bin" 2>/dev/null || true) != '#!' ]]; then
+  skip "omarchy-windows-vm is a compiled binary; test requires shell script implementation # SKIP"
+  exit 0
+fi
+
 # Bind mounts need CAP_SYS_ADMIN in a private mount namespace. Keep the
 # caller's uid so the non-root development path is exercised.
 if [[ ${OMARCHY_WINDOWS_TEST_NAMESPACE:-0} != 1 ]]; then

@@ -4,6 +4,14 @@
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+# This test sources omarchy-windows-vm as a shell library to access its
+# internal privilege-boundary functions. That only works with a shell script.
+_windows_vm_bin=$(omarchy_bin omarchy-windows-vm)
+if [[ $(head -c 2 "$_windows_vm_bin" 2>/dev/null || true) != '#!' ]]; then
+  skip "omarchy-windows-vm is a compiled binary; test requires shell script implementation # SKIP"
+  exit 0
+fi
+
 if ((EUID != 0)); then
   if unshare --user --map-auto --map-root-user --mount true 2>/dev/null; then
     exec unshare --user --map-auto --map-root-user --mount --propagation private bash "$0"

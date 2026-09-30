@@ -26,6 +26,8 @@ run_migration() {
 run_mise() {
   local test_home="$1"
   shift
+  local mise_bin
+  mise_bin=$(command -v mise)
 
   env -i \
     HOME="$test_home" \
@@ -35,7 +37,7 @@ run_mise() {
     XDG_STATE_HOME="$test_home/.local/state" \
     MISE_PARANOID="${OMARCHY_TEST_MISE_PARANOID:-false}" \
     PATH=/usr/bin \
-    mise "$@"
+    "$mise_bin" "$@"
 }
 
 mise_environment() {

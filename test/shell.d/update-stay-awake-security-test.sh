@@ -4,6 +4,15 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+# This test patches the helper with sed to inject cancellation barriers and
+# tool path overrides. That technique only works with a shell script; a compiled
+# binary cannot be patched this way.
+_stay_awake_bin=$(omarchy_bin omarchy-update-stay-awake)
+if [[ $(head -c 2 "$_stay_awake_bin" 2>/dev/null || true) != '#!' ]]; then
+  skip "omarchy-update-stay-awake is a compiled binary; patchable-helper tests require a shell script implementation # SKIP"
+  exit 0
+fi
+
 test_tmp=$(mktemp -d)
 test_processes=()
 test_runtime_created=""

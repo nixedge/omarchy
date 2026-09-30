@@ -22,9 +22,13 @@ trap 'rm -rf "$test_tmp"' EXIT
 
 # Dev checkout: OMARCHY_PATH pointing to the repo has a .git dir, so git
 # rev-parse succeeds and the output matches "dev (<hash>)".
-output=$(omarchy_version "$ROOT" 2>&1)
-[[ $output == "dev ("* ]] || fail "dev checkout reports a git hash" "got: $output"
-pass "dev checkout reports a git hash"
+if [[ ! -d $ROOT/.git ]]; then
+  skip "dev checkout reports a git hash # SKIP: no .git at ROOT (synced without git history)"
+else
+  output=$(omarchy_version "$ROOT" 2>&1)
+  [[ $output == "dev ("* ]] || fail "dev checkout reports a git hash" "got: $output"
+  pass "dev checkout reports a git hash"
+fi
 
 # Production install: a plain directory with a version file returns its contents.
 prod_dir="$test_tmp/prod"

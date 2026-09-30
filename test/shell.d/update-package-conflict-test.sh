@@ -5,6 +5,7 @@ set -euo pipefail
 source "$(dirname "$0")/base-test.sh"
 
 require_command script
+require_command pacman
 
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
