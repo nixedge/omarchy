@@ -116,11 +116,18 @@ else
 fi
 SH
 chmod +x "$runtime/venv/bin/hermes"
-printf '#!/bin/sh\nexec /usr/bin/python3 "$@"\n' >"$runtime/venv/bin/python"
+printf '#!/usr/bin/env bash\nexec python3 "$@"\n' >"$runtime/venv/bin/python"
 chmod +x "$runtime/venv/bin/python"
 [[ ${OMARCHY_TEST_NO_MARKER:-0} == 1 ]] || touch "$runtime/.hermes-bootstrap-complete"
 write_commands
 MOCK
+
+# Capture real tool paths before $test_tmp/bin is prepended to PATH.
+cat >"$test_tmp/bin/real-paths.sh" <<SH
+real_cp=$(command -v cp)
+real_git=$(command -v git)
+real_mv=$(command -v mv)
+SH
 
 cat >"$test_tmp/bin/omarchy-pkg-add" <<'MOCK'
 #!/bin/bash
@@ -133,28 +140,34 @@ cat >"$test_tmp/bin/omarchy-pkg-present" <<'MOCK'
 [[ -e $OMARCHY_TEST_ROOT/package-installed ]]
 MOCK
 cat >"$test_tmp/bin/git" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 if [[ ${OMARCHY_TEST_FETCH_FAIL:-0} == 1 && " $* " == *" --unshallow "* ]]; then exit 8; fi
-exec /usr/bin/git "$@"
+exec "$real_git" "$@"
 MOCK
 cat >"$test_tmp/bin/setsid" <<'MOCK'
 #!/bin/sh
 exec "$@"
 MOCK
 cat >"$test_tmp/bin/cp" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 if [[ ${OMARCHY_TEST_COPY_FAIL:-0} == 1 ]]; then
   touch "${@: -1}/partial-copy"
   exit 9
 fi
-exec /usr/bin/cp "$@"
+exec "$real_cp" "$@"
 MOCK
 cat >"$test_tmp/bin/mv" <<'MOCK'
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+source "${0%/*}/real-paths.sh"
 if [[ ${OMARCHY_TEST_COPY_RACE:-0} == 1 && $1 == -T ]]; then
   mkdir -p "${@: -1}"
 fi
-exec /usr/bin/mv "$@"
+exec "$real_mv" "$@"
 MOCK
 cat >"$test_tmp/bin/uwsm-app" <<'MOCK'
 #!/bin/bash
