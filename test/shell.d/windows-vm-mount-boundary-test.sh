@@ -17,7 +17,7 @@ trap 'rm -rf "$test_tmp"' EXIT
 
 # The checkout may live under /home, which the tmpfs below hides, so take a
 # mount-safe copy of the helper before the mounts land.
-cp "$ROOT/bin/omarchy-windows-vm" "$test_tmp/omarchy-windows-vm"
+cp "$(omarchy_bin omarchy-windows-vm)" "$test_tmp/omarchy-windows-vm"
 
 # Hide host state before creating the production paths used by the root helper.
 mount -t tmpfs -o mode=0755,size=8m run-test /run

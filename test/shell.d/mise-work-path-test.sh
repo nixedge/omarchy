@@ -19,7 +19,7 @@ run_migration() {
     XDG_DATA_HOME="$test_home/.local/share" \
     XDG_STATE_HOME="$test_home/.local/state" \
     MISE_PARANOID="${OMARCHY_TEST_MISE_PARANOID:-false}" \
-    PATH=/usr/bin \
+    PATH=/usr/bin:/run/current-system/sw/bin \
     bash -euo pipefail "$migration"
 }
 
@@ -92,7 +92,7 @@ env \
   HOME="$install_home" \
   MISE_TEST_LOG="$install_log" \
   OMARCHY_SETUP_CONTEXT=runtime \
-  PATH="$test_dir/bin:/usr/bin" \
+  PATH="$test_dir/bin:/usr/bin:/run/current-system/sw/bin" \
   bash -euo pipefail -c 'source "$1"' bash "$ROOT/install/user/mise-work.sh"
 
 [[ -d $install_home/Work/tries ]] || fail "installer creates the work and tries directories"

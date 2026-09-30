@@ -61,6 +61,7 @@ echo '[{"instance":"old","time":1,"wl_socket":"wayland-0"},{"instance":"live","t
 EOF
 
 chmod +x "$stub_bin"/* "$remote_bin"/*
+ln -sf "$(command -v jq)" "$remote_bin/jq"
 
 reset_remotes() {
   rm -rf "$SYNC_TEST/remotes" "$SYNC_TEST/ssh-calls"

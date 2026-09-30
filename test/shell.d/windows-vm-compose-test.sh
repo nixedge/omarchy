@@ -21,7 +21,7 @@ export HOME="$TMPDIR/home"
 mkdir -p "$HOME"
 
 set -- help
-source "$ROOT/bin/omarchy-windows-vm" >/dev/null 2>&1
+source "$(omarchy_bin omarchy-windows-vm)" >/dev/null 2>&1
 COMPOSE="$OMARCHY_WINDOWS_DIR/docker-compose.yml"
 
 unmount_all() {

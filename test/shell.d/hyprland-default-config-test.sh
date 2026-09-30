@@ -13,7 +13,7 @@ package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("OMARCHY_PATH
 
 local prelude = os.getenv("OMARCHY_BINDING_PRELUDE") or ""
 if prelude ~= "" then
-  assert(load(prelude))()
+  assert((loadstring or load)(prelude))()
 end
 
 hl = {
@@ -57,7 +57,7 @@ end
 
 local prelude = os.getenv("OMARCHY_BINDING_PRELUDE") or ""
 if prelude ~= "" then
-  assert(load(prelude))()
+  assert((loadstring or load)(prelude))()
 end
 
 hl = setmetatable({

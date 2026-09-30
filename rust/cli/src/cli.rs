@@ -148,7 +148,10 @@ pub enum Cmd {
         force: bool,
     },
     #[command(name = "git-url-check", about = "Validate a git URL")]
-    GitUrlCheck { url: String },
+    GitUrlCheck {
+        #[arg(allow_hyphen_values = true)]
+        url: String,
+    },
     #[command(name = "games-retro-cores", about = "List installed RetroArch cores")]
     GamesRetroCores,
     #[command(name = "games-retro-install", about = "Create a desktop launcher for a RetroArch game")]

@@ -9,6 +9,18 @@ tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT
 export OMARCHY_PCI_DEVICES_PATH="$tmp_dir/devices" OMARCHY_PATH="$ROOT" PATH="$ROOT/bin:$PATH"
 
+# nvidia.lua resolves detector binaries via OMARCHY_PATH/bin/. When those
+# binaries live only in result/bin/ (NixOS build), symlink them into a
+# temporary overlay so the Lua execution finds them at the expected path.
+lua_omarchy_path="$ROOT"
+if [[ ! -x $ROOT/bin/omarchy-hw-nvidia ]]; then
+  lua_omarchy_path="$tmp_dir/lua-omarchy"
+  mkdir -p "$lua_omarchy_path/bin"
+  for cmd in omarchy-hw-nvidia omarchy-hw-nvidia-gsp omarchy-hw-nvidia-without-gsp omarchy-hw-nvidia-display; do
+    ln -sf "$(omarchy_bin "$cmd")" "$lua_omarchy_path/bin/$cmd"
+  done
+fi
+
 # Exit statuses, expected NVD_BACKEND/LIBVA/GLX values, then vendor:device:class[:boot_vga].
 while IFS='|' read -r description nvidia gsp without_gsp display expected_env devices; do
   rm -rf "$tmp_dir/devices"
@@ -34,7 +46,7 @@ while IFS='|' read -r description nvidia gsp without_gsp display expected_env de
   done
 
   # Run the real Lua config and detectors; capture only Hyprland's env calls.
-  actual_env=$(lua <<'LUA'
+  actual_env=$(OMARCHY_PATH="$lua_omarchy_path" lua <<'LUA'
 package.path = os.getenv("ROOT") .. "/?.lua;" .. package.path
 require("default.hypr.helpers")
 local env = {}

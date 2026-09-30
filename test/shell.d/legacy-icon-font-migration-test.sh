@@ -4,6 +4,7 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+require_command python3
 require_command cmp
 
 migration="$ROOT/migrations/1788848726.sh"

@@ -74,7 +74,7 @@ require("default.hypr.omarchy")
 
 local epilogue = os.getenv("OMARCHY_BINDING_EPILOGUE") or ""
 if epilogue ~= "" then
-  assert(load(epilogue))()
+  assert((loadstring or load)(epilogue))()
 end
 
 -- X11 keycodes are evdev codes plus 8. Only the rows Omarchy binds by code

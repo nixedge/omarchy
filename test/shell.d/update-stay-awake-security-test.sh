@@ -109,7 +109,7 @@ chmod +x "$stub_bin"/*
 ln -s "$stub_bin/omarchy-toggle-idle" "$mapped_root/bin/omarchy-toggle-idle"
 
 mapped_helper="$mapped_root/bin/omarchy-update-stay-awake"
-cp "$ROOT/bin/omarchy-update-stay-awake" "$mapped_helper"
+cp "$(omarchy_bin omarchy-update-stay-awake)" "$mapped_helper"
 cp "$ROOT/bin/omarchy-security-functions" "$mapped_root/bin/omarchy-security-functions"
 cp "$ROOT/default/omarchy/sudo-no-update/sudo" "$mapped_root/default/omarchy/sudo-no-update/sudo"
 for mapped_file in \

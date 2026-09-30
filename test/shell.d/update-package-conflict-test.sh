@@ -77,7 +77,7 @@ update_env() {
 # No terminal on any stream, the way a cron or ssh caller arrives.
 run_headless() {
   mapfile -t environment < <(update_env)
-  env "${environment[@]}" bash "$ROOT/bin/omarchy-update-system-pkgs" \
+  env "${environment[@]}" bash "$(omarchy_bin omarchy-update-system-pkgs)" \
     </dev/null >"$test_tmp/out" 2>"$test_tmp/err"
 }
 
@@ -86,9 +86,11 @@ run_headless() {
 # transcript is stdout and stderr together, which is also what that person sees.
 # $1 optionally takes one stream back off the pty.
 run_on_terminal() {
+  local cmd
+  cmd=$(omarchy_bin omarchy-update-system-pkgs)
   mapfile -t environment < <(update_env)
   env "${environment[@]}" \
-    script -qec "bash '$ROOT/bin/omarchy-update-system-pkgs' ${1:-}" "$test_tmp/out" >/dev/null 2>&1
+    script -qec "bash '$cmd' ${1:-}" "$test_tmp/out" >/dev/null 2>&1
 }
 
 call_line() {

@@ -154,14 +154,14 @@ os.execute = function()
   executed = true
 end
 
-assert(load(snippet, "eval", "t"))()
+assert((loadstring or load)(snippet, "eval", "t"))()
 assert(executed == false, "quoted hyprctl eval must not run os.execute")
 assert(#seen == 1)
 assert(seen[1].name == poc)
 assert(seen[1].enabled == false)
 
 seen, executed = {}, false
-assert(load('hl.device({ name = "' .. poc .. '", enabled = false })', "unquoted", "t"))()
+assert((loadstring or load)('hl.device({ name = "' .. poc .. '", enabled = false })', "unquoted", "t"))()
 assert(executed == true, "unquoted interpolation is the Lua injection")
 
 seen, executed = {}, false
