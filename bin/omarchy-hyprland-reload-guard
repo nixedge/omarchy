@@ -97,7 +97,7 @@ resume_instance() {
 
 case "$command" in
   paused)
-    compgen -G "$state_dir/*" >/dev/null
+    shopt -s nullglob; _paused=("$state_dir"/*); shopt -u nullglob; [[ ${#_paused[@]} -gt 0 ]]
     ;;
   pause)
     while IFS=$'\t' read -r runtime_dir signature; do
