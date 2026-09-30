@@ -32,7 +32,8 @@ printf 'watcher=%s popup=%s\n' \
   "${QS_DISABLE_FILE_WATCHER:-unset}" "${QS_NO_RELOAD_POPUP:-unset}" >>"$OMARCHY_TEST_QS_ENV_LOG"
 
 launches=$(wc -l <"$OMARCHY_TEST_QS_LOG")
-status=$(awk -v n="$launches" 'NR == n { print; found = 1 } END { if (!found) print "0" }' <<<"$OMARCHY_TEST_QS_STATUSES")
+status=$(sed -n "${launches}p" <<<"$OMARCHY_TEST_QS_STATUSES")
+[[ -n $status ]] || status="0"
 
 if [[ $status == "run" ]]; then
   trap 'touch "$OMARCHY_TEST_QS_TERMINATED"; exit 143' TERM

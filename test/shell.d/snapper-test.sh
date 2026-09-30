@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if ! command -v pacman &>/dev/null; then
+  pass "Arch snapper/limine tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 template="$ROOT/default/snapper/root"
 limine_defaults="$ROOT/etc/limine-entry-tool.d/omarchy-defaults.conf"
 limine_notify_autostart="$ROOT/config/autostart/limine-snapper-notify.desktop"

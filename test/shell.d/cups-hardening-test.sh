@@ -90,6 +90,11 @@ done
 
 pass "cups-browsed runs as its confined service account without added capabilities"
 
+if ! command -v awk &>/dev/null; then
+  pass "cups-browsed migration collision tests skipped: awk not available # SKIP"
+  exit 0
+fi
+
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
 

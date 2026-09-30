@@ -16,10 +16,10 @@ cat >"$fake_bin/supergfxctl" <<'STUB'
 case "${BLOCKED:-no}" in
 kill-only)
   trap '' TERM
-  /usr/bin/sleep 30
+  sleep 30
   ;;
 term)
-  /usr/bin/sleep 30
+  sleep 30
   ;;
 esac
 
@@ -28,18 +28,30 @@ esac
 printf '%s\n' "${SUPPORTED_MODES:-Integrated Hybrid}"
 STUB
 
-cat >"$fake_bin/lspci" <<'STUB'
-#!/bin/sh
-
-for _ in $(seq "${GPU_COUNT:-1}"); do
-  echo "0000:00:02.0 VGA compatible controller: Stub GPU"
-done
-STUB
-
 chmod +x "$fake_bin"/*
 
+# The Rust CLI reads PCI device classes from sysfs rather than calling lspci.
+# Create a mock PCI sysfs directory with GPU_COUNT VGA-class devices.
+pci_path="$test_tmp/pci"
+
+setup_pci() {
+  rm -rf "$pci_path"
+  mkdir -p "$pci_path"
+  local count=${GPU_COUNT:-1}
+  local i
+  for i in $(seq "$count"); do
+    local dev="$pci_path/0000:00:0$i.0"
+    mkdir -p "$dev"
+    printf '0x10de\n' >"$dev/vendor"
+    printf '0x030000\n' >"$dev/class"
+    printf '0x0001\n' >"$dev/device"
+  done
+}
+
 hybrid_gpu() {
-  PATH="$fake_bin:$PATH" timeout --kill-after=1s 10s bash "$ROOT/bin/omarchy-hw-hybrid-gpu"
+  setup_pci
+  PATH="$fake_bin:$PATH" OMARCHY_PCI_DEVICES_PATH="$pci_path" \
+    timeout --kill-after=1s 10s "$(omarchy_bin omarchy-hw-hybrid-gpu)"
 }
 
 hybrid_gpu ||

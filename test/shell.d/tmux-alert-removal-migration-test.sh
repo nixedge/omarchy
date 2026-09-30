@@ -4,6 +4,8 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+require_command awk
+
 migration="$ROOT/migrations/1785189600.sh"
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT

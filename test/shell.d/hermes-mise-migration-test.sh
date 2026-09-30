@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-install-hermes-cli ]]; then
+  pass "hermes mise migration tests skipped: installer is the Rust CLI # SKIP"
+  exit 0
+fi
+
 migration="$ROOT/migrations/1790017600.sh"
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT

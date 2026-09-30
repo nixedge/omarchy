@@ -79,7 +79,7 @@ mkdir -p "$restart_root/shell" "$restart_bin" "$runtime_dir"
 touch "$restart_root/shell/shell.qml"
 ln -s "$ROOT/bin/omarchy-shell" "$restart_bin/omarchy-shell"
 ln -s "$ROOT/bin/omarchy-launch-shell" "$restart_bin/omarchy-launch-shell"
-ln -s "$ROOT/bin/omarchy-cmd-missing" "$restart_bin/omarchy-cmd-missing"
+ln -s "$(omarchy_bin omarchy-cmd-missing)" "$restart_bin/omarchy-cmd-missing"
 ln -s "$ROOT/bin/omarchy-hyprland-session-locked" "$restart_bin/omarchy-hyprland-session-locked"
 
 cat >"$restart_bin/qs" <<'SH'
@@ -118,7 +118,7 @@ case " $* " in
     [[ $pid =~ ^[0-9]+$ ]] || exit 1
     kill "$pid" 2>/dev/null
     while kill -0 "$pid" 2>/dev/null; do sleep 0.01; done
-    awk 'NR > 1' "$OMARCHY_TEST_QS_STATE" >"$OMARCHY_TEST_QS_STATE.next"
+    tail -n +2 "$OMARCHY_TEST_QS_STATE" >"$OMARCHY_TEST_QS_STATE.next"
     mv "$OMARCHY_TEST_QS_STATE.next" "$OMARCHY_TEST_QS_STATE"
     ;;
   *' -n -p '*)
@@ -218,7 +218,7 @@ OMARCHY_TEST_IPC_LOG="$ipc_log" \
 OMARCHY_TEST_SESSION_PATH="$restart_root" \
 OMARCHY_TEST_TRANSIENT_ENV=leaked \
 OMARCHY_TEST_NOTIFICATION_CHECKS="$test_tmp/notification-checks" \
-  timeout 5 "$ROOT/bin/omarchy-restart-shell"
+  timeout 5 "$(omarchy_bin omarchy-restart-shell)"
 
 if kill -0 "$restart_pid_one" 2>/dev/null; then
   fail "restart stops the first matching shell instance"
@@ -253,7 +253,7 @@ locked_error=$(PATH="$restart_bin:$PATH" \
   OMARCHY_TEST_DISPATCH_LOG="$dispatch_log" \
   OMARCHY_TEST_IPC_LOG="$ipc_log" \
   OMARCHY_TEST_SESSION_PATH="$restart_root" \
-  "$ROOT/bin/omarchy-restart-shell" 2>&1) && fail "restart refuses while the shell lock is active"
+  "$(omarchy_bin omarchy-restart-shell)" 2>&1) && fail "restart refuses while the shell lock is active"
 
 [[ $locked_error == "Refusing to restart Omarchy shell while the session is locked." ]] || fail "locked restart explains why it was refused" "$locked_error"
 [[ $(<"$restart_state") == 303 ]] || fail "locked restart preserves the running shell"
@@ -280,7 +280,7 @@ OMARCHY_TEST_QS_ENV_LOG="$restart_env_log" \
 OMARCHY_TEST_DISPATCH_LOG="$dispatch_log" \
 OMARCHY_TEST_IPC_LOG="$ipc_log" \
 OMARCHY_TEST_SESSION_PATH="$restart_root" \
-  timeout 5 "$ROOT/bin/omarchy-restart-shell" || fail "locked restart recovers when the lock client is dead"
+  timeout 5 "$(omarchy_bin omarchy-restart-shell)" || fail "locked restart recovers when the lock client is dead"
 
 if kill -0 "$restart_pid_one" 2>/dev/null; then
   fail "dead-lock recovery stops the stale shell instance"
@@ -314,7 +314,7 @@ if PATH="$restart_bin:$PATH" \
   OMARCHY_TEST_SESSION_PATH="$restart_root" \
   OMARCHY_TEST_NOTIFICATION_CHECKS="$test_tmp/notification-checks" \
   OMARCHY_TEST_NOTIFICATIONS_DIE=1 \
-  timeout 10 "$ROOT/bin/omarchy-restart-shell" >"$test_tmp/dead-notifications.out" 2>&1; then
+  timeout 10 "$(omarchy_bin omarchy-restart-shell)" >"$test_tmp/dead-notifications.out" 2>&1; then
   fail "a restart whose notification service never returns must not report success"
 fi
 wait "$restart_pid_one" 2>/dev/null || true

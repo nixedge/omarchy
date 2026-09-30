@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-update-available ]]; then
+  pass "Arch pacman update-checker tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
 

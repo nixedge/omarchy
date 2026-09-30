@@ -38,7 +38,7 @@ monitor_state() {
 
   mapfile -t state_lines < <(
     FAKE_MONITORS="$monitors_file" PATH="$test_bin:$PATH" \
-      bash "$ROOT/bin/omarchy-monitor-state" 2>/dev/null
+      "$(omarchy_bin omarchy-monitor-state)" 2>/dev/null
   )
 }
 

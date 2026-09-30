@@ -233,6 +233,12 @@ else
   pass "the fit is not satisfied by a window that scrolls the layout"
 fi
 
+# The real measure_layout uses awk to strip ANSI codes; skip the section if absent.
+if ! command -v awk &>/dev/null; then
+  pass "logo-padding detection tests skipped: awk not available # SKIP"
+  exit 0
+fi
+
 # The padding this file was written against is the config in the repo; the config
 # that runs is the one in /etc, which a checkout does not replace. Measure the
 # logo in what fastfetch drew rather than working it out from an assumption, or a

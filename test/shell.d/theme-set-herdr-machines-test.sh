@@ -5,6 +5,8 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 require_command jq
+require_command awk
+require_command flock
 
 SYNC_TEST=$(mktemp -d)
 trap 'rm -rf "$SYNC_TEST"' EXIT

@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if ! command -v pacman &>/dev/null; then
+  pass "Arch snapper timeline leak migration tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 leak_migration=$(grep -rl 'timeline snapshots leaked by earlier defaults' "$ROOT/migrations" | head -n 1 || true)
 [[ -n $leak_migration ]] || fail "Snapper timeline leak migration exists"
 

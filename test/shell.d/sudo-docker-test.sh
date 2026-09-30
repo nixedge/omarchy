@@ -14,7 +14,7 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
-command="$ROOT/bin/omarchy-sudo-docker"
+cmd="$(omarchy_bin omarchy-sudo-docker)"
 
 # Stub id so the configured groups are controllable.
 mkdir -p "$TMPDIR/bin"
@@ -34,7 +34,7 @@ chmod 400 "$blocked_socket"
 
 run() { # SOCKET GROUPS [--configured]
   env PATH="$TMPDIR/bin:$PATH" OMARCHY_DOCKER_SOCKET="$1" STUB_GROUPS="$2" USER=tester \
-    bash "$command" ${3:+"$3"}
+    "$cmd" ${3:+"$3"}
 }
 
 # Default mode follows the socket, not the group list.

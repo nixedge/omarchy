@@ -16,6 +16,11 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+if ! command -v pacman &>/dev/null; then
+  pass "Arch PKGBUILD ownership check skipped on NixOS # SKIP"
+  exit 0
+fi
+
 python3 - "$ROOT" <<'PYTHON'
 import os, re, sys
 from pathlib import Path

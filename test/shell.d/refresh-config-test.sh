@@ -2,6 +2,8 @@
 
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 
+require_command cmp
+
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
 

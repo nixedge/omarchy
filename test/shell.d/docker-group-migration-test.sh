@@ -13,6 +13,11 @@ set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-remove-security-sudoless-docker ]]; then
+  pass "Arch docker-group migration tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 migration="$ROOT/migrations/1787580187.sh"
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT

@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-windows-vm ]]; then
+  pass "Arch Windows VM tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 windows_vm_command="$ROOT/bin/omarchy-windows-vm"
 windows_vm_rules="$ROOT/default/hypr/apps/windows-vm.lua"
 

@@ -25,7 +25,7 @@ export OMARCHY_TEST_ARGV="$test_tmp/argv"
 applications="$HOME/.local/share/applications"
 
 install_webapp() {
-  bash "$ROOT/bin/omarchy-webapp-install" "$@" >/dev/null
+  "$(omarchy_bin omarchy-webapp-install)" "$@" >/dev/null
 }
 
 desktop_value() {

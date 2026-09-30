@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-remove-security-sshd && -z ${REMOVE_SECURITY_SSHD_UNDER_TEST:-} ]]; then
+  pass "Arch SSH firewall removal tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 remove="${REMOVE_SECURITY_SSHD_UNDER_TEST:-$ROOT/bin/omarchy-remove-security-sshd}"
 test_dir=$(mktemp -d)
 stub_bin="$test_dir/bin"

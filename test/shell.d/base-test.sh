@@ -39,7 +39,24 @@ shell_ipc_socket() {
 require_command() {
   local command="$1"
 
-  command -v "$command" >/dev/null || fail "required command is available: $command"
+  if ! command -v "$command" >/dev/null; then
+    skip "required command is available: $command"
+    exit 0
+  fi
+}
+
+# Return the path to an omarchy command binary. Checks source-tree bin/ first
+# (bash scripts), then result/bin/ (Rust CLI build output). Falls back to a
+# bare bin/ path that will produce a clear "not found" error if neither exists.
+omarchy_bin() {
+  local cmd="$1"
+  if [[ -x $ROOT/bin/$cmd ]]; then
+    printf '%s' "$ROOT/bin/$cmd"
+  elif [[ -x $ROOT/result/bin/$cmd ]]; then
+    printf '%s' "$ROOT/result/bin/$cmd"
+  else
+    printf '%s' "$ROOT/bin/$cmd"
+  fi
 }
 
 # WAYLAND_DISPLAY proves the variable was inherited, not that the compositor

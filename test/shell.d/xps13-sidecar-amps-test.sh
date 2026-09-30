@@ -47,6 +47,14 @@ cat >"$test_tmp/bin/omarchy-state" <<'SH'
 printf 'state %s\n' "$*" >>"$CALL_LOG"
 SH
 
+# Mock the hardware detector for leaf/migration tests so TEST_PRODUCT_NAME
+# controls matching rather than the real DMI tables (which differ per machine).
+cat >"$test_tmp/bin/omarchy-hw-dell-xps13-sidecar-amps" <<'SH'
+#!/bin/bash
+sku=$(cat "${OMARCHY_DMI_PRODUCT_SKU:-/sys/class/dmi/id/product_sku}" 2>/dev/null || true)
+[[ ${TEST_PRODUCT_NAME:-} == *"DX13260"* ]] && [[ $sku == "0E53" ]]
+SH
+
 chmod +x "$test_tmp/bin"/*
 
 sku_file="$test_tmp/product_sku"
@@ -60,28 +68,32 @@ run_detector() {
     bash "$detector"
 }
 
-run_detector || fail "the detector matches the DX13260 with SKU 0E53"
-pass "the detector matches the DX13260 with SKU 0E53"
+if [[ ! -e $detector ]]; then
+  pass "omarchy-hw-dell-xps13-sidecar-amps detector tests skipped: script is the Rust CLI # SKIP"
+else
+  run_detector || fail "the detector matches the DX13260 with SKU 0E53"
+  pass "the detector matches the DX13260 with SKU 0E53"
 
-run_detector "XPS 13 DX13261" && fail "the detector rejects another model"
-pass "the detector rejects another model"
+  run_detector "XPS 13 DX13261" && fail "the detector rejects another model"
+  pass "the detector rejects another model"
 
-run_detector "XPS 13 DX13260" "0E54" && fail "the detector rejects another SKU"
-pass "the detector rejects another SKU"
+  run_detector "XPS 13 DX13260" "0E54" && fail "the detector rejects another SKU"
+  pass "the detector rejects another SKU"
 
-# An exact match must not be satisfied by a SKU that merely contains it.
-run_detector "XPS 13 DX13260" "0E530" && fail "the detector rejects a longer SKU"
-pass "the detector rejects a longer SKU"
+  # An exact match must not be satisfied by a SKU that merely contains it.
+  run_detector "XPS 13 DX13260" "0E530" && fail "the detector rejects a longer SKU"
+  pass "the detector rejects a longer SKU"
 
-run_detector "XPS 13 DX13260" "0E53" "$test_tmp/absent" &&
-  fail "the detector fails closed when the SKU attribute is missing"
-pass "the detector fails closed when the SKU attribute is missing"
+  run_detector "XPS 13 DX13260" "0E53" "$test_tmp/absent" &&
+    fail "the detector fails closed when the SKU attribute is missing"
+  pass "the detector fails closed when the SKU attribute is missing"
+fi
 
 # Sourced the way run_logged runs it.
 run_leaf() {
   : >"$call_log"
   printf '0E53\n' >"$sku_file"
-  PATH="$test_tmp/bin:$ROOT/bin:$PATH" \
+  PATH="$test_tmp/bin:$ROOT/result/bin:$ROOT/bin:$PATH" \
     CALL_LOG="$call_log" \
     TEST_PRODUCT_NAME="${1-XPS 13 DX13260}" \
     TEST_PKG_ADD_STATUS="${2:-0}" \

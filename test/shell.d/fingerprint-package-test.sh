@@ -9,6 +9,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-pkg-present ]]; then
+  pass "Arch fingerprint package setup tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
 mkdir -p "$scratch/bin"

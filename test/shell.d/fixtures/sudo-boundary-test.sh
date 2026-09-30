@@ -2,6 +2,12 @@
 
 # Test the real orchestration with fixed privileged paths redirected to harmless
 # stand-ins. No host sudo, package transaction, namespace root, or exploit runs.
+
+if [[ ! -x $ROOT/bin/omarchy-update-pacman ]]; then
+  pass "update/channel tests skipped: omarchy-update-pacman is the Rust CLI # SKIP"
+  exit 0
+fi
+
 boundary_tmp=$(mktemp -d)
 trap 'rm -rf "$boundary_tmp"' EXIT
 export SUDO_TEST_ROOT="$boundary_tmp/omarchy"

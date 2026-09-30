@@ -2,6 +2,9 @@
 set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+require_command cmp
+require_command vercmp
+
 test_home=$(mktemp -d)
 trap 'rm -rf "$test_home"' EXIT
 provider="$test_home/.config/nvim/lua/config/remote_clipboard.lua"

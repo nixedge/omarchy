@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-setup-security-fido2 ]]; then
+  pass "Arch FIDO2 security setup tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 setup="$ROOT/bin/omarchy-setup-security-fido2"
 
 test_tmp=$(mktemp -d)

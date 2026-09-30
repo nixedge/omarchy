@@ -4,6 +4,8 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+require_command awk
+
 apply_lock="$ROOT/bin/omarchy-apply-lock"
 
 root_path_guard=$(awk '

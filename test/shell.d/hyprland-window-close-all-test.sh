@@ -2,6 +2,8 @@
 
 source "$(dirname "$0")/base-test.sh"
 
+require_command diff
+
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
 

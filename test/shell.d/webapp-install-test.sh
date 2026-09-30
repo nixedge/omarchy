@@ -11,7 +11,7 @@ home="$tmpdir/home"
 mkdir -p "$home/.local/share/applications"
 
 install_webapp() {
-  HOME="$home" "$ROOT/bin/omarchy-webapp-install" "$@"
+  HOME="$home" "$(omarchy_bin omarchy-webapp-install)" "$@"
 }
 
 desktop_for() {
@@ -112,7 +112,7 @@ printf 'Evil\nfile:///etc/passwd\n' >"$tmpdir/answers"
 : >"$tmpdir/curl-log"
 
 if GUM_ANSWERS="$tmpdir/answers" GUM_COUNT="$tmpdir/gum-count" CURL_LOG="$tmpdir/curl-log" \
-  PATH="$stubs:$PATH" HOME="$home" "$ROOT/bin/omarchy-webapp-install" \
+  PATH="$stubs:$PATH" HOME="$home" "$(omarchy_bin omarchy-webapp-install)" \
   >"$tmpdir/out" 2>"$tmpdir/err"; then
   fail "interactive webapp install refuses a file: URL" "$(cat "$tmpdir/out")"
 fi

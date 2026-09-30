@@ -4,6 +4,8 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
+require_command cmp
+
 migration="$ROOT/migrations/1788848726.sh"
 fixture="$ROOT/test/shell.d/fixtures/legacy-icon-font/omarchy.ttf"
 test_dir=$(mktemp -d)

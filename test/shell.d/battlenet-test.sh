@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-install-gaming-battlenet ]]; then
+  pass "Arch Battle.net installer tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 install_script="$ROOT/bin/omarchy-install-gaming-battlenet"
 
 [[ ! -f $ROOT/applications/battlenet.desktop ]] || fail "Battle.net launcher is not part of default application refresh"

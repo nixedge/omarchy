@@ -4,6 +4,8 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+require_command perl
+
 # The command fixture follows the runtime invariant and reads defaults through
 # OMARCHY_PATH. Point it at this checkout rather than whichever install launched
 # the test (or nothing at all on a non-Omarchy development machine).

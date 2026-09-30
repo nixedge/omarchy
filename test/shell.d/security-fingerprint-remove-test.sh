@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x $ROOT/bin/omarchy-remove-security-fingerprint ]]; then
+  pass "Arch fingerprint security removal tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
 remove="$ROOT/bin/omarchy-remove-security-fingerprint"
 test_tmp=$(mktemp -d /tmp/omarchy-fingerprint-remove.XXXXXX)
 trap 'rm -rf "$test_tmp"' EXIT

@@ -11,7 +11,7 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 check() {
-  "$ROOT/bin/omarchy-git-url-check" "$@" 2>&1
+  "$(omarchy_bin omarchy-git-url-check)" "$@" 2>&1
 }
 
 # `<helper>::<address>`, the shape that runs a program. `ext::` is the dangerous

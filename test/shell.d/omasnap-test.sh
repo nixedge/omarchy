@@ -122,6 +122,11 @@ Name=Omasnap
 Exec=omasnap
 NoDisplay=true
 EOF
+if ! command -v cmp &>/dev/null; then
+  pass "imv-binding comparison tests skipped: cmp not available # SKIP"
+  exit 0
+fi
+
 if OMASNAP_PACKAGE_STATUS=1 run_migration; then
   fail "Omasnap install failure stops the migration"
 fi

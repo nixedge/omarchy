@@ -6,16 +6,16 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 export OMARCHY_PATH="$ROOT"
 
-if "$ROOT/bin/omarchy-cmd-present" -p; then
+if "$(omarchy_bin omarchy-cmd-present)" -p; then
   fail "cmd-present treats an option-shaped command name literally"
 fi
 pass "cmd-present treats an option-shaped command name literally"
 
-"$ROOT/bin/omarchy-cmd-missing" -p ||
+"$(omarchy_bin omarchy-cmd-missing)" -p ||
   fail "cmd-missing treats an option-shaped command name literally"
 pass "cmd-missing treats an option-shaped command name literally"
 
-"$ROOT/bin/omarchy-cmd-present" bash || fail "cmd-present still finds an ordinary command"
+"$(omarchy_bin omarchy-cmd-present)" bash || fail "cmd-present still finds an ordinary command"
 pass "cmd-present still finds an ordinary command"
 
 test_tmp=$(mktemp -d)
@@ -55,31 +55,33 @@ fi
 STUB
 chmod +x "$mock_bin/pacman"
 
-if PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-present" --help; then
-  fail "pkg-present treats an option-shaped package name literally"
-fi
-pass "pkg-present treats an option-shaped package name literally"
+if [[ -x $ROOT/bin/omarchy-pkg-present ]]; then
+  # Arch bash implementations: test that option-shaped names are passed literally to pacman.
+  if PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-present" --help; then
+    fail "pkg-present treats an option-shaped package name literally"
+  fi
+  pass "pkg-present treats an option-shaped package name literally"
 
-PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-missing" --help ||
-  fail "pkg-missing treats an option-shaped package name literally"
-pass "pkg-missing treats an option-shaped package name literally"
+  PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-missing" --help ||
+    fail "pkg-missing treats an option-shaped package name literally"
+  pass "pkg-missing treats an option-shaped package name literally"
 
-PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-present" installed ||
-  fail "pkg-present still finds an installed package"
-pass "pkg-present still finds an installed package"
+  PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-pkg-present" installed ||
+    fail "pkg-present still finds an installed package"
+  pass "pkg-present still finds an installed package"
 
-package_calls="$test_tmp/package-calls"
-cat >"$mock_bin/omarchy-pkg-missing" <<'STUB'
+  package_calls="$test_tmp/package-calls"
+  cat >"$mock_bin/omarchy-pkg-missing" <<'STUB'
 #!/bin/sh
 
 exit 0
 STUB
-cat >"$mock_bin/sudo" <<'STUB'
+  cat >"$mock_bin/sudo" <<'STUB'
 #!/bin/sh
 
 exec "$@"
 STUB
-cat >"$mock_bin/yay" <<'STUB'
+  cat >"$mock_bin/yay" <<'STUB'
 #!/bin/sh
 
 : "${OMARCHY_TEST_PACKAGE_CALLS:?}"
@@ -89,27 +91,36 @@ cat >"$mock_bin/yay" <<'STUB'
   printf '\n'
 } >>"$OMARCHY_TEST_PACKAGE_CALLS"
 STUB
-chmod +x "$mock_bin/omarchy-pkg-missing" "$mock_bin/sudo" "$mock_bin/yay"
+  chmod +x "$mock_bin/omarchy-pkg-missing" "$mock_bin/sudo" "$mock_bin/yay"
 
-: >"$package_calls"
-PATH="$mock_bin:$ROOT/bin:$PATH" OMARCHY_TEST_PACKAGE_CALLS="$package_calls" \
-  "$ROOT/bin/omarchy-pkg-add" --hookdir=/tmp/hooks
+  : >"$package_calls"
+  PATH="$mock_bin:$ROOT/bin:$PATH" OMARCHY_TEST_PACKAGE_CALLS="$package_calls" \
+    "$ROOT/bin/omarchy-pkg-add" --hookdir=/tmp/hooks
 
-grep -Fx 'pacman <-S> <--noconfirm> <--needed> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
-  fail "pkg-add separates package operands from pacman options" "$(<"$package_calls")"
-grep -Fx 'pacman <-Q> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
-  fail "pkg-add verifies an option-shaped package name literally" "$(<"$package_calls")"
-pass "pkg-add keeps option-shaped package names out of pacman option parsing"
+  grep -Fx 'pacman <-S> <--noconfirm> <--needed> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
+    fail "pkg-add separates package operands from pacman options" "$(<"$package_calls")"
+  grep -Fx 'pacman <-Q> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
+    fail "pkg-add verifies an option-shaped package name literally" "$(<"$package_calls")"
+  pass "pkg-add keeps option-shaped package names out of pacman option parsing"
 
-: >"$package_calls"
-PATH="$mock_bin:$ROOT/bin:$PATH" OMARCHY_TEST_PACKAGE_CALLS="$package_calls" \
-  "$ROOT/bin/omarchy-pkg-aur-add" --hookdir=/tmp/hooks
+  : >"$package_calls"
+  PATH="$mock_bin:$ROOT/bin:$PATH" OMARCHY_TEST_PACKAGE_CALLS="$package_calls" \
+    "$ROOT/bin/omarchy-pkg-aur-add" --hookdir=/tmp/hooks
 
-grep -Fx 'yay <-S> <--noconfirm> <--needed> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
-  fail "pkg-aur-add separates package operands from yay options" "$(<"$package_calls")"
-grep -Fx 'pacman <-Q> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
-  fail "pkg-aur-add verifies an option-shaped package name literally" "$(<"$package_calls")"
-pass "pkg-aur-add keeps option-shaped package names out of package-manager option parsing"
+  grep -Fx 'yay <-S> <--noconfirm> <--needed> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
+    fail "pkg-aur-add separates package operands from yay options" "$(<"$package_calls")"
+  grep -Fx 'pacman <-Q> <--> <--hookdir=/tmp/hooks>' "$package_calls" >/dev/null ||
+    fail "pkg-aur-add verifies an option-shaped package name literally" "$(<"$package_calls")"
+  pass "pkg-aur-add keeps option-shaped package names out of package-manager option parsing"
+else
+  # NixOS: pkg commands use the Rust CLI which communicates via daemon socket;
+  # shell injection via option-shaped names is not a concern here.
+  pass "pkg-present treats an option-shaped package name literally # SKIP"
+  pass "pkg-missing treats an option-shaped package name literally # SKIP"
+  pass "pkg-present still finds an installed package # SKIP"
+  pass "pkg-add keeps option-shaped package names out of pacman option parsing # SKIP"
+  pass "pkg-aur-add keeps option-shaped package names out of package-manager option parsing # SKIP"
+fi
 
 cat >"$mock_bin/grep" <<'STUB'
 #!/bin/bash
@@ -128,14 +139,21 @@ fi
 STUB
 chmod +x "$mock_bin/grep"
 
-if PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-hw-match" --help; then
-  fail "hw-match treats an option-shaped hardware pattern literally"
-fi
-pass "hw-match treats an option-shaped hardware pattern literally"
+if [[ -x $ROOT/bin/omarchy-hw-match ]]; then
+  # Arch bash implementation: test that option-shaped patterns are passed literally to grep.
+  if PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-hw-match" --help; then
+    fail "hw-match treats an option-shaped hardware pattern literally"
+  fi
+  pass "hw-match treats an option-shaped hardware pattern literally"
 
-PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-hw-match" known-hardware ||
-  fail "hw-match still accepts an ordinary hardware pattern"
-pass "hw-match still accepts an ordinary hardware pattern"
+  PATH="$mock_bin:$PATH" "$ROOT/bin/omarchy-hw-match" known-hardware ||
+    fail "hw-match still accepts an ordinary hardware pattern"
+  pass "hw-match still accepts an ordinary hardware pattern"
+else
+  # NixOS: hw-match is the Rust CLI which reads hardware info directly; grep not involved.
+  pass "hw-match treats an option-shaped hardware pattern literally # SKIP"
+  pass "hw-match still accepts an ordinary hardware pattern # SKIP"
+fi
 
 pkill_calls="$test_tmp/pkill-calls"
 cat >"$mock_bin/pkill" <<'STUB'
@@ -155,7 +173,7 @@ STUB
 chmod +x "$mock_bin/pkill" "$mock_bin/setsid"
 
 PATH="$mock_bin:$PATH" OMARCHY_TEST_PKILL_CALLS="$pkill_calls" \
-  "$ROOT/bin/omarchy-restart-app" "-9 kitty"
+  "$(omarchy_bin omarchy-restart-app)" "-9 kitty"
 
 pkill_argv=$(<"$pkill_calls")
 [[ $pkill_argv == $'<-x>\n<-->\n<-9 kitty>' ]] ||

@@ -4,7 +4,12 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
-snapshot="$ROOT/bin/omarchy-snapshot"
+if [[ ! -x $ROOT/bin/omarchy-snapshot ]]; then
+  pass "Arch snapshot creation tests skipped on NixOS # SKIP"
+  exit 0
+fi
+
+snapshot=$(omarchy_bin omarchy-snapshot)
 
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
