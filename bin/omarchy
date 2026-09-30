@@ -186,6 +186,15 @@ register_command() {
   local fallback_summary=""
   local has_summary="false"
   local metadata_errors=""
+  local first_line=""
+
+  # Detect whether this is a script or a compiled binary. Binary files (e.g.
+  # Rust CLI symlinks) have no # omarchy: headers; treat their auto-generated
+  # summary as acceptable so --check doesn't flag them.
+  IFS= read -r first_line <"$file" 2>/dev/null || true
+  if [[ $first_line != "#!"* ]]; then
+    has_summary="true"
+  fi
 
   while IFS= read -r line && (( line_count < METADATA_SCAN_LIMIT )); do
     line_count=$((line_count + 1))
