@@ -5,6 +5,13 @@ set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 TEST_DIR="$ROOT/test/shell.d"
 
+# Ensure source-tree bin/ and the Rust CLI build output are both reachable so
+# that omarchy-* helpers called by name work in tests without a full install.
+export PATH="$ROOT/bin:$PATH"
+if [[ -d $ROOT/result/bin ]]; then
+  export PATH="$ROOT/result/bin:$PATH"
+fi
+
 shopt -s nullglob
 tests=()
 for test in "$TEST_DIR"/*-test.sh; do

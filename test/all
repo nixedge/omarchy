@@ -13,7 +13,7 @@ tests=(
 failed=()
 for test in "${tests[@]}"; do
   printf '==> %s\n' "${test#$ROOT/}"
-  "$test" || failed+=("${test#$ROOT/}")
+  bash "$test" || failed+=("${test#$ROOT/}")
 done
 
 if (( ${#failed[@]} > 0 )); then

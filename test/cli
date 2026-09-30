@@ -9,6 +9,58 @@ TMPDIRS=()
 
 export PATH="$ROOT/bin:$PATH"
 
+# In the dev environment the Rust CLI is built to result/bin/ while bash scripts
+# stay in bin/.  On a real NixOS install both end up in the same profile bin/.
+# Simulate that by merging them into a temp directory so bin/omarchy's scanner
+# sees all commands through one OMARCHY_BIN_DIR.
+#
+# For Rust-only commands (deleted from bin/ but in result/bin/), create a stub
+# bash script with proper # omarchy:* metadata sourced from the Rust CLI's own
+# commands --json output.  Bash scripts in bin/ take priority and overwrite any
+# stubs for shared commands.
+if [[ -z ${OMARCHY_CLI:-} && -d $ROOT/result/bin ]]; then
+  _merge_bin=$(mktemp -d)
+  TMPDIRS+=("$_merge_bin")
+
+  # Create stubs for Rust-only commands using metadata from the Rust CLI.
+  # bin/omarchy derives route from # omarchy:group= and # omarchy:name= headers,
+  # not from # omarchy:route=, so stubs must emit the right group/name pair.
+  while IFS=$'\t' read -r _binary _route _summary; do
+    [[ -x $ROOT/bin/$_binary ]] && continue
+    _stem="${_binary#omarchy-}"
+    _auto_group="${_stem%%-*}"
+    _filename_route="omarchy ${_stem//-/ }"
+    # Extract args from the binary's --help if it exposes a "Usage: <route> <args>" line.
+    _args=$("$ROOT/result/bin/$_binary" --help 2>/dev/null | grep -m1 "^Usage: $_route " | sed "s|^Usage: $_route ||" || true)
+    {
+      printf '#!/bin/bash\n'
+      printf '# omarchy:summary=%s\n' "$_summary"
+      [[ -n "$_args" ]] && printf '# omarchy:args=%s\n' "$_args"
+      if [[ "$_route" != "$_filename_route" ]]; then
+        _route_suffix="${_route#omarchy }"
+        _route_group="${_route_suffix%% *}"
+        if [[ "$_route_suffix" == *" "* ]]; then
+          _route_name="${_route_suffix#* }"
+        else
+          _route_name=""
+        fi
+        [[ "$_route_group" != "$_auto_group" ]] && printf '# omarchy:group=%s\n' "$_route_group"
+        printf '# omarchy:name=%s\n' "$_route_name"
+      fi
+      printf 'exec "%s/%s" "$@"\n' "$ROOT/result/bin" "$_binary"
+    } > "$_merge_bin/$_binary"
+    chmod +x "$_merge_bin/$_binary"
+  done < <("$ROOT/result/bin/omarchy" commands --json | jq -r '.commands[] | [.binary, .route, .summary] | @tsv')
+
+  # Symlink all bash scripts (overriding stubs for commands that have both).
+  for f in "$ROOT/bin"/omarchy-*; do
+    [[ -x $f ]] && ln -sf "$f" "$_merge_bin/${f##*/}"
+  done
+  ln -sf "$ROOT/bin/omarchy" "$_merge_bin/omarchy"
+  CLI="$_merge_bin/omarchy"
+  export PATH="$_merge_bin:$PATH"
+fi
+
 # Assigns a fresh temporary directory to the named variable and registers it for
 # removal on exit, so every scratch directory this suite makes is cleaned up.
 make_tmpdir() {
