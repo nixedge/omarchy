@@ -3,6 +3,11 @@ use std::path::Path;
 use std::io::{self, Read, Write};
 
 pub fn done(action: &str, name: &str) -> i32 {
+    if name.contains('/') || name == "." || name == ".." {
+        eprintln!("Invalid done marker name: {name}");
+        return 1;
+    }
+
     let home = std::env::var("HOME").unwrap_or_default();
     let done_dir = format!("{home}/.local/state/omarchy/done");
     let path = format!("{done_dir}/{name}");
@@ -19,12 +24,17 @@ pub fn done(action: &str, name: &str) -> i32 {
             }
         }
         "ensure" => {
-            // mark if not already done
-            if !Path::new(&path).exists() {
-                let _ = fs::create_dir_all(&done_dir);
-                let _ = fs::write(&path, "");
+            // Like bash noclobber: return 0 only on the first call (when the
+            // marker did not exist yet). Return 1 if already marked, so callers
+            // can gate one-time setup with: if omarchy-done ensure task; then ...
+            if Path::new(&path).exists() {
+                return 1;
             }
-            0
+            let _ = fs::create_dir_all(&done_dir);
+            match fs::OpenOptions::new().create_new(true).write(true).open(&path) {
+                Ok(_) => 0,
+                Err(_) => 1, // lost race or already existed
+            }
         }
         other => {
             eprintln!("Unknown action: {other}. Use check, mark, or ensure.");

@@ -16,7 +16,7 @@ use std::process::{Command, Stdio};
 use std::time::Duration;
 
 pub fn app(name: &str, args: &[String]) -> i32 {
-    let _ = Command::new("pkill").args(["-x", name]).status();
+    let _ = Command::new("pkill").args(["-x", "--", name]).status();
     std::thread::sleep(Duration::from_millis(500));
     let mut cmd = Command::new("setsid");
     cmd.args(["uwsm-app", "--", name]);
@@ -178,6 +178,10 @@ pub fn shell() -> i32 {
         }
     }
 
+    // Remember whether the notification service was up before the restart so we
+    // can wait for it to come back (core IPC answers before it re-registers).
+    let notifications_were_running = notifications_ready();
+
     // Check if session is locked
     let mut relock = false;
     let locked = Command::new("omarchy-hyprland-session-locked").status()
@@ -226,6 +230,22 @@ pub fn shell() -> i32 {
                 eprintln!("Omarchy shell restarted, but the session lock was not re-secured.");
                 return 1;
             }
+            // Core IPC answers before the notification plugin re-registers its bus
+            // name; wait for it before invitation toasts fire their one-time sends.
+            if notifications_were_running {
+                let mut notifications_restored = false;
+                for _ in 0..20 {
+                    if notifications_ready() {
+                        notifications_restored = true;
+                        break;
+                    }
+                    std::thread::sleep(Duration::from_millis(100));
+                }
+                if !notifications_restored {
+                    eprintln!("Omarchy shell restarted, but its notification service did not become ready.");
+                    return 1;
+                }
+            }
             // Restart invitation services
             let _ = Command::new("systemctl")
                 .args(["--user", "try-restart", "omarchy-*-invitation.service"])
@@ -239,6 +259,19 @@ pub fn shell() -> i32 {
 
     eprintln!("Omarchy shell did not become ready after restart.");
     1
+}
+
+fn notifications_ready() -> bool {
+    Command::new("busctl")
+        .args(["--user", "--timeout=1s", "call",
+            "org.freedesktop.DBus", "/org/freedesktop/DBus",
+            "org.freedesktop.DBus", "NameHasOwner",
+            "s", "org.freedesktop.Notifications"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim() == "b true")
+        .unwrap_or(false)
 }
 
 fn shell_ipc_query(omarchy_path: &str, args: &[&str]) -> Option<String> {

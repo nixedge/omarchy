@@ -619,7 +619,7 @@ pub enum HwCmd {
     Check {
         #[arg(value_parser = PossibleValuesParser::new(HW_CHECKS))]
         name: String,
-        #[arg(help = "Pattern for 'match' check")]
+        #[arg(help = "Pattern for 'match' check", allow_hyphen_values = true)]
         pattern: Option<String>,
     },
     #[command(about = "Query dynamic hardware state (omarchy hw state)")]
@@ -993,9 +993,15 @@ pub enum PkgCmd {
     #[command(about = "Sync system configuration (omarchy pkg sync)")]
     Sync,
     #[command(about = "Check if a package is installed (omarchy pkg present)")]
-    Present { name: String },
+    Present {
+        #[arg(allow_hyphen_values = true)]
+        name: String,
+    },
     #[command(about = "Check if a package is missing (omarchy pkg missing)")]
-    Missing { name: String },
+    Missing {
+        #[arg(allow_hyphen_values = true)]
+        name: String,
+    },
     #[command(about = "Resolve package name to nixpkgs attribute (omarchy pkg resolve)")]
     Resolve { name: String },
 }
@@ -1006,8 +1012,9 @@ pub enum PkgCmd {
 pub enum RestartCmd {
     #[command(about = "Restart an application (omarchy restart app)")]
     App {
+        #[arg(allow_hyphen_values = true)]
         name: String,
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     #[command(about = "Restart audio services and recover stuck USB audio (omarchy restart audio)")]
@@ -1090,12 +1097,12 @@ pub enum PowerCmd {
 pub enum CmdCheckCmd {
     #[command(about = "Check if any command is missing from PATH (omarchy cmd missing)")]
     Missing {
-        #[arg(required = true)]
+        #[arg(required = true, allow_hyphen_values = true)]
         cmds: Vec<String>,
     },
     #[command(about = "Check if all commands are present in PATH (omarchy cmd present)")]
     Present {
-        #[arg(required = true)]
+        #[arg(required = true, allow_hyphen_values = true)]
         cmds: Vec<String>,
     },
     #[command(name = "terminal-cwd", about = "Print CWD of active terminal (omarchy cmd terminal cwd)")]

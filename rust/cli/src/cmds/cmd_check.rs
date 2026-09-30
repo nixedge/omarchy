@@ -1,3 +1,4 @@
+use std::os::unix::fs::PermissionsExt;
 use std::process::{Command, Stdio};
 
 pub fn missing(cmds: &[String]) -> i32 {
@@ -50,14 +51,33 @@ pub fn terminal_cwd() -> i32 {
 }
 
 fn command_in_path(cmd: &str) -> bool {
-    // Use `which` or check PATH manually
-    Command::new("which")
-        .arg(cmd)
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .map(|s| s.success())
-        .unwrap_or(false)
+    if cmd.is_empty() {
+        return false;
+    }
+    // Absolute or relative path — check executability directly
+    if cmd.contains('/') {
+        let p = std::path::Path::new(cmd);
+        return p.is_file()
+            && std::fs::metadata(p)
+                .map(|m| m.permissions().mode() & 0o111 != 0)
+                .unwrap_or(false);
+    }
+    // Search PATH directories for an executable named exactly `cmd`
+    let path_env = std::env::var("PATH").unwrap_or_default();
+    for dir in path_env.split(':') {
+        if dir.is_empty() {
+            continue;
+        }
+        let candidate = std::path::Path::new(dir).join(cmd);
+        if candidate.is_file()
+            && std::fs::metadata(&candidate)
+                .map(|m| m.permissions().mode() & 0o111 != 0)
+                .unwrap_or(false)
+        {
+            return true;
+        }
+    }
+    false
 }
 
 fn get_active_window_pid() -> Option<String> {

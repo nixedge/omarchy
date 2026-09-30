@@ -110,19 +110,18 @@ pub fn run() -> i32 {
         .unwrap_or_default();
     println!("{scaling_out}");
 
-    // Monitors JSON array with essential fields
-    let monitor_list: Vec<serde_json::Value> = monitors_arr.iter()
+    // Monitors JSON array — build manually to preserve field order expected by consumers.
+    let monitor_list: Vec<String> = monitors_arr.iter()
         .map(|m| {
-            serde_json::json!({
-                "name": m.get("name").and_then(|n| n.as_str()).unwrap_or(""),
-                "enabled": !m.get("disabled").and_then(|d| d.as_bool()).unwrap_or(false),
-                "focused": m.get("focused").and_then(|f| f.as_bool()).unwrap_or(false),
-                "width": m.get("width").and_then(|w| w.as_i64()).unwrap_or(0),
-                "height": m.get("height").and_then(|h| h.as_i64()).unwrap_or(0),
-            })
+            let name    = m.get("name").and_then(|n| n.as_str()).unwrap_or("");
+            let enabled = !m.get("disabled").and_then(|d| d.as_bool()).unwrap_or(false);
+            let focused = m.get("focused").and_then(|f| f.as_bool()).unwrap_or(false);
+            let width   = m.get("width").and_then(|w| w.as_i64()).unwrap_or(0);
+            let height  = m.get("height").and_then(|h| h.as_i64()).unwrap_or(0);
+            format!(r#"{{"name":"{name}","enabled":{enabled},"focused":{focused},"width":{width},"height":{height}}}"#)
         })
         .collect();
-    println!("{}", serde_json::to_string(&monitor_list).unwrap_or_else(|_| "[]".to_string()));
+    println!("[{}]", monitor_list.join(","));
 
     0
 }

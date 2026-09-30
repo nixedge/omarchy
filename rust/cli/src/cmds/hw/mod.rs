@@ -223,22 +223,35 @@ pub fn check_vulkan() -> bool {
 }
 
 pub fn check_hybrid_gpu() -> bool {
+    use std::os::unix::process::ExitStatusExt;
     use std::process::{Command, Stdio};
-    if let Ok(out) = Command::new("supergfxctl")
-        .args(["-s"])
+    // Bound the query: a wedged supergfxd blocks its clients forever.
+    let Ok(out) = Command::new("timeout")
+        .args(["--kill-after=1s", "1s", "supergfxctl", "-s"])
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .output()
-    {
-        // If supergfxctl timed out or was killed, fall through to lspci.
-        if out.status.success() {
-            return String::from_utf8_lossy(&out.stdout)
-                .to_lowercase()
-                .contains("hybrid");
-        }
+    else {
+        // timeout not available; count GPUs directly.
+        return pci_devices().iter().filter(|d| is_gpu_class(d.class)).count() >= 2;
+    };
+    if out.status.success() {
+        // supergfxctl answered; trust its output.
+        return String::from_utf8_lossy(&out.stdout)
+            .to_lowercase()
+            .contains("hybrid");
     }
-    // Count display-class PCI devices.
-    pci_devices().iter().filter(|d| is_gpu_class(d.class)).count() >= 2
+    // When --kill-after fires, timeout kills its child then itself with SIGKILL:
+    // the process is signal-terminated (code() returns None).  Also treat normal
+    // timeout exits (124), SIGKILL exit codes (137), and "not found" (127) as
+    // "no reliable answer" and fall back to counting PCI GPUs.
+    // Any other numeric exit code means supergfxctl ran but reported an error.
+    let code = out.status.code();
+    let signal_killed = out.status.signal().is_some();
+    if signal_killed || matches!(code, Some(124) | Some(137) | Some(127)) {
+        return pci_devices().iter().filter(|d| is_gpu_class(d.class)).count() >= 2;
+    }
+    false
 }
 
 pub fn check_asus_rog() -> bool {

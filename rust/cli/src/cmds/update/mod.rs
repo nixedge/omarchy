@@ -365,14 +365,12 @@ pub fn status() -> i32 {
     let code = status.map(|s| s.code().unwrap_or(0)).unwrap_or(0);
 
     if code == 0 {
-        // Updates available - refresh indicators
         let _ = Command::new("omarchy-shell")
-            .args(["-q", "omarchy.indicators", "refresh"])
+            .args(["-q", "omarchy.system-update", "refresh"])
             .status();
     } else {
-        // No updates - clear indicators
         let _ = Command::new("omarchy-shell")
-            .args(["-q", "omarchy.indicators", "clear"])
+            .args(["-q", "omarchy.system-update", "clear"])
             .status();
     }
     0

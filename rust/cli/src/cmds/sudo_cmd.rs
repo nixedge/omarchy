@@ -2,18 +2,24 @@ use std::fs;
 use std::process::{Command, Stdio};
 
 pub fn docker(configured: bool) -> i32 {
+    // Exit code convention (same as hw-* commands): 0 = condition is true ("needs sudo"),
+    // 1 = condition is false ("no sudo needed").
     if configured {
-        // Check if user is in docker group
+        // Check if user is in docker group — if so, sudoless Docker is configured.
         let user = std::env::var("USER").unwrap_or_default();
         let groups = Command::new("id").arg("-Gn").arg(&user)
             .output()
             .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
             .unwrap_or_default();
-        if groups.split_whitespace().any(|g| g == "docker") { 0 } else { 1 }
+        // In docker group → no sudo needed → 1; not in group → needs sudo → 0.
+        if groups.split_whitespace().any(|g| g == "docker") { 1 } else { 0 }
     } else {
-        // Check if docker socket is writable
-        Command::new("test").args(["-w", "/var/run/docker.sock"])
-            .status().map(|s| if s.success() { 0 } else { 1 }).unwrap_or(1)
+        // Check if docker socket is writable this session.
+        // Writable → no sudo needed → 1; not writable / missing → needs sudo → 0.
+        let socket = std::env::var("OMARCHY_DOCKER_SOCKET")
+            .unwrap_or_else(|_| "/var/run/docker.sock".to_string());
+        Command::new("test").args(["-w", &socket])
+            .status().map(|s| if s.success() { 1 } else { 0 }).unwrap_or(0)
     }
 }
 

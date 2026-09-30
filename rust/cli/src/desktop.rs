@@ -238,7 +238,13 @@ pub fn gum_choose(options: &[&str], header: &str) -> Option<Vec<String>> {
 
 /// Normalize a URL — add https:// prefix if schemeless.
 pub fn normalize_url(url: &str) -> String {
-    if url.contains("://") {
+    // A URL already has a scheme if there is a ':' before any '/'.
+    // This catches javascript:, data:, ftp://, etc. and avoids prefixing them.
+    let has_scheme = url
+        .find(':')
+        .map(|c| url.find('/').map_or(true, |s| c < s))
+        .unwrap_or(false);
+    if has_scheme {
         url.to_owned()
     } else {
         format!("https://{url}")

@@ -1068,10 +1068,16 @@ fn normalize_multiword_subcmd(args: Vec<String>) -> Vec<String> {
 fn main() {
     let raw: Vec<String> = std::env::args().collect();
 
-    let args = std::path::Path::new(&raw[0])
+    let binary_name = std::path::Path::new(&raw[0])
         .file_name()
         .and_then(|n| n.to_str())
-        .and_then(argv0_subcmds)
+        .unwrap_or("");
+
+    // Map argv0 (e.g. "omarchy-hw-hybrid-gpu") to subcommand args.
+    let argv0_prefix = argv0_subcmds(binary_name);
+    let is_argv0_dispatch = argv0_prefix.is_some();
+
+    let args = argv0_prefix
         .map(|subcmds| {
             let mut v = vec![raw[0].clone()];
             v.extend(subcmds.iter().map(|s| s.to_string()));
@@ -1100,8 +1106,13 @@ fn main() {
                 let _ = Cli::command().print_long_help();
                 process::exit(0);
             }
-            if let Some(code) = handle_partial_prefix(&args) {
-                process::exit(code);
+            // For argv0-dispatched commands (e.g. omarchy-sudo-docker), parse errors
+            // are real errors (unknown flags, etc.) — skip partial-prefix matching and
+            // let Clap report exit code 2.
+            if !is_argv0_dispatch {
+                if let Some(code) = handle_partial_prefix(&args) {
+                    process::exit(code);
+                }
             }
             err.exit();
         }
