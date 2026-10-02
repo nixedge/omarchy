@@ -1116,8 +1116,15 @@ fn main() {
             // When invoked with no subcommand, Clap would show help on stderr and
             // exit 2.  Mirror the bash router behaviour: print help to stdout and
             // exit 0 so callers can safely capture the output.
+            // Show the named group's help when one was given (e.g. `omarchy pkg`),
+            // otherwise fall back to the root help (bare `omarchy`).
             if matches!(err.kind(), clap::error::ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand) {
-                let _ = Cli::command().print_long_help();
+                let group = args.get(1).filter(|a| !a.starts_with('-')).map(|s| s.as_str());
+                if let Some(g) = group {
+                    print_group_help(g);
+                } else {
+                    let _ = Cli::command().print_long_help();
+                }
                 process::exit(0);
             }
             // For argv0-dispatched commands (e.g. omarchy-sudo-docker), parse errors
