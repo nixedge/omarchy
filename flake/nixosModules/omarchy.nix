@@ -38,6 +38,9 @@
 
       config = lib.mkIf cfg.enable {
 
+        # ── System branding ────────────────────────────────────────────────────
+        system.nixos.distroName = "Omarchy Cinque";
+
         # ── Hyprland compositor ────────────────────────────────────────────────
         programs.hyprland = {
           enable = true;
