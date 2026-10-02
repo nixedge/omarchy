@@ -607,6 +607,11 @@ pub enum FontCmd {
         #[arg(help = "Font name")]
         name: String,
     },
+    #[command(about = "Enable font as NixOS system default and update live config (omarchy font enable)")]
+    Enable {
+        #[arg(help = "Font family name (e.g. 'JetBrainsMono Nerd Font')")]
+        name: String,
+    },
 }
 
 #[derive(Subcommand)]

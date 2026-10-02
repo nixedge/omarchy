@@ -29,6 +29,11 @@ pub fn generate_module(state: &State) -> String {
         format!("  fonts.packages = [\n{font_list}\n  ];\n")
     };
 
+    let font_default_section = match &state.font_default {
+        Some(family) => format!("  fonts.fontconfig.defaultFonts.monospace = [ \"{family}\" ];\n"),
+        None => String::new(),
+    };
+
     format!(
         "# Managed by omarchy-nix-daemon — do not edit manually.\n\
          {{ pkgs, ... }}:\n\
@@ -36,7 +41,7 @@ pub fn generate_module(state: &State) -> String {
            environment.systemPackages = [\n\
          {pkg_list}\n\
            ];\n\
-         {fonts_section}}}\n"
+         {fonts_section}{font_default_section}}}\n"
     )
 }
 

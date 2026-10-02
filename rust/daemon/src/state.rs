@@ -12,6 +12,8 @@ pub struct State {
     pub services: Vec<String>,
     #[serde(default)]
     pub fonts: Vec<String>,
+    #[serde(default)]
+    pub font_default: Option<String>,
 }
 
 impl State {

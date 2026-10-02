@@ -32,8 +32,9 @@ pub async fn dispatch(
         Request::ConfigCheck => config::check(rebuild_lock, progress_tx).await,
         Request::ServiceEnable { name } => service::enable(&name, rebuild_lock, progress_tx).await,
         Request::ServiceDisable { name } => service::disable(&name, rebuild_lock, progress_tx).await,
-        Request::FontAdd { name } => font::add(&name, rebuild_lock, progress_tx).await,
+        Request::FontAdd { name, enable_family } => font::add(&name, enable_family.as_deref(), rebuild_lock, progress_tx).await,
         Request::FontRemove { name } => font::remove(&name, rebuild_lock, progress_tx).await,
+        Request::FontEnable { family } => font::enable(&family, rebuild_lock, progress_tx).await,
         req => {
             drop(progress_tx);
             match req {
@@ -57,7 +58,8 @@ pub async fn dispatch(
                 | Request::ServiceEnable { .. }
                 | Request::ServiceDisable { .. }
                 | Request::FontAdd { .. }
-                | Request::FontRemove { .. } => unreachable!(),
+                | Request::FontRemove { .. }
+                | Request::FontEnable { .. } => unreachable!(),
             }
         }
     };

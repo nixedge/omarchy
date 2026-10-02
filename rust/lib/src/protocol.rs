@@ -20,8 +20,9 @@ pub enum Request {
     ServiceEnable { name: String },
     ServiceDisable { name: String },
     ServiceList,
-    FontAdd { name: String },
+    FontAdd { name: String, #[serde(default, skip_serializing_if = "Option::is_none")] enable_family: Option<String> },
     FontRemove { name: String },
+    FontEnable { family: String },
     FontList,
     Status,
 }

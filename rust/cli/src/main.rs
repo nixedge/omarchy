@@ -1451,6 +1451,7 @@ fn main() {
             FontCmd::Current => cmds::font::current(),
             FontCmd::List => cmds::font::list(),
             FontCmd::Set { name } => cmds::font::set_font(&name),
+            FontCmd::Enable { name } => cmds::font::enable(&name),
         },
         Cmd::Weather { subcmd } => match subcmd {
             WeatherCmd::Icon => cmds::weather::icon(),

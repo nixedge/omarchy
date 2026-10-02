@@ -15,7 +15,7 @@ pub fn install(name: &str, package: &str, family: &str) -> i32 {
     };
 
     let mut fs = filter::FilterState::default();
-    let resp = match client.stream(Request::FontAdd { name: package.to_owned() }, |line| {
+    let resp = match client.stream(Request::FontAdd { name: package.to_owned(), enable_family: Some(family.to_owned()) }, |line| {
         if let Some(out) = filter::filter(line, &mut fs, &p) {
             println!("{out}");
         }

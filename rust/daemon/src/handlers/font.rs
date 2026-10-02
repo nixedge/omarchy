@@ -7,6 +7,7 @@ use tokio::sync::{mpsc, Mutex};
 
 pub async fn add(
     name: &str,
+    enable_family: Option<&str>,
     rebuild_lock: Arc<Mutex<()>>,
     progress_tx: mpsc::UnboundedSender<String>,
 ) -> Response {
@@ -29,6 +30,9 @@ pub async fn add(
     }
 
     state.fonts.push(nix_attr.to_owned());
+    if let Some(family) = enable_family {
+        state.font_default = Some(family.to_owned());
+    }
     if let Err(e) = state.save().await {
         return Response::err(format!("state save failed: {e}"));
     }
@@ -40,6 +44,34 @@ pub async fn add(
     }
 
     tracing::info!("font-add: {name} → {nix_attr} installed");
+    Response::ok(None)
+}
+
+pub async fn enable(
+    family: &str,
+    rebuild_lock: Arc<Mutex<()>>,
+    progress_tx: mpsc::UnboundedSender<String>,
+) -> Response {
+    let _ = progress_tx.send(format!("queuing rebuild to enable font '{family}'…"));
+    let _guard = rebuild_lock.lock().await;
+
+    let mut state = match State::load().await {
+        Ok(s) => s,
+        Err(e) => return Response::err(format!("state load failed: {e}")),
+    };
+
+    state.font_default = Some(family.to_owned());
+    if let Err(e) = state.save().await {
+        return Response::err(format!("state save failed: {e}"));
+    }
+
+    let _ = progress_tx.send(format!("running nixos-rebuild switch to enable font '{family}'…"));
+
+    if let Err(e) = rebuild::run(&state, rebuild::Mode::Switch, progress_tx).await {
+        return Response::err(format!("rebuild failed: {e}"));
+    }
+
+    tracing::info!("font-enable: '{family}' set as NixOS default monospace font");
     Response::ok(None)
 }
 
