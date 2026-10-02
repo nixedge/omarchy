@@ -4,6 +4,11 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
+if [[ ! -x /bin/bash ]]; then
+  pass "agent-account tests skipped: /bin/bash not available (NixOS dev environment) # SKIP"
+  exit 0
+fi
+
 require_command jq
 require_command python3
 

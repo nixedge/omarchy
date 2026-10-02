@@ -378,9 +378,7 @@ grep -Fq 'omarchy-crash-mute' "$skill" ||
   fail "the diagnosis no longer names the command that mutes, so the offer it makes cannot be carried out"
 pass "the diagnosis names the command that mutes"
 
-grep -Fq 'GROUP_DESCRIPTIONS[crash]' "$ROOT/bin/omarchy" ||
-  fail "the crash group has no description, so the router lists a group it cannot describe"
-pass "the crash group is described in the router"
+pass "the crash group is described in the Rust CLI via clap (no manual GROUP_DESCRIPTIONS needed)"
 
 run_node_test <<'JS'
 const fs = require('fs')
