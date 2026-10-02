@@ -112,3 +112,12 @@ fn extract_partition_num(source: &str) -> String {
     let num_str = &source[s.len()..];
     num_str.to_string()
 }
+
+pub fn security_ssh_agent() -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-setup-security-ssh-agent", omarchy_path);
+    let err = Command::new(&script).exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}

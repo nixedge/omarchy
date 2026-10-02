@@ -13,9 +13,9 @@ use cli::{
     ChannelCmd, Cli, Cmd, BatteryCmd, ClipboardCmd, CmdCheckCmd, ConfigCmd, CrashCmd, DebugCmd,
     DefaultCmd, DevCmd, DriveCmd, FontCmd, HibernationCmd, HookCmd, HwCmd, HyprlandCmd,
     InstallCmd, LaunchCmd, MenuCmd, MigrateCmd, NetworkCmd, NotificationCmd, PkgCmd, PluginCmd,
-    PlymouthCmd, PowerCmd, PowerprofilesCmd, RefreshCmd, RemoveCmd, RestartCmd, ServiceCmd,
-    SetupCmd, SudoCmd, SystemCmd, TailscaleCmd, ThemeCmd, ToggleCmd, TranscodeCmd, UpdateCmd,
-    VersionCmd, VoxtypeCmd, WeatherCmd, WebappHandlerCmd,
+    PlymouthCmd, PowerCmd, PowerprofilesCmd, ProvisionCmd, RefreshCmd, RemoveCmd, RestartCmd,
+    ServiceCmd, SetupCmd, SudoCmd, SystemCmd, TailscaleCmd, ThemeCmd, ToggleCmd, TranscodeCmd,
+    UpdateCmd, VersionCmd, VoxtypeCmd, WeatherCmd, WebappHandlerCmd,
 };
 use std::process;
 
@@ -155,6 +155,8 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-hw-touchscreen" => Some(&["hw", "state", "touchscreen"]),
         "omarchy-hw-webcam" => Some(&["hw", "state", "webcam"]),
         "omarchy-hw-recover-internal-monitor" => Some(&["hw", "recover-internal-monitor"]),
+        "omarchy-hw-nvidia-display" => Some(&["hw", "nvidia-display"]),
+        "omarchy-hw-vm" => Some(&["hw", "vm"]),
         // restart-* → restart <subcmd>
         "omarchy-restart-app" => Some(&["restart", "app"]),
         "omarchy-restart-audio" => Some(&["restart", "audio"]),
@@ -189,6 +191,8 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-cmd-missing" => Some(&["cmd", "missing"]),
         "omarchy-cmd-present" => Some(&["cmd", "present"]),
         "omarchy-cmd-terminal-cwd" => Some(&["cmd", "terminal-cwd"]),
+        "omarchy-cmd-browser-handoff" => Some(&["cmd", "browser-handoff"]),
+        "omarchy-cmd-default-browser" => Some(&["cmd", "default-browser"]),
         // state
         "omarchy-state" => Some(&["state"]),
         // done
@@ -229,6 +233,8 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-update-user-notify" => Some(&["update", "user-notify"]),
         // setup
         "omarchy-setup-direct-boot" => Some(&["setup", "direct-boot"]),
+        "omarchy-setup-security-ssh-agent" => Some(&["setup", "security-ssh-agent"]),
+        "omarchy-remove-service-ssh-agent" => Some(&["remove", "service-ssh-agent"]),
         // sudo
         "omarchy-sudo-docker" => Some(&["sudo", "docker"]),
         "omarchy-sudo-keepalive" => Some(&["sudo", "keepalive"]),
@@ -274,6 +280,8 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-toggle-suspend" => Some(&["toggle", "suspend"]),
         "omarchy-toggle-touchpad" => Some(&["toggle", "touchpad"]),
         "omarchy-toggle-touchscreen" => Some(&["toggle", "touchscreen"]),
+        "omarchy-toggle-animations" => Some(&["toggle", "animations"]),
+        "omarchy-toggle-theme-sync" => Some(&["toggle", "theme-sync"]),
         // bluetooth
         "omarchy-bluetooth-device" => Some(&["bluetooth", "device"]),
         "omarchy-bluetooth-power" => Some(&["bluetooth", "power"]),
@@ -298,6 +306,15 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-agent-usage-codex" => Some(&["agent", "usage-codex"]),
         "omarchy-agent-usage-fireworks" => Some(&["agent", "usage-fireworks"]),
         "omarchy-agent-usage-update" => Some(&["agent", "usage-update"]),
+        "omarchy-agent-usage-grok" => Some(&["agent", "usage-grok"]),
+        "omarchy-agent-account-add" => Some(&["agent", "account-add"]),
+        "omarchy-agent-account-home" => Some(&["agent", "account-home"]),
+        "omarchy-agent-account-list" => Some(&["agent", "account-list"]),
+        "omarchy-agent-account-mode" => Some(&["agent", "account-mode"]),
+        "omarchy-agent-account-remove" => Some(&["agent", "account-remove"]),
+        "omarchy-agent-account-rename" => Some(&["agent", "account-rename"]),
+        "omarchy-agent-account-state" => Some(&["agent", "account-state"]),
+        "omarchy-agent-account-use" => Some(&["agent", "account-use"]),
         // branding
         "omarchy-branding-about" => Some(&["branding", "about"]),
         "omarchy-branding-screensaver" => Some(&["branding", "screensaver"]),
@@ -507,6 +524,8 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-theme-set-vscode" => Some(&["theme", "set-vscode"]),
         "omarchy-theme-switcher" => Some(&["theme", "switcher"]),
         "omarchy-theme-update" => Some(&["theme", "update"]),
+        "omarchy-theme-set-hunk" => Some(&["theme", "set-hunk"]),
+        "omarchy-theme-set-herdr-machines" => Some(&["theme", "set-herdr-machines"]),
         // transcode
         "omarchy-transcode" => Some(&["transcode", "convert"]),
         "omarchy-transcode-ascii" => Some(&["transcode", "ascii"]),
@@ -525,18 +544,13 @@ fn argv0_subcmds(name: &str) -> Option<&'static [&'static str]> {
         "omarchy-apply-hardware" => Some(&["apply", "hardware"]),
         "omarchy-apply-system" => Some(&["apply", "system"]),
         "omarchy-apply-lock" => Some(&["apply", "lock"]),
+        "omarchy-provision-first-run" => Some(&["provision", "first-run"]),
+        "omarchy-provision-user" => Some(&["provision", "user"]),
+        "omarchy-update" => Some(&["update", "run"]),
         _ => None,
     }
 }
 
-fn exec_hw(name: &str, args: &[String]) -> i32 {
-    use std::os::unix::process::CommandExt;
-    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
-    let script = format!("{}/bin/omarchy-hw-{}", omarchy_path, name);
-    let err = std::process::Command::new(&script).args(args).exec();
-    eprintln!("exec failed: {}", err);
-    1
-}
 
 fn exec_bin(binary: &str, args: &[String]) -> i32 {
     use std::os::unix::process::CommandExt;
@@ -1224,6 +1238,7 @@ fn main() {
                 cmds::remove::launcher_entry::run(&desktop_id, entry_name.as_deref())
             }
             RemoveCmd::AiOpenclaw => cmds::remove::ai::openclaw(),
+            RemoveCmd::ServiceSshAgent => cmds::remove::service_ssh_agent(),
         },
         Cmd::Hw { subcmd } => match subcmd {
             HwCmd::Detect => cmds::hw::detect::run(),
@@ -1241,33 +1256,35 @@ fn main() {
                 }
                 0
             }
-            HwCmd::AsusRog => exec_hw("asus-rog", &[]),
-            HwCmd::AsusExpertbookB9406 => exec_hw("asus-expertbook-b9406", &[]),
-            HwCmd::AsusZenbookUx5406aa => exec_hw("asus-zenbook-ux5406aa", &[]),
-            HwCmd::Clamshell => exec_hw("clamshell", &[]),
-            HwCmd::DellXps13SidecarAmps => exec_hw("dell-xps13-sidecar-amps", &[]),
-            HwCmd::DellXpsHapticTouchpad => exec_hw("dell-xps-haptic-touchpad", &[]),
-            HwCmd::DellXpsOled => exec_hw("dell-xps-oled", &[]),
-            HwCmd::Display => exec_hw("display", &[]),
-            HwCmd::ElegatoCamlink4k => exec_hw("elgato-camlink-4k", &[]),
-            HwCmd::ExternalMonitors => exec_hw("external-monitors", &[]),
-            HwCmd::Fingerprint => exec_hw("fingerprint", &[]),
-            HwCmd::Framework16 => exec_hw("framework16", &[]),
-            HwCmd::HybridGpu => exec_hw("hybrid-gpu", &[]),
-            HwCmd::Intel => exec_hw("intel", &[]),
-            HwCmd::IntelPtl => exec_hw("intel-ptl", &[]),
-            HwCmd::IntelSof => exec_hw("intel-sof", &[]),
-            HwCmd::Laptop => exec_hw("laptop", &[]),
-            HwCmd::LaptopClosed => exec_hw("laptop-closed", &[]),
-            HwCmd::Match { args } => exec_hw("match", &args),
-            HwCmd::Nvidia => exec_hw("nvidia", &[]),
-            HwCmd::NvidiaGsp => exec_hw("nvidia-gsp", &[]),
-            HwCmd::NvidiaWithoutGsp => exec_hw("nvidia-without-gsp", &[]),
-            HwCmd::Surface => exec_hw("surface", &[]),
-            HwCmd::Touchpad => exec_hw("touchpad", &[]),
-            HwCmd::Touchscreen => exec_hw("touchscreen", &[]),
-            HwCmd::Vulkan => exec_hw("vulkan", &[]),
-            HwCmd::Webcam => exec_hw("webcam", &[]),
+            HwCmd::AsusRog => cmds::hw::check::run("asus-rog", None),
+            HwCmd::AsusExpertbookB9406 => cmds::hw::check::run("asus-expertbook", None),
+            HwCmd::AsusZenbookUx5406aa => cmds::hw::check::run("asus-zenbook", None),
+            HwCmd::Clamshell => cmds::hw::state::run("clamshell"),
+            HwCmd::DellXps13SidecarAmps => cmds::hw::check::run("dell-xps13-sidecar-amps", None),
+            HwCmd::DellXpsHapticTouchpad => cmds::hw::check::run("dell-xps-haptic", None),
+            HwCmd::DellXpsOled => cmds::hw::check::run("dell-xps-oled", None),
+            HwCmd::Display => cmds::hw::state::run("display"),
+            HwCmd::ElegatoCamlink4k => cmds::hw::check::run("elgato-camlink", None),
+            HwCmd::ExternalMonitors => cmds::hw::state::run("external-monitors"),
+            HwCmd::Fingerprint => cmds::hw::check::run("fingerprint", None),
+            HwCmd::Framework16 => cmds::hw::check::run("framework16", None),
+            HwCmd::HybridGpu => cmds::hw::check::run("hybrid-gpu", None),
+            HwCmd::Intel => cmds::hw::check::run("intel", None),
+            HwCmd::IntelPtl => cmds::hw::check::run("intel-ptl", None),
+            HwCmd::IntelSof => cmds::hw::check::run("intel-sof", None),
+            HwCmd::Laptop => cmds::hw::check::run("laptop", None),
+            HwCmd::LaptopClosed => cmds::hw::state::run("lid"),
+            HwCmd::Match { args } => cmds::hw::check::run("match", args.first().map(String::as_str)),
+            HwCmd::Nvidia => cmds::hw::check::run("nvidia", None),
+            HwCmd::NvidiaGsp => cmds::hw::check::run("nvidia-gsp", None),
+            HwCmd::NvidiaWithoutGsp => cmds::hw::check::run("nvidia-without-gsp", None),
+            HwCmd::Surface => cmds::hw::check::run("surface", None),
+            HwCmd::Touchpad => cmds::hw::state::run("touchpad"),
+            HwCmd::Touchscreen => cmds::hw::state::run("touchscreen"),
+            HwCmd::Vulkan => cmds::hw::check::run("vulkan", None),
+            HwCmd::Webcam => cmds::hw::state::run("webcam"),
+            HwCmd::NvidiaDisplay => cmds::hw::check::run("nvidia-display", None),
+            HwCmd::Vm => cmds::hw::check::run("vm", None),
         },
         Cmd::Restart { subcmd } => match subcmd {
             RestartCmd::App { name, args } => cmds::restart::app(&name, &args),
@@ -1307,6 +1324,8 @@ fn main() {
             CmdCheckCmd::Missing { cmds: c } => cmds::cmd_check::missing(&c),
             CmdCheckCmd::Present { cmds: c } => cmds::cmd_check::present(&c),
             CmdCheckCmd::TerminalCwd => cmds::cmd_check::terminal_cwd(),
+            CmdCheckCmd::BrowserHandoff { args } => cmds::cmd_check::browser_handoff(&args),
+            CmdCheckCmd::DefaultBrowser => cmds::cmd_check::default_browser(),
         },
         Cmd::State { action, name } => cmds::state_cmd::run(&action, &name),
         Cmd::Done { action, name } => cmds::done_cmd::done(&action, &name),
@@ -1349,9 +1368,11 @@ fn main() {
             UpdateCmd::SystemPkgs => cmds::update::system_pkgs(),
             UpdateCmd::Time => cmds::update::time(),
             UpdateCmd::UserNotify { args } => cmds::update::user_notify(&args),
+            UpdateCmd::Run { yes } => cmds::update::run(yes),
         },
         Cmd::Setup { subcmd } => match subcmd {
             SetupCmd::DirectBoot => cmds::setup_cmd::direct_boot(),
+            SetupCmd::SecuritySshAgent => cmds::setup_cmd::security_ssh_agent(),
         },
         Cmd::Sudo { subcmd } => match subcmd {
             SudoCmd::Docker { configured } => cmds::sudo_cmd::docker(configured),
@@ -1414,6 +1435,8 @@ fn main() {
             Some(ToggleCmd::Suspend) => cmds::toggle::suspend(),
             Some(ToggleCmd::Touchpad { action }) => cmds::toggle::touchpad(&action),
             Some(ToggleCmd::Touchscreen { action }) => cmds::toggle::touchscreen(&action),
+            Some(ToggleCmd::Animations { action }) => cmds::toggle::animations(&action),
+            Some(ToggleCmd::ThemeSync) => cmds::toggle::theme_sync(),
         },
         Cmd::Bluetooth { subcmd } => match subcmd {
             BluetoothCmd::Device { action, address } => cmds::bluetooth::device(&action, &address),
@@ -1458,6 +1481,15 @@ fn main() {
             AgentCmd::UsageUpdate { force, limits_only, except, agents } => {
                 cmds::agent::usage_update(force, limits_only, &except, &agents)
             }
+            AgentCmd::UsageGrok { args } => cmds::agent::usage_grok(&args),
+            AgentCmd::AccountAdd { args } => cmds::agent::account_add(&args),
+            AgentCmd::AccountHome { args } => cmds::agent::account_home(&args),
+            AgentCmd::AccountList { args } => cmds::agent::account_list(&args),
+            AgentCmd::AccountMode { args } => cmds::agent::account_mode(&args),
+            AgentCmd::AccountRemove { args } => cmds::agent::account_remove(&args),
+            AgentCmd::AccountRename { args } => cmds::agent::account_rename(&args),
+            AgentCmd::AccountState { args } => cmds::agent::account_state(&args),
+            AgentCmd::AccountUse { args } => cmds::agent::account_use(&args),
         },
         Cmd::Branding { subcmd } => match subcmd {
             BrandingCmd::About { mode } => cmds::branding::about(&mode),
@@ -1724,6 +1756,8 @@ fn main() {
             ThemeCmd::SetVscode { args } => cmds::theme::set_vscode(&args),
             ThemeCmd::Switcher { args } => cmds::theme::switcher(&args),
             ThemeCmd::Update { args } => cmds::theme::update(&args),
+            ThemeCmd::SetHunk => cmds::theme::set_hunk(),
+            ThemeCmd::SetHerdrMachines { args } => cmds::theme::set_herdr_machines(&args),
         },
         Cmd::Transcode { subcmd } => match subcmd {
             TranscodeCmd::Convert { args } => cmds::transcode::convert(&args),
@@ -1737,6 +1771,10 @@ fn main() {
         Cmd::WebappHandler { subcmd } => match subcmd {
             WebappHandlerCmd::Hey { args } => cmds::webapp_handler::hey(&args),
             WebappHandlerCmd::Zoom { args } => cmds::webapp_handler::zoom(&args),
+        },
+        Cmd::Provision { subcmd } => match subcmd {
+            ProvisionCmd::FirstRun { args } => cmds::provision::first_run(&args),
+            ProvisionCmd::User { args } => cmds::provision::user(&args),
         },
         Cmd::Commands { all, json, check } => cmds::commands::run(all, json, check),
         Cmd::Screenshot { args } => cmds::capture::screenshot(&args),

@@ -527,3 +527,27 @@ pub fn touchpad(action: &str) -> i32 {
 pub fn touchscreen(action: &str) -> i32 {
     input_device("touchscreen", action)
 }
+
+// ─── toggle animations ────────────────────────────────────────────────────
+
+pub fn animations(action: &str) -> i32 {
+    use std::os::unix::process::CommandExt;
+    use std::process::Command;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-toggle-animations", omarchy_path);
+    let err = Command::new(&script).arg(action).exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}
+
+// ─── toggle theme-sync ────────────────────────────────────────────────────
+
+pub fn theme_sync() -> i32 {
+    use std::os::unix::process::CommandExt;
+    use std::process::Command;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-toggle-theme-sync", omarchy_path);
+    let err = Command::new(&script).exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}

@@ -21,6 +21,8 @@ pub fn run(name: &str, pattern: Option<&str>) -> i32 {
         "dell-xps-haptic" => check_dell_xps_haptic(),
         "dell-xps13-sidecar-amps" => check_dell_xps13_sidecar_amps(),
         "elgato-camlink" => check_elgato_camlink(),
+        "nvidia-display" => check_nvidia_display(),
+        "vm" => check_vm(),
         "match" => {
             let pat = pattern.unwrap_or("");
             if pat.is_empty() {

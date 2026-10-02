@@ -162,3 +162,21 @@ fn proc_cwd(pid: String, home: &str) -> String {
 
     home.to_string()
 }
+
+pub fn browser_handoff(args: &[String]) -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-cmd-browser-handoff", omarchy_path);
+    let err = Command::new(&script).args(args).exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}
+
+pub fn default_browser() -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-cmd-default-browser", omarchy_path);
+    let err = Command::new(&script).exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}

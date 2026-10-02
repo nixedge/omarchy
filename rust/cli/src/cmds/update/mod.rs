@@ -571,3 +571,16 @@ pub fn user_notify(args: &[String]) -> i32 {
     eprintln!("exec failed: {err}");
     1
 }
+
+pub fn run(yes: bool) -> i32 {
+    use std::os::unix::process::CommandExt;
+    let omarchy_path = std::env::var("OMARCHY_PATH").unwrap_or_default();
+    let script = format!("{}/bin/omarchy-update", omarchy_path);
+    let mut cmd = Command::new(&script);
+    if yes {
+        cmd.arg("-y");
+    }
+    let err = cmd.exec();
+    eprintln!("exec {}: {}", script, err);
+    1
+}

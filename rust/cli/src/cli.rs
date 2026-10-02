@@ -144,7 +144,7 @@ pub enum Cmd {
     },
     #[command(about = "Run the Omarchy screensaver", long_about = "Run the Omarchy screensaver\n\nBinary: omarchy-screensaver")]
     Screensaver {
-        #[arg(help = "Force start")]
+        #[arg(long, help = "Force start")]
         force: bool,
     },
     #[command(name = "git-url-check", about = "Validate a git URL")]
@@ -390,6 +390,11 @@ pub enum Cmd {
         #[command(subcommand)]
         subcmd: WebappHandlerCmd,
     },
+    #[command(about = "First-login and user provisioning")]
+    Provision {
+        #[command(subcommand)]
+        subcmd: ProvisionCmd,
+    },
     #[command(about = "List available commands")]
     Commands {
         #[arg(long)]
@@ -566,6 +571,13 @@ pub enum ToggleCmd {
         #[arg(default_value = "toggle")]
         action: String,
     },
+    #[command(about = "Toggle animations and GPU effects (omarchy toggle animations)")]
+    Animations {
+        #[arg(default_value = "toggle")]
+        action: String,
+    },
+    #[command(name = "theme-sync", about = "Toggle mirroring theme changes to herdr machines (omarchy toggle theme sync)")]
+    ThemeSync,
 }
 
 #[derive(Subcommand)]
@@ -690,6 +702,10 @@ pub enum HwCmd {
     Vulkan,
     #[command(name = "webcam", about = "Check webcam (omarchy hw webcam)")]
     Webcam,
+    #[command(name = "nvidia-display", about = "Check if NVIDIA drives the display (omarchy hw nvidia display)")]
+    NvidiaDisplay,
+    #[command(name = "vm", about = "Check if running in a virtual machine (omarchy hw vm)")]
+    Vm,
 }
 
 #[derive(Subcommand)]
@@ -904,6 +920,8 @@ pub enum RemoveCmd {
     },
     #[command(name = "ai-openclaw", about = "Remove the OpenClaw agent platform (omarchy remove ai openclaw)")]
     AiOpenclaw,
+    #[command(name = "service-ssh-agent", about = "Disable the gcr-ssh-agent SSH agent (omarchy remove service ssh agent)")]
+    ServiceSshAgent,
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -1110,6 +1128,13 @@ pub enum CmdCheckCmd {
     },
     #[command(name = "terminal-cwd", about = "Print CWD of active terminal (omarchy cmd terminal cwd)")]
     TerminalCwd,
+    #[command(name = "browser-handoff", about = "Hand a command line to the running browser (omarchy cmd browser handoff)")]
+    BrowserHandoff {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "default-browser", about = "Print desktop entry ID of the default web browser (omarchy cmd default browser)")]
+    DefaultBrowser,
 }
 
 #[derive(Subcommand)]
@@ -1185,12 +1210,33 @@ pub enum UpdateCmd {
     Confirm,
     #[command(name = "analyze-logs", about = "Analyze update logs for issues (omarchy update analyze logs)")]
     AnalyzeLogs,
+    #[command(name = "run", about = "Update Omarchy and system packages (omarchy update run)")]
+    Run {
+        #[arg(short = 'y', long = "yes", help = "Skip confirmation")]
+        yes: bool,
+    },
 }
 
 #[derive(Subcommand)]
 pub enum SetupCmd {
     #[command(name = "direct-boot", about = "Manage EFI direct boot entry for Omarchy UKI (omarchy setup direct boot)")]
     DirectBoot,
+    #[command(name = "security-ssh-agent", about = "Enable gcr-ssh-agent for graphical passphrase prompts (omarchy setup security ssh agent)")]
+    SecuritySshAgent,
+}
+
+#[derive(Subcommand)]
+pub enum ProvisionCmd {
+    #[command(name = "first-run", about = "Finish first-login setup (omarchy provision first run)")]
+    FirstRun {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(about = "Finalize Omarchy user setup (omarchy provision user)")]
+    User {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -1243,6 +1289,51 @@ pub enum AgentCmd {
         except: Vec<String>,
         #[arg(help = "Agent(s) to update (default: all)")]
         agents: Vec<String>,
+    },
+    #[command(name = "usage-grok", about = "Show Grok usage (omarchy agent usage grok)")]
+    UsageGrok {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-add", about = "Sign in to a Claude, Codex, or Grok subscription (omarchy agent account add)")]
+    AccountAdd {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-home", about = "Open the home directory of an agent account (omarchy agent account home)")]
+    AccountHome {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-list", about = "List agent accounts (omarchy agent account list)")]
+    AccountList {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-mode", about = "Set or show the agent account mode (omarchy agent account mode)")]
+    AccountMode {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-remove", about = "Sign out of an agent account (omarchy agent account remove)")]
+    AccountRemove {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-rename", about = "Rename an agent account (omarchy agent account rename)")]
+    AccountRename {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-state", about = "Print agent account state JSON (omarchy agent account state)")]
+    AccountState {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "account-use", about = "Switch active agent account (omarchy agent account use)")]
+    AccountUse {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
 }
 
@@ -2075,6 +2166,13 @@ pub enum ThemeCmd {
     },
     #[command(about = "Update themes from upstream (omarchy theme update)")]
     Update {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+    #[command(name = "set-hunk", about = "Tell running Hunk sessions to pick up new terminal colors (omarchy theme set hunk)")]
+    SetHunk,
+    #[command(name = "set-herdr-machines", about = "Mirror current theme to herdr machines (omarchy theme set herdr machines)")]
+    SetHerdrMachines {
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },

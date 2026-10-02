@@ -143,3 +143,11 @@ pub fn switcher(args: &[String]) -> i32 {
 pub fn update(args: &[String]) -> i32 {
     exec_theme("update", args)
 }
+
+pub fn set_hunk() -> i32 {
+    exec_theme("set-hunk", &[])
+}
+
+pub fn set_herdr_machines(args: &[String]) -> i32 {
+    exec_theme("set-herdr-machines", args)
+}

@@ -59,12 +59,14 @@
               omarchy-install-service-dropbox \
               omarchy-install-service-nordvpn \
               omarchy-install-service-sunshine \
+              omarchy-remove-service-ssh-agent \
               omarchy-remove-service-tailscale \
               omarchy-remove-service-1password \
               omarchy-remove-service-dropbox \
               omarchy-remove-service-sunshine \
               omarchy-setup-security-fingerprint \
               omarchy-setup-security-fido2 \
+              omarchy-setup-security-ssh-agent \
               omarchy-setup-security-sshd \
               omarchy-setup-security-sudoless-docker \
               omarchy-remove-security-fingerprint \
@@ -156,8 +158,10 @@
               omarchy-hw-laptop-closed \
               omarchy-hw-match \
               omarchy-hw-nvidia \
+              omarchy-hw-nvidia-display \
               omarchy-hw-nvidia-gsp \
               omarchy-hw-nvidia-without-gsp \
+              omarchy-hw-vm \
               omarchy-hw-recover-internal-monitor \
               omarchy-hw-surface \
               omarchy-hw-touchpad \
@@ -190,6 +194,8 @@
               omarchy-battery-low \
               omarchy-battery-status \
               omarchy-power-present \
+              omarchy-cmd-browser-handoff \
+              omarchy-cmd-default-browser \
               omarchy-cmd-missing \
               omarchy-cmd-present \
               omarchy-cmd-terminal-cwd \
@@ -261,6 +267,8 @@
               omarchy-toggle-notification-silencing \
               omarchy-toggle-screensaver \
               omarchy-toggle-suspend \
+              omarchy-toggle-animations \
+              omarchy-toggle-theme-sync \
               omarchy-toggle-touchpad \
               omarchy-toggle-touchscreen \
               omarchy-bluetooth-device \
@@ -280,7 +288,16 @@
               omarchy-agent-usage-claude \
               omarchy-agent-usage-codex \
               omarchy-agent-usage-fireworks \
+              omarchy-agent-usage-grok \
               omarchy-agent-usage-update \
+              omarchy-agent-account-add \
+              omarchy-agent-account-home \
+              omarchy-agent-account-list \
+              omarchy-agent-account-mode \
+              omarchy-agent-account-remove \
+              omarchy-agent-account-rename \
+              omarchy-agent-account-state \
+              omarchy-agent-account-use \
               omarchy-branding-about \
               omarchy-branding-screensaver \
               omarchy-capture-qr \
@@ -462,6 +479,8 @@
               omarchy-theme-set-t3code \
               omarchy-theme-set-templates \
               omarchy-theme-set-tmux \
+              omarchy-theme-set-hunk \
+              omarchy-theme-set-herdr-machines \
               omarchy-theme-set-vscode \
               omarchy-theme-switcher \
               omarchy-theme-update \
@@ -471,7 +490,10 @@
               omarchy-voxtype-model \
               omarchy-voxtype-status \
               omarchy-webapp-handler-hey \
-              omarchy-webapp-handler-zoom; do
+              omarchy-webapp-handler-zoom \
+              omarchy-provision-first-run \
+              omarchy-provision-user \
+              omarchy-update; do
               ln -s $out/bin/omarchy $out/bin/$name
             done
           '';
@@ -494,14 +516,6 @@
             # icon.png is referenced by default/chromium/extensions/copy-url/icon.png
             # via a ../../../../ symlink that resolves to the package root.
             [ -f icon.png ] && cp icon.png $out/
-
-            # omarchy bash-router completions (for `omarchy pkg …` etc.)
-            install -Dm644 completions/bash/omarchy \
-              $out/share/bash-completion/completions/omarchy
-            install -Dm644 completions/zsh/_omarchy \
-              $out/share/zsh/site-functions/_omarchy
-            install -Dm644 completions/fish/omarchy.fish \
-              $out/share/fish/vendor_completions.d/omarchy.fish
 
             # Wayland session entry so SDDM discovers the omarchy session.
             mkdir -p $out/share/wayland-sessions

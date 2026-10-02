@@ -90,6 +90,54 @@ pub fn check_nvidia() -> bool {
         .any(|d| d.vendor == 0x10de && is_gpu_class(d.class))
 }
 
+pub fn check_nvidia_display() -> bool {
+    let mut nvidia_boot = false;
+    let mut other_boot = false;
+    for d in pci_devices() {
+        if !is_gpu_class(d.class) {
+            continue;
+        }
+        let base = pci_devices_path();
+        let dir = fs::read_dir(&base).ok();
+        // We need the path for boot_vga; re-scan per-device
+        let _ = dir; // handled below via direct path check
+        let _ = d.device_id;
+    }
+    // Re-scan with path access for boot_vga
+    let base = pci_devices_path();
+    let Ok(entries) = fs::read_dir(&base) else {
+        return true; // assume NVIDIA drives display if we can't tell
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let class_str = read_file(path.join("class").to_str().unwrap_or(""));
+        let class = u32::from_str_radix(class_str.trim_start_matches("0x"), 16).unwrap_or(0);
+        if !is_gpu_class(class) {
+            continue;
+        }
+        let vendor_str = read_file(path.join("vendor").to_str().unwrap_or(""));
+        let boot_vga_str = read_file(path.join("boot_vga").to_str().unwrap_or(""));
+        let boot_vga = boot_vga_str.trim() == "1";
+        if vendor_str.trim() == "0x10de" {
+            if boot_vga {
+                nvidia_boot = true;
+            }
+        } else if boot_vga {
+            other_boot = true;
+        }
+    }
+    !(other_boot && !nvidia_boot)
+}
+
+pub fn check_vm() -> bool {
+    use std::process::Command;
+    Command::new("systemd-detect-virt")
+        .args(["--vm", "--quiet"])
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false)
+}
+
 pub fn check_nvidia_gsp() -> bool {
     pci_devices()
         .iter()

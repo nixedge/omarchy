@@ -43,6 +43,7 @@ pub mod notification;
 pub mod openclaw_onboard;
 pub mod osd;
 pub mod plugin;
+pub mod provision;
 pub mod power;
 pub mod powerprofiles;
 pub mod present;

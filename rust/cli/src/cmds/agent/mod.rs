@@ -295,6 +295,44 @@ pub fn usage_fireworks(args: &[String]) -> i32 {
     exec_script("agent-usage-fireworks", args)
 }
 
+pub fn usage_grok(args: &[String]) -> i32 {
+    exec_script("agent-usage-grok", args)
+}
+
+// ─── omarchy-agent-account-* (exec delegates) ────────────────────────────────
+
+pub fn account_add(args: &[String]) -> i32 {
+    exec_script("agent-account-add", args)
+}
+
+pub fn account_home(args: &[String]) -> i32 {
+    exec_script("agent-account-home", args)
+}
+
+pub fn account_list(args: &[String]) -> i32 {
+    exec_script("agent-account-list", args)
+}
+
+pub fn account_mode(args: &[String]) -> i32 {
+    exec_script("agent-account-mode", args)
+}
+
+pub fn account_remove(args: &[String]) -> i32 {
+    exec_script("agent-account-remove", args)
+}
+
+pub fn account_rename(args: &[String]) -> i32 {
+    exec_script("agent-account-rename", args)
+}
+
+pub fn account_state(args: &[String]) -> i32 {
+    exec_script("agent-account-state", args)
+}
+
+pub fn account_use(args: &[String]) -> i32 {
+    exec_script("agent-account-use", args)
+}
+
 // ─── omarchy-agent-usage-update ───────────────────────────────────────────────
 
 pub fn usage_update(force: bool, limits_only: bool, except: &[String], agents: &[String]) -> i32 {
